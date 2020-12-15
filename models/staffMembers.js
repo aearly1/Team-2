@@ -5,16 +5,16 @@ const staffSchema = new schema ({
     password: String,
     id: {type:String,unique:true},
     name: String,
-    type: String,
+    type: String, // can either be HR or academic
     office: Number,
     dayOff: String,
-    faculty: String,
-    department: String,
-    attendance: [],
-    courses: [String],
-    schedule: [mongoose.Schema.Types.Slot],
-    sentRequests: [mongoose.Schema.Types.Request],
-    receivedRequests: [mongoose.Schema.Types.Request],
+    facultyName: String, //null for HR
+    departmentName: String, //null for HR or just set to HR
+    attendance: Array, //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+    courses: [String], //array with course ids of courses they teach && empty list in case of HR
+    scheduleSLots: [mongoose.Schema.Types.Slot], //can be an array of slot models (nested models) //null in case of HR
+    sentRequests: [mongoose.Schema.Types.Request], //stores request models sent by this particular staff member
+    receivedRequests: [mongoose.Schema.Types.Request], //stores request models submitted to this particular staff
     annualLeaves: Number,
     Salary: Number
 })
