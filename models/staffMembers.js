@@ -16,6 +16,7 @@ const staffSchema = new schema ({
     sentRequests: [mongoose.Types.ObjectId], //stores request models sent by this particular staff member
     receivedRequests: [mongoose.Types.ObjectId], //stores request models submitted to this particular staff
     annualLeaves: Number,
+    accidentalLeavesLeft: Number,
     Salary: Number
 })
 
