@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const SlotSchema = new mongoose.Schema(
     {
-        slotNumber: {type: Number, required:true, unique:true}, //an id for the slot
         startTime: {type: Date, required: true}, //start time of slot
         endTime: {type: Date, required: true}, // end time of slot
         courseTaughtInSlot: {type: String, required: true}, //what course will be taught in the slot 
