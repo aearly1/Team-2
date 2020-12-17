@@ -5,7 +5,7 @@ const request = supertest(app);
 const mongoose = require('mongoose')
 const staffMembers = require('../models/staffMembers.js');
 beforeAll(async()=>{
-    await mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority')
+    await mongoose.connect('')
 
 })
 beforeEach(async()=>{
