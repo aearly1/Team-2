@@ -62,7 +62,11 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
     app.put('/profile/update',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
-        
+        if(!u)
+        res.status(404).send("User not found")
+        u.office = req.body.office
+        console.log(req.body.office)
+        res.status(200).send("Profile Updated")
     })
     app.put('/passwordreset',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
@@ -81,9 +85,8 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
     })
     app.post('/signin',async(req,res)=>{        
         var today = new Date();
-        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date+' '+time;
+        if(today.getHours()>19 || today.getHours()<7)
+        return res.status(401).send("Working hours start from 0700 to 1900")
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
@@ -99,15 +102,15 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
 
     app.post('/signout',async(req,res)=>{        
         var today = new Date();
-        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date+' '+time;
+        if(today.getHours()>19 || today.getHours()<7)
+        return res.status(401).send("Working hours start from 0700 to 1900")
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
         u.attendance.push(lastop)
+        let minspent = (today.getTime()-lastop.time.getTime())/(1000*60)
         if(lastop.op == "sign in"){
-        u.attendance.push({op:"sign out", time: today,spent:today.getTime()-lastop.time.getTime()})
+        u.attendance.push({op:"sign out", time: today,net:minspent-504})
         res.status(200).send(u.attendance)
         staffMembers.deleteOne({email:payload.email})
         u.save()
@@ -119,13 +122,20 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         console.log(u.attendance)
-           let out = []
-            for (let index = 0; index < u.attendance.length; index++) {
-                let d =u.attendance[index].time.split("-")
-                if(d[1] == req.params.month)
-                out.push(u.attendance[index]);
-            }
-            res.status(200).send(out)
+            let curr = new Date()
+            let month = req.params.month
+            let max = new Date()
+            max.setMonth(month,10)
+            max.setHours(19)
+            let min = new Date()
+            min.setMonth(month-1,11)
+            min.setHours(6)
+            let att = u.attendance.filter(function(elem){
+                let d = elem.time
+                return  d.getTime()>min.getTime() && d.getTime() < max.getTime()
+            })
+
+            res.status(200).send(att)
         
     })
 
@@ -142,9 +152,22 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         let dayoff = u.dayOff
         let today = new Date()
         let month = today.getMonth()
+        if(today.getDate()>10)
+        month++;
+        let curr = new Date()
+        let mont = curr.getMonth()
+        if(curr.getDate()>10)
+        mont++
+        let max = new Date()
+        max.setMonth(mont,10)
+        max.setHours(19)
+        let min = new Date()
+        min.setMonth(mont-1,11)
+        min.setHours(6)
         const missingdays= []
         let att = u.attendance.filter(function(elem){
-        return elem.time.getMonth() == month
+            let d = elem.time
+            return elem.op == "sign out" && d.getTime()>min.getTime() && d.getTime() < max.getTime() 
         })
         switch (u.dayOff) {
             case "Saturday":
@@ -168,22 +191,48 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
                 dayoff=5
                 break;
         }
-        for (let i = 1; i < 32; i++) {
-            let ds = new Date()
-            ds.setDate(i);
-            if(dayoff==ds.getDay())
+        for (let i = min; i.getTime() <= max.getTime(); i.setTime(i.getTime()+86400000)) {
+            //let ds = new Date()
+            //ds.setDate(i);
+            if(dayoff==i.getDay())
                 continue;
-            if(ds.getDay()==5)
+            if(i.getDay()==5)
                 continue;
             let fil = att.filter(function(elem){
-                return elem.time.getDate()==i
+                return elem.time.getDate()==i.getDate()
             })
-            
+            console.log(i.getDate())
             if(fil.length==0)
-            missingdays.push(ds)
+            missingdays.push(i.getDate())
         }
         res.send(missingdays)
 
+    })
+    app.get('/missinghours',async(req,res)=>{
+        const payload = jwt.verify(req.header('auth-token'),key);
+        let u = await staffMembers.findOne({email:payload.email});
+        let sum = 0
+        let curr = new Date()
+        let month = curr.getMonth()
+        if(curr.getDate()>10)
+        month++
+        let max = new Date()
+        max.setMonth(month,10)
+        max.setHours(19)
+        let min = new Date()
+        min.setMonth(month-1,11)
+        min.setHours(6)
+        let att = u.attendance.filter(function(elem){
+            let d = elem.time
+            return elem.op == "sign out" && d.getTime()>min.getTime() && d.getTime() < max.getTime()
+        })
+        console.log(min)
+        console.log(max)
+        console.log(curr)
+        att.forEach(element => {
+            sum+=element.net
+        });
+        res.send(sum/60+" Hours")
     })
 
     function authenticate(req,res,next){
