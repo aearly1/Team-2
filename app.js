@@ -1,28 +1,54 @@
-const mongoose = require('mongoose');
-const express= require('express');
-const becrypt = require('becrypt');
-const jwt = require("jsonwebtoken");
-const course = require('./models/course.js');
-const department= require('./models/department.js');
-const faculty = require('./models/faculty.js')
-const location= require('./models/location.js')
-const request = require('./models/request.js')
-const slot= require('./models/slot.js')
-const staffMembers = require('./models/staffMembers.js')
+const express = require("express");
+const connectDB = require("./config/db");
+const path = require("path");
 
-mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongodb.net:27017,peacluster-shard-00-01.zwo5a.mongodb.net:27017,peacluster-shard-00-02.zwo5a.mongodb.net:27017/dev?ssl=true&replicaSet=atlas-zvq7do-shard-0&authSource=admin&retryWrites=true&w=majority')
-.then(async()=>{//idk if putting async here is enough
-    const app= express();
-    app.use(express.json());
-    
-    /*this is where we will add our routes*/
-    
-    app.listen(3000,function()
-    {
-        console.log("Server started at port 3000");
-    });
-})
-.catch((err)=>{
-    console.log(err)
-})
+const app = express();
+//Connect Database
+connectDB();
+
+//Init Middleware
+app.use(express.json({extended: false}));
+
+//Define Routes
+app.use("/api/user", require("./routes/user"));
+app.use("/api/auth", require("./routes/auth"));
+//app.use("/api/auth", require("./routes/HOD"))
+
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+
+/* OLD CODE */
+// const MongoURL = process.env.DB_URL_TEST;
+// mongoose.connect(MongoURL, { useNewUrlParser: true,useUnifiedTopology: true })
+// .then(()=>{//idk if putting async here is enough
+//     console.log('Mongo Connected')
+//     const app= express();
+//     app.use(express.json());
+//     app.use("", authRoutes);
+//     /*app.use(async (req, res, next) => {
+//         const token = req.headers.token;
+//         // TODO deny access if token does not exist
+//         req.user = jwt.verify(token, process.env.TOKEN_SECRET);
+//         next();
+//        });*/
+       
+//     /*this is where we will add our routes*/
+//     app.use("/api/users", require("./routes/users"));
+//     app.use("/api/auth", require("./routes/auth"));
+//     app.use("/api/contacts", require("./routes/contacts"));
+
+
+
+//     app.listen(3000,function()
+//     {
+//         console.log("Server started at port 3000");
+//     });
+
+// })
+// .catch((err)=>{
+//     console.log(err)
+// })
 

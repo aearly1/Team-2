@@ -5,8 +5,7 @@ const request = supertest(app);
 const mongoose = require('mongoose')
 const staffMembers = require('../models/staffMembers.js');
 beforeAll(async()=>{
-    await mongoose.connect('')
-
+mongoose.connect('mongodb+srv://admin:admin@cluster0.ccvnk.mongodb.net/diabs_tester_HOD?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true }).then(console.log('Successfully Connected to The Test Database'))
 })
 beforeEach(async()=>{
     await staffMembers.deleteMany();
