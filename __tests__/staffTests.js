@@ -8,8 +8,7 @@ const slot = require('../models/slot')
 const bcrypt = require('bcrypt')
 
 beforeAll(async()=>{
-    await mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority')
-
+mongoose.connect('mongodb+srv://admin:admin@cluster0.ccvnk.mongodb.net/diabs_tester_HOD?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true }).then(console.log('Successfully Connected to The Test Database'))
 })
 beforeEach(async()=>{
     await staffMembers.deleteMany();
