@@ -88,13 +88,14 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
+        console.log(lastop)
+        if(lastop)
         if(lastop.op == "sign out")
         u.attendance.push(lastop)
-        u.attendance.push({op:"sign in", time: dateTime})
+        u.attendance.push({op:"sign in", time: today})
         res.status(200).send(u.attendance)
         staffMembers.deleteOne({email:payload.email})
         u.save()
-        
     })
 
     app.post('/signout',async(req,res)=>{        
@@ -107,7 +108,7 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         let lastop = u.attendance.pop()
         u.attendance.push(lastop)
         if(lastop.op == "sign in"){
-        u.attendance.push({op:"sign out", time: dateTime})
+        u.attendance.push({op:"sign out", time: today,spent:today.getTime()-lastop.time.getTime()})
         res.status(200).send(u.attendance)
         staffMembers.deleteOne({email:payload.email})
         u.save()
@@ -122,7 +123,6 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
            let out = []
             for (let index = 0; index < u.attendance.length; index++) {
                 let d =u.attendance[index].time.split("-")
-                console.log(d)
                 if(d[1] == req.params.month)
                 out.push(u.attendance[index]);
             }
@@ -135,6 +135,56 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         let u = await staffMembers.findOne({email:payload.email});
         res.status(200).send(u.attendance)
         
+    })
+
+    app.get('/missingdays',async(req,res)=>{
+        const payload = jwt.verify(req.header('auth-token'),key);
+        let u = await staffMembers.findOne({email:payload.email});
+        let dayoff = u.dayOff
+        let today = new Date()
+        let month = today.getMonth()
+        const missingdays= []
+        let att = u.attendance.filter(function(elem){
+        return elem.time.getMonth() == month
+        })
+        switch (u.dayOff) {
+            case "Saturday":
+                dayoff=6
+                break;
+            case "Sunday":
+                dayoff=0
+            case "Monday":
+                dayoff=1
+                break;
+            case "Tuesday":
+                dayoff=2
+                break;
+            case "Wednesday":
+                dayoff=3
+                break;
+            case "Thursday":
+                dayoff=4
+                break;
+            case "Friday":
+                dayoff=5
+                break;
+        }
+        for (let i = 1; i < 32; i++) {
+            let ds = new Date()
+            ds.setDate(i);
+            if(dayoff==ds.getDay())
+                continue;
+            if(ds.getDay()==5)
+                continue;
+            let fil = att.filter(function(elem){
+                return elem.time.getDate()==i
+            })
+            
+            if(fil.length==0)
+            missingdays.push(ds)
+        }
+        res.send(missingdays)
+
     })
 
     function authenticate(req,res,next){
