@@ -79,7 +79,6 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         u.save()
         res.status(200).send("Password Changed")
     })
-
     app.post('/signin',async(req,res)=>{        
         var today = new Date();
         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
