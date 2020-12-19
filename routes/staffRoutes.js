@@ -11,7 +11,9 @@ const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 const key = "qofhiqoh38hfqfh3109fjqpjf";
 const blacklist = []
-mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority')
+const connectDB = require("../config/db");
+const auth = require('../middleware/auth.js')
+connectDB()
 .then(async()=>{
     const app= express();
     app.use(express.json());
@@ -34,24 +36,19 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
     })
     app.get('/profile',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
-        let staffMem = await staffMembers.findOne({email:payload.email});
+        let staffMem = await staffMembers.findOne({email:payload.email})
         if(!staffMem)
         return res.status(404).send("not found")
-        let x = staffMem.scheduleSlots;
-        let slots = []
-        slots.push( await slot.findById(x[0]));
+        console.log(staffMem.facultyName)
         let out = {
             Name: staffMem.name,
+            Email: staffMem.email,
             ID: staffMem.id,
             Office: staffMem.office,
             FacultyName: staffMem.facultyName,
             DepartmentName: staffMem.departmentName,
             Courses: staffMem.courses,
-            Slots: slots,
-            Attendance: staffMem.attendance,
             DayOff: staffMem.dayOff,
-            sentRequests: staffMem.sentRequests,
-            receivedRequests: staffMem.receivedRequests,
             annualLeaves: staffMem.annualLeaves,
             accidentalLeavesLeft: staffMem.accidentalLeavesLeft,
             Salary: staffMem.Salary
