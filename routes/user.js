@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const User = require("../models/staffMembers");
 const { v4: uuidv4 } = require('uuid');
+
 // @route   POST api/user
 // @desc    Register a user
 // @access  Public

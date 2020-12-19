@@ -12,12 +12,13 @@ app.use(express.json({extended: false}));
 //Define Routes
 app.use("/api/user", require("./routes/user"));
 app.use("/api/auth", require("./routes/auth"));
-//app.use("/api/auth", require("./routes/HOD"))
+app.use("/api/hod", require("./routes/HOD"));
 
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
 
 
 /* OLD CODE */

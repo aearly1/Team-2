@@ -3,52 +3,17 @@ const DepartmentModel= require('../models/department')
 const CourseModel = require('../models/course')
 const StaffModel = require('../models/staffMembers')
 const FacultyModel = require('../models/faculty')
-
+const { v4: uuidv4 } = require('uuid');
+const { Server, ObjectId } = require('mongodb');
 const connectDB = require("../config/db");
 connectDB();
 
-// beforeEach(async()=>{
+//  beforeAll(async()=>{
 //     await StaffModel.deleteMany();
 //     await CourseModel.deleteMany();
 //     await DepratmentModel.deleteMany();
-// })
-test('getUserToken', async ()=>{
-    await FacultyModel.deleteMany({})
-    let faculty = new FacultyModel({
-        facultyName: "Engineering",
-      //  departments: [1,2,3] //contains department ids
-    });
-    await faculty.save()
-    expect(await FacultyModel.find({ "facultyName": "Engineering"})).toHaveLength(1);
-})
-
-
-test('staffMember add test', async ()=>{
-    await StaffModel.deleteMany({})
-    let staff = new StaffModel({
-        email: "sshakirafanboy@gmail.com",
-        password: "MyHipsNeverLie",
-        id: "1", 
-        name: "Abdelrahman Diab",
-        departmentName: "MET", //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
-        courses: ["CSEN 501", "CSEN 703"], //array with course ids of courses they teach && empty list in case of HR
-        // scheduleSlots: [mongoose.Types.ObjectId], //can be an array of slot models (nested models) //null in case of HR
-        // sentRequests: [mongoose.Types.ObjectId], //stores request models sent by this particular staff member
-        // receivedRequests: [mongoose.Types.ObjectId], //stores request models submitted to this particular staff
-        Salary: 50000
-    });
-    await staff.save()
-    expect(await StaffModel.find({ "name": "Abdelrahman Diab"})).toHaveLength(1);
-})
-
-
-test('User Type to HOD',  async ()=>{
-    let user = await StaffModel.findOne({"email":"UserTypeChangeTest@gmail.com" })
-   
-    expect(await FacultyModel.find({ "facultyName": "Engineering"})).toHaveLength(1);
-})
-
-
+//     await FacultyModel.deleteMany();
+//  })
 test('Course add test', async ()=>{
     await CourseModel.deleteMany({})
     let course = new CourseModel({
@@ -64,73 +29,73 @@ test('Course add test', async ()=>{
 })
 
 test('Department add test', async ()=>{
+    let hod = await StaffModel.findOne({"type": "hod"})
     await DepartmentModel.deleteMany({})
+    let course = await CourseModel.findOne({"courseName": "CSEN 701 - Embedded Systems"})
     let department = new DepartmentModel({
         departmentName: "MET",
-        HOD_id: "41224d776a326fb40f000001",
-       // courses: [1,2,3,4] //array with course ids of courses belonging to this department
+        HOD_id: hod._id, //Slim
+        courses: [course._id] //CSEN 701
     });
     await department.save()
-    expect(await DepartmentModel.find({  "departmentName": "MET"})).toHaveLength(1);
+    expect(await DepartmentModel.find({"departmentName": "MET"})).toHaveLength(1);
 })
 
 test('Faculty add test', async ()=>{
     await FacultyModel.deleteMany({})
+    department = DepartmentModel.find({"departmentName":"MET"})
     let faculty = new FacultyModel({
         facultyName: "Engineering",
-      //  departments: [1,2,3] //contains department ids
+        departments: [ department._id] //MET department
     });
     await faculty.save()
     expect(await FacultyModel.find({ "facultyName": "Engineering"})).toHaveLength(1);
 })
 
+test('Make Staff HOD', async ()=>{
+    let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
+    let department = await DepartmentModel.findOne({"departmentName": "MET"})
+    await StaffModel.updateOne({"name":"Head of Department 1"},{
+        "type": "hod",
+        "facultyId": faculty._id,
+        "departmentId": department._id, //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        "courses": [], //array with course ids of courses they teach && empty list in case of HR
+        "dayOff": "Saturday",
+        "annualLeaves": 20,
+        "accidentalLevesLeft": 4,
+        "Salary": 50000
+    });
+    expect(await StaffModel.find({ "name": "Head of Department 1"})).toHaveLength(1);
+})
 
-// test('Assign instructor to course', async ()=>{
-//     await staffModel.deleteMany({})
-//     expect(await staffModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
+test('Make Staff instructor', async ()=>{
+    let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
+    let department = await DepartmentModel.findOne({"departmentName": "MET"})
+    await StaffModel.updateOne({"name":"Instructor 1"},{
+        "type": "instructor",
+        "facultyId": faculty._id,
+        "departmentId": department._id, //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        "courses": [], //array with course ids of courses they teach && empty list in case of HR
+        "dayOff": "Saturday",
+        "annualLeaves": 16,
+        "accidentalLevesLeft": 1,
+        "Salary": 18000
+    });
+    expect(await StaffModel.find({ "name": "Instructor 1"})).toHaveLength(1);
+})
 
-// test('Delete course instructor', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-    
-// test('View staff in department', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('View day off of all staff in department', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('View day off of single staff in department', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('View day off request by staff in his department', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('Accept a request', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('Reject a request', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('View course coverage', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
-
-// test('View teaching assignments of courses offered by department', async ()=>{
-//     await UserModel.deleteMany({})
-//     expect(await UserModel.find({ "name": "Saeed"})).toHaveLength(0);
-// })
+test('Make Staff instructor #2', async ()=>{
+    let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
+    let department = await DepartmentModel.findOne({"departmentName": "MET"})
+    await StaffModel.updateOne({"name":"Instructor 2"},{
+        "type": "instructor",
+        "facultyId": faculty._id,
+        "departmentId": department._id, //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        "courses": [], //array with course ids of courses they teach && empty list in case of HR
+        "dayOff": "Wednesday",
+        "annualLeaves": 15,
+        "accidentalLevesLeft": 2,
+        "Salary": 15000
+    });
+    expect(await StaffModel.find({ "name": "Instructor 2"})).toHaveLength(1);
+})
