@@ -6,7 +6,7 @@ const staffSchema = new schema ({
     id: {type:String,unique:true}, // Generated using uuidv4
     name: String,
     type: String, // can either be HR or academic
-    office: Number,
+    office: String,
     dayOff: String,
     facultyId: mongoose.Types.ObjectId, //null for HR
     departmentId: mongoose.Types.ObjectId, //null for HR or just set to HR
