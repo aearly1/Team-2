@@ -247,7 +247,7 @@ connectDB()
             })
             console.log(i.getDate())
             if(fil.length==0)
-            missingdays.push(i.getDate())
+            missingdays.push(i.getDate()+"/"+i.getMonth)
         }
         res.send(missingdays)
 
@@ -276,7 +276,8 @@ connectDB()
         att.forEach(element => {
             sum+=element.net
         });
-        res.send(sum/60+" Hours")
+        let mins = ((sum/60)-Math.floor(sum/60))*60
+        res.send(Math.floor(sum/60)+" Hours "+mins +" Mins")
     })
 
     function authenticate(req,res,next){
