@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
 const department= require('../models/department.js');
@@ -357,7 +358,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                    await staffMembers.findOneAndUpdate({_id :
                         ObjectId(senderID)},  { $push: { sentRequests: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
+                        ObjectId(recieverID)},  { $push: { courses: newRequest._id }}, {new: true});
                    //save request in DB
                     try
                     {

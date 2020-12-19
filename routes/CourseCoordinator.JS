@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
 const department= require('../models/department.js');
@@ -126,12 +127,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/addCourseSlot')
-    .post((req,res)=>
+    .post(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
         const courseID=req.body.courseID;
+        const STARTTIME=req.body.startTime;
+        const ENDTIME=req.body.endTime;
+        const SLOTLOCATION=req.body.slotLocation;
         try
         {
             //get user
@@ -147,21 +151,125 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(401).send("User is not the course coordinator of this course")
             }
+            //ADD CHECKS ON SLOT INFO
             const newSlot=  new slot(
                 {
-                    startTime: req.body.startTime, //start time of slot
-                    endTime: req.body.endTime, // end time of slot
+                    startTime: STARTTIME, //start time of slot
+                    endTime: ENDTIME, // end time of slot
                     courseTaughtInSlot: ObjectId(courseID), //what course will be taught in the slot 
-                    staffTeachingSlot: mongoose.Types.ObjectId,// null if this slot is still not assigned to anyone
-                    slotLocation: {type: mongoose.Types.ObjectId, required: true}, //ex. H14, C7.301
-                    replacementStaff: mongoose.Types.ObjectId //if another staff member will replace a staff member on leave
+                    slotLocation: ObjectId(SLOTLOCATION), //ex. H14, C7.301
                 }
             );
+            newSlot.save();
+            await course.findOneAndUpdate({_id :
+                ObjectId(courseID)}, {unassignedSlots:courseObject.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
+            res.send(newSlot);
+            }
+        catch(err)
+        {
+            console.log(err)
+        }
+    })
+    app.route('/updateCourseSlot')
+    .post(async(req,res)=>
+    {
+        var ObjectId = require('mongodb').ObjectId; 
+
+        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const courseID=req.body.courseID;
+        const slotID=req.body.slotID; 
+        const STAFFTEACHINGSLOT=req.body.staffTeachingSlot;
+        const SLOTLOCATION=req.body.slotLocation;
+        try
+        {
+            //get user
+            let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+            let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+            let sloteObject = await slot.findOne({_id:ObjectId(slotID)})//course of coordinator
+
+            //check that user is a coordinator
+            if(courseObject==null)
+            {
+                res.status(404).send("Course doesn't exist")
+            }
+            if(!courseObject.coordinator.equals(user._id))
+            {
+                res.status(401).send("User is not the course coordinator of this course")
+            }
+            //update person teaching slot
+            await staffMembers.findOneAndUpdate({_id :
+                sloteObject.staffTeachingSlot}, {$pull: { teachingSlots: sloteObject._id}}, {new: true});
+            if(SLOTLOCATION==null)
+            {
+                await slot.findOneAndUpdate({_id :
+                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT)}, {new: true})
+            }
+            else
+            {
+                await slot.findOneAndUpdate({_id :
+                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT), slotLocation:ObjectID(SLOTLOCATION)}, {new: true});
+            }
+            //update person teaching slot
+            await staffMembers.findOneAndUpdate({_id :
+                sloteObject.staffTeachingSlot}, {$push: { teachingSlots: sloteObject._id}}, {new: true});
         }
         catch(err)
         {
             console.log(err)
         }
+    })
+    app.route('/deleteCourseSlot')
+    .post(async(req,res)=>
+    {
+        var ObjectId = require('mongodb').ObjectId; 
+
+        const userID=req.body.userID; //(TO BE CHANGED TO TOKEN)
+        const courseID=req.body.courseID; 
+        const slotID=req.body.slotID; 
+        try
+        {
+            //get object of supposed coordinator
+            const user = await staffMembers.findOne({_id:ObjectId(userID)});
+            //get course that our user is supposedly the coordinator of
+            const courseCoordinated = await course.findOne({_id:ObjectId(courseID)});
+            //check that user is a coordinator and that course exists
+            if(courseCoordinated==null)
+            {
+                res.status(404).send("Course doesn't exist")
+            }
+            if(!courseCoordinated.coordinator.equals(user._id))
+            {
+                res.status(401).send("User is not the course coordinator of this course")
+            }
+            //check that slot exists in course
+            const slotToBeDeleted= await slot.find({_id:ObjectId(slotID)});
+            if(slotToBeDeleted==null)
+            {
+                res.status(404).send("Slot doesnt exist")
+            }
+            else if(!slotToBeDeleted.courseTaughtInSlot.equals(ObjectId(courseID)))
+            {
+                res.status(404).send("Slot belongs to another course")
+            }
+            else{
+                //remove it from schedules
+                await staffMembers.findOneAndUpdate(
+                    {_id:slotToBeDeleted.staffTeachingSlot},
+                    { $pull: { scheduleSlots: ObjectId(slotToBeDeleted._id) } },
+                    { multi: true }
+                )
+                //passed all checks delete slot
+                const result= await slot.deleteOne({_id :
+                    slotToBeDeleted._id})
+                    res.send(result)
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+
+        
     })
     async function trial()
     {
