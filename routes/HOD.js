@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const auth = require("../middleware/auth");
+//const auth = require("../middleware/auth");
 const departmentModel = require('../models/department');
+const requestModel = require('../models/request');
 const courseModel = require('../models/course');
 const staffModel = require('../models/staffMembers');
 const { check, validationResult } = require("express-validator");
 const { Server, ObjectId } = require('mongodb');
+
 
 
 //Done ==> 7
@@ -31,12 +33,11 @@ router.post("/assign-instr-course",
         //Get the Logged in User & his department 
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
         //check if user is head of the department
-
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentId" : depart._id , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -52,9 +53,9 @@ router.post("/assign-instr-course",
                         res.status(400).send("Instructor is already assigned to course")
                     }
                     
-                    if (!(instr.courses.includes(ObjectId(req.body.courseId)))){
+                    if (!(instr.courses.includes(course1.courseName))){
                         let coursesArray = instr.courses
-                        coursesArray.push(ObjectId(req.body.courseId))
+                        coursesArray.push(course1.courseName)
                         await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{ 
                             "courses" : coursesArray
                         })
@@ -101,12 +102,12 @@ router.delete("/del-instr-course",[
         //Get the Logged in User & his department 
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentId" : depart._id , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -121,9 +122,9 @@ router.delete("/del-instr-course",[
                     }
                     else{res.status(400).send("Instructor is not assigned to course")}
                     
-                    if ((instr.courses.includes(ObjectId(req.body.courseId)))){
+                    if ((instr.courses.includes(course1.courseName))){
                         let coursesArray = instr.courses
-                        let idx = coursesArray.indexOf(ObjectId(req.body.courseId))
+                        let idx = coursesArray.indexOf(course1.courseName)
                         coursesArray.splice(idx,1)
                         await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{"courses" : coursesArray})
                     }
@@ -165,12 +166,12 @@ router.post("/update-instr-course",[
         //Get the Logged in User & his department 
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentId" : depart._id , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -190,7 +191,7 @@ router.post("/update-instr-course",[
                         "instructors": instrArray
                     })
                     
-                    let coursesArray = [ObjectId(req.body.courseId)];
+                    let coursesArray = [course1.courseName];
                     await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{ 
                         "courses" : coursesArray
                     })
@@ -226,11 +227,11 @@ router.get("/staff", async (req, res) => {
         //Get the Logged in User's department
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.find({"departmentId" : depart._id});
+        let staff = await staffModel.find({"departmentName" : depart.departmentName});
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             userCode: staffMem.id,
@@ -258,7 +259,7 @@ router.get("/staff-crs",[
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
   ]
   ,
-  auth, async (req, res) => {
+   async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -267,11 +268,11 @@ router.get("/staff-crs",[
         //Get the Logged in User's department
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.find({"departmentId" : depart._id});
+        let staff = await staffModel.find({"departmentName" : depart.departmentName});
         staff = staff.filter((x) => x.courses.includes(ObjectId(req.body.courseId)))
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
@@ -296,16 +297,17 @@ router.get("/staff-crs",[
 // @input   -
 // @desc    View the day off of all the staff in his/her department.
 // @access  Private
-router.get("/staff-do", auth, async (req, res) => {
+router.get("/staff-do",  async (req, res) => {
+    console.log("you have reached staff-do")
     try {
         //Get the Logged in User's department
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.find({"departmentId" : depart._id});
+        let staff = await staffModel.find({"departmentName" : depart.departmentName});
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             id : staffMem.id,
@@ -332,7 +334,7 @@ router.get("/staff-dos",[
     check("staffId", "Staff Id incorrect <backend problem>").isLength(24)
   ]
   ,
-  auth, async (req, res) => {
+   async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -341,10 +343,10 @@ router.get("/staff-dos",[
         //Get the Logged in User's department
         let userCode = req.user.id;
         let currentUser = await staffModel.findOne({"id": userCode});
-        let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+        let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
         //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.findOne({"_id": ObjectId(req.body.staffId),"departmentId" : depart._id});
+        let staff = await staffModel.findOne({"_id": ObjectId(req.body.staffId),"departmentName" : depart.departmentName});
         let staffMem = {
             id : staff.id,
             dayOff: staff.dayOff
@@ -367,22 +369,40 @@ router.get("/staff-dos",[
 // @desc    View all the requests “change day off/leave” sent by staff members 
 //          in his/her department
 // @access  Private
-router.get("/leave-reqs", auth, async (req, res) => {
+router.get("/leave-do-reqs", async (req, res) => {
     try {
          //Get the Logged in User's department
          let userCode = req.user.id;
          let currentUser = await staffModel.findOne({"id": userCode});
-         let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+         let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
          //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-            let staff = await staffModel.find({"departmentId" : depart._id});
-            let staffOutput = [];
-            staff.forEach(staffMem => staffOutput.push({
-                userCode: staffMem.id,
-                email: staffMem.email,
-                name: staffMem.name
-            }))
-            res.status(200).json(staffOutput)
+            let staff = await staffModel.find({"departmentName" : depart.departmentName});
+            let leavesOutput = [];
+           
+            //for Each staff member get their requests
+            staff.forEach(staffMem => 
+                staffMem.sentRequests.forEach( async requestId =>{
+                    //for each request, find it in the DB, and add its info to printables
+                    let requests1 = await requestModel.findOne({"_id":ObjectId(requestId)}) 
+                    let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
+                    if (requests1){
+                        if((requests1.requestType == "change day off") | (requests1.requestType == "leave")){
+                            let leavesOutputItem = {
+                                sendName: staffMem.name,
+                                senderID: staffMem.id,
+                                recieverName: reciever.name,
+                                recieverID: reciever.id,
+                                type:requestType,
+                                status:requests1.status,
+                            }
+                            if(requests1.requestReason){leavesOutputItem.requestReason= requests1.requestReason}
+                            if(requests1.rejectionReason){leavesOutputItem.rejectionReason= requests1.rejectionReason}
+                            
+                            
+                            leavesOutput.push({leavesOutputItem})
+                        }}}))
+            res.status(200).json(leavesOutput)
 
         }
         else{
@@ -404,8 +424,7 @@ router.get("/leave-reqs", auth, async (req, res) => {
 router.post("/leave-req-a",[
     check("reqId", "Request Id incorrect <backend problem>").isLength(24)
   ]
-  ,
-  auth, async (req, res) => {
+  , async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -429,8 +448,7 @@ router.post("/leave-req-a",[
 router.post("/leave-req-r",[
     check("reqId", "Request Id incorrect <backend problem>").isLength(24)
   ]
-  ,
-  auth, async (req, res) => {
+  , async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -453,8 +471,7 @@ router.post("/leave-req-r",[
 router.get("/course-cov", [
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
   ]
-  ,
-  auth, async (req, res) => {
+  , async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -478,8 +495,7 @@ router.get("/course-cov", [
 router.get("/teaching-assignments",[
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
   ]
-  ,
-  auth, async (req, res) => {
+  , async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
