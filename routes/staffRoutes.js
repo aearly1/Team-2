@@ -62,10 +62,25 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
     app.put('/profile/update',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
-        if(!u)
-        res.status(404).send("User not found")
+        if(req.body.office)
         u.office = req.body.office
-        console.log(req.body.office)
+        if(req.body.email)
+        u.email = req.body.email
+        console.log(payload.type)
+        if(payload.type!="Academic"){
+            if(req.body.salary)
+            u.Salary=req.body.salary
+            if(req.body.department)
+            u.departmentName=req.body.department
+            if(req.body.faculty)
+            u.facultyName=req.body.faculty
+        }
+        await staffMembers.findOneAndUpdate({email:payload.email},{office:u.office})
+        await staffMembers.findOneAndUpdate({email:payload.email},{email:u.email})
+        await staffMembers.findOneAndUpdate({email:payload.email},{Salary:u.Salary})
+        await staffMembers.findOneAndUpdate({email:payload.email},{departmentName:u.departmentName})
+        await staffMembers.findOneAndUpdate({email:payload.email},{facultyName:u.facultyName})
+        //await u.save()
         res.status(200).send("Profile Updated")
     })
     app.put('/passwordreset',async(req,res)=>{
@@ -73,14 +88,14 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         let u = await staffMembers.findOne({email:payload.email});
         let oldpass = req.body.oldpassword
         let newpass = req.body.newpassword
+        if(!(oldpass && newpass))
+        return res.status(403).send("Enter password")
         const verified = await bcrypt.compare(oldpass,u.password)
         if(!verified)
         return res.status(403).send("wrong pass")
         const salt = await bcrypt.genSalt(12)
         const hashedPassword =await bcrypt.hash(newpass,salt)
-        u.password = hashedPassword
-        staffMembers.deleteOne({email:payload.email})
-        u.save()
+        await staffMembers.findOneAndUpdate({email:payload.email},{password: hashedPassword})
         res.status(200).send("Password Changed")
     })
     app.post('/signin',async(req,res)=>{        
@@ -95,25 +110,57 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
         if(lastop.op == "sign out")
         u.attendance.push(lastop)
         u.attendance.push({op:"sign in", time: today})
+        await staffMembers.findOneAndUpdate({email:payload.email},{attendance: u.attendance})
         res.status(200).send(u.attendance)
-        staffMembers.deleteOne({email:payload.email})
-        u.save()
+       
+        //await u.save()
     })
 
     app.post('/signout',async(req,res)=>{        
         var today = new Date();
+        var dayoff = 0;
+        var minspent=0;
         if(today.getHours()>19 || today.getHours()<7)
         return res.status(401).send("Working hours start from 0700 to 1900")
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
+        if(!lastop)
+        res.status(401).send("Sign in first")
         u.attendance.push(lastop)
-        let minspent = (today.getTime()-lastop.time.getTime())/(1000*60)
+        switch (u.dayOff) {
+            case "Saturday":
+                dayoff=6
+                break;
+            case "Sunday":
+                dayoff=0
+            case "Monday":
+                dayoff=1
+                break;
+            case "Tuesday":
+                dayoff=2
+                break;
+            case "Wednesday":
+                dayoff=3
+                break;
+            case "Thursday":
+                dayoff=4
+                break;
+            case "Friday":
+                dayoff=5
+                break;
+        }
+        let arr = u.attendance.filter(function(elem){
+            return elem.time.getMonth()==today.getMonth() && elem.time.getDate()==elem.time.getDate() && elem.op=="sign out"
+        })
         if(lastop.op == "sign in"){
+        minspent = (today.getTime()-lastop.time.getTime())/(1000*60)
+        if(dayoff==today.getDay()||(arr.length!=0))
+        u.attendance.push({op:"sign out", time: today,net:minspent})
+        else
         u.attendance.push({op:"sign out", time: today,net:minspent-504})
         res.status(200).send(u.attendance)
-        staffMembers.deleteOne({email:payload.email})
-        u.save()
+        await staffMembers.findOneAndUpdate({email:payload.email},{attendance: u.attendance})
         }
         else
         res.status(401).send("cannot sign out before signing in")
@@ -250,7 +297,7 @@ mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.ne
             res.status(403).send("wrong token")
         }
     }
-    app.listen(3000,function()
+    app.listen(3000,async function()
     {
         console.log("Server started at port 3000");
     });

@@ -1,16 +1,18 @@
 {
   "name": "acl-project",
   "version": "1.0.0",
-  "description": "",
+  "description": "Diab was here",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev":"nodemon app.js", 
-    "test": "jest --forceExit"
+    "dev": "nodemon app.js",
+    "test": "jest --forceExit",
+    "staffRoutes": "nodemon routes/staffRoutes.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.3",
     "dotenv": "^8.2.0",
@@ -25,5 +27,13 @@
     "supertest": "^6.0.1",
     "uuid": "^8.3.2"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aearly1/Team-2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aearly1/Team-2/issues"
+  },
+  "homepage": "https://github.com/aearly1/Team-2#readme"
 }
