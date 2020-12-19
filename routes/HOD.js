@@ -17,10 +17,14 @@ const { Server, ObjectId } = require('mongodb');
 // @input   courseId, instructorId
 // @desc    Assign a course instructor for each course in his department.
 // @access  Private
-router.post("/assign-instr-course", auth, async (req, res) => {
+router.post("/assign-instr-course",
+[
+  check("courseId", "Course Id incorrect <backend problem>").isLength(24),
+  check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+]
+,
+auth, async (req, res) => {
     const errors = validationResult(req);
-    //^^ we have to do this for routes that are going
-    //to accept data and need validation
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
