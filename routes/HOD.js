@@ -22,8 +22,7 @@ router.post("/assign-instr-course",
   check("courseId", "Course Id incorrect <backend problem>").isLength(24),
   check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
 ]
-,
-auth, async (req, res) => {
+, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -86,10 +85,18 @@ auth, async (req, res) => {
 
 // @status  Done & Tested
 // @route   DELETE api/HOD/assign-instr-course
-// @input   course id, instructor id
+// @input   courseId, instructorId
 // @desc    delete a course instructor for each course in his department.
 // @access  Private
-router.delete("/del-instr-course", auth, async (req, res) => {
+router.delete("/del-instr-course",[
+    check("courseId", "Course Id incorrect <backend problem>").isLength(24),
+    check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+  ]
+  , async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User & his department 
         let userCode = req.user.id;
@@ -142,10 +149,18 @@ router.delete("/del-instr-course", auth, async (req, res) => {
 
 // @status  Done & Tested
 // @route   POST api/HOD/update-instr-course
-// @input   course id, instructor id
+// @input   courseId, instructorId
 // @desc    Update a course instructor(overwrites all other instructors, only this one remains)
 // @access  Private
-router.post("/update-instr-course", auth, async (req, res) => {
+router.post("/update-instr-course",[
+    check("courseId", "Course Id incorrect <backend problem>").isLength(24),
+    check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+  ]
+  , async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User & his department 
         let userCode = req.user.id;
@@ -206,7 +221,7 @@ router.post("/update-instr-course", auth, async (req, res) => {
 // @input   -
 // @desc    View all staff members (View their Ids? or all info??)
 // @access  Private
-router.get("/staff", auth, async (req, res) => {
+router.get("/staff", async (req, res) => {
     try {
         //Get the Logged in User's department
         let userCode = req.user.id;
@@ -239,7 +254,15 @@ router.get("/staff", auth, async (req, res) => {
 // @input   courseId  
 // @desc    View one staff members
 // @access  Private
-router.get("/staff-crs", auth, async (req, res) => {
+router.get("/staff-crs",[
+    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         let userCode = req.user.id;
@@ -305,7 +328,15 @@ router.get("/staff-do", auth, async (req, res) => {
 // @input   staff member id  
 // @desc    View the day off of a single staff in his/her department.
 // @access  Private
-router.get("/staff-dos", auth, async (req, res) => {
+router.get("/staff-dos",[
+    check("staffId", "Staff Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         let userCode = req.user.id;
@@ -343,11 +374,18 @@ router.get("/leave-reqs", auth, async (req, res) => {
          let currentUser = await staffModel.findOne({"id": userCode});
          let depart = await departmentModel.findOne({_id : currentUser.departmentId});
          //check if user is head of the department
-         if (depart.HOD_id.toString() == currentUser._id.toString()){
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let staff = await staffModel.find({"departmentId" : depart._id});
+            let staffOutput = [];
+            staff.forEach(staffMem => staffOutput.push({
+                userCode: staffMem.id,
+                email: staffMem.email,
+                name: staffMem.name
+            }))
+            res.status(200).json(staffOutput)
 
-
-         }
-         else{
+        }
+        else{
             res.status(401).send("Unauthorized. User is not head of his department")
         }
     } catch (err) {
@@ -359,11 +397,19 @@ router.get("/leave-reqs", auth, async (req, res) => {
 
 // @status  Untouched
 // @route   POST api/hod/leave-req-a
-// @input   req-id
+// @input   reqId
 // @desc    Accept a request. if a request is accepted, appropriate logic should be
 //          executed to handlethis request.
 // @access  Private
-router.post("/leave-req-a", auth, async (req, res) => {
+router.post("/leave-req-a",[
+    check("reqId", "Request Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         const department = await departmentModel.findOne({HOD_id : req.user.id});
@@ -376,11 +422,19 @@ router.post("/leave-req-a", auth, async (req, res) => {
 
 // @status  Untouched
 // @route   POST api/hod/leave-req-r
-// @input   req-id
+// @input   reqId
 // @desc    Reject a request, and optionally leave a comment as to why this
 //          request was rejected
 // @access  Private
-router.post("/leave-req-r", auth, async (req, res) => {
+router.post("/leave-req-r",[
+    check("reqId", "Request Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         const department = await departmentModel.findOne({HOD_id : req.user.id});
@@ -393,10 +447,18 @@ router.post("/leave-req-r", auth, async (req, res) => {
 
 // @status  Untouched
 // @route   GET api/hod/course-cov
-// @input   course-id
+// @input   course-Id
 // @desc    View the coverage of each course in his/her department
 // @access  Private
-router.get("/course-cov", auth, async (req, res) => {
+router.get("/course-cov", [
+    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         const department = await departmentModel.findOne({HOD_id : req.user.id});
@@ -409,11 +471,19 @@ router.get("/course-cov", auth, async (req, res) => {
 
 // @status  Untouched
 // @route   GET api/hod/teaching-assignments
-// @input   course-id  
+// @input   courseId  
 // @desc    View teaching assignments (which staff members teach which slots) 
 //          of course offered by his department.
 // @access  Private
-router.get("/teaching-assignments", auth, async (req, res) => {
+router.get("/teaching-assignments",[
+    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+  ]
+  ,
+  auth, async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
     try {
         //Get the Logged in User's department
         const department = await departmentModel.findOne({HOD_id : req.user.id});

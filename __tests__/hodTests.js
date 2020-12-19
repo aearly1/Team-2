@@ -5,6 +5,9 @@ const StaffModel = require('../models/staffMembers')
 const FacultyModel = require('../models/faculty')
 const { v4: uuidv4 } = require('uuid');
 const { Server, ObjectId } = require('mongodb');
+
+
+
 const connectDB = require("../config/db");
 connectDB();
 
@@ -29,6 +32,7 @@ test('Course add test', async ()=>{
 })
 
 test('Department add test', async ()=>{
+    await DepartmentModel.deleteMany({})
     let hod = await StaffModel.findOne({"type": "hod"})
     await DepartmentModel.deleteMany({})
     let course = await CourseModel.findOne({"courseName": "CSEN 701 - Embedded Systems"})
