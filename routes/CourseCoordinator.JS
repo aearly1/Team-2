@@ -149,7 +149,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             }
             const newSlot=  new slot(
                 {
-                    
+                    startTime: req.body.startTime, //start time of slot
+                    endTime: req.body.endTime, // end time of slot
+                    courseTaughtInSlot: ObjectId(courseID), //what course will be taught in the slot 
+                    staffTeachingSlot: mongoose.Types.ObjectId,// null if this slot is still not assigned to anyone
+                    slotLocation: {type: mongoose.Types.ObjectId, required: true}, //ex. H14, C7.301
+                    replacementStaff: mongoose.Types.ObjectId //if another staff member will replace a staff member on leave
                 }
             );
         }

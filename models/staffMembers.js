@@ -5,6 +5,7 @@ const staffSchema = new schema ({
     password: String,
     id: {type:String,unique:true}, // Generated using uuidv4
     name: String,
+    gender:String,
     type: String, // can either be HR or academic
     office: String,
     dayOff: String,
