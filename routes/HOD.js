@@ -4,6 +4,7 @@ const auth = require("../middleware/auth");
 const departmentModel = require('../models/department');
 const courseModel = require('../models/course');
 const staffModel = require('../models/staffMembers');
+const { check, validationResult } = require("express-validator");
 const { Server, ObjectId } = require('mongodb');
 
 
@@ -17,6 +18,12 @@ const { Server, ObjectId } = require('mongodb');
 // @desc    Assign a course instructor for each course in his department.
 // @access  Private
 router.post("/assign-instr-course", auth, async (req, res) => {
+    const errors = validationResult(req);
+    //^^ we have to do this for routes that are going
+    //to accept data and need validation
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     try {
         //Get the Logged in User & his department 
         let userCode = req.user.id;
@@ -327,8 +334,18 @@ router.get("/staff-dos", auth, async (req, res) => {
 // @access  Private
 router.get("/leave-reqs", auth, async (req, res) => {
     try {
-        //Get the Logged in User's department
-        const department = await departmentModel.findOne({HOD_id : req.user.id});
+         //Get the Logged in User's department
+         let userCode = req.user.id;
+         let currentUser = await staffModel.findOne({"id": userCode});
+         let depart = await departmentModel.findOne({_id : currentUser.departmentId});
+         //check if user is head of the department
+         if (depart.HOD_id.toString() == currentUser._id.toString()){
+
+
+         }
+         else{
+            res.status(401).send("Unauthorized. User is not head of his department")
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
