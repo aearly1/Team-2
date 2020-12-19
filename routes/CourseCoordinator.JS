@@ -127,7 +127,13 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/addCourseSlot')
-    .post(async(req,res)=>
+    .post([
+        check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
+        check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
+        check("startTime", "Invalid data type. userID must be of type string").isString(),
+        check("endTime", "Invalid data type. userID must be of type string").isString(),
+        check("slotLocation", "Invalid data type. userID must be of type string").isString().isLength(24)
+      ], async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
@@ -151,11 +157,19 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(401).send("User is not the course coordinator of this course")
             }
-            //ADD CHECKS ON SLOT INFO
+            //perhaps I should do checks on the time?
+           //check that slot location exists
+           const loc = await location.findOne({_id:ObjectId(SLOTLOCATION)});
+           if(loc==null)
+           {
+               res.status(404).send("Location doesnt exist. It might exist in lala land. Who knows?");
+           }
+           else
+           {
             const newSlot=  new slot(
                 {
-                    startTime: STARTTIME, //start time of slot
-                    endTime: ENDTIME, // end time of slot
+                    startTime: new Date(STARTTIME), //start time of slot
+                    endTime: new Date(ENDTIME), // end time of slot
                     courseTaughtInSlot: ObjectId(courseID), //what course will be taught in the slot 
                     slotLocation: ObjectId(SLOTLOCATION), //ex. H14, C7.301
                 }
@@ -164,6 +178,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             await course.findOneAndUpdate({_id :
                 ObjectId(courseID)}, {unassignedSlots:courseObject.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
             res.send(newSlot);
+           }
+            
             }
         catch(err)
         {
@@ -171,7 +187,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/updateCourseSlot')
-    .post(async(req,res)=>
+    .put(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
@@ -197,21 +213,28 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 res.status(401).send("User is not the course coordinator of this course")
             }
             //update person teaching slot
+            if(sloteObject.staffTeachingSlot!=null)
             await staffMembers.findOneAndUpdate({_id :
                 sloteObject.staffTeachingSlot}, {$pull: { teachingSlots: sloteObject._id}}, {new: true});
             if(SLOTLOCATION==null)
             {
-                await slot.findOneAndUpdate({_id :
+                const result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT)}, {new: true})
+                    res.send(result);
             }
             else
             {
-                await slot.findOneAndUpdate({_id :
-                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT), slotLocation:ObjectID(SLOTLOCATION)}, {new: true});
+                const result=await slot.findOneAndUpdate({_id :
+                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT), slotLocation:ObjectId(SLOTLOCATION)}, {new: true});
+                    res.send(result);
+
             }
             //update person teaching slot
-            await staffMembers.findOneAndUpdate({_id :
-                sloteObject.staffTeachingSlot}, {$push: { teachingSlots: sloteObject._id}}, {new: true});
+            if(sloteObject.staffTeachingSlot!=null)
+            {
+                await staffMembers.findOneAndUpdate({_id :
+                    sloteObject.staffTeachingSlot}, {$push: { teachingSlots: sloteObject._id}}, {new: true});
+            }
         }
         catch(err)
         {
@@ -275,8 +298,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     {
         var ObjectId = require('mongodb').ObjectId; 
 
-        await staffMembers.findOneAndUpdate({_id :
-            ObjectId("5fdde841c77a572248510f5c")},  { $push: { receivedRequests: ObjectId("5fddea993ca9aa1e9c41d2bd")}}, {new: true});
+       const newLoc = new location(
+        {
+            roomNr: "H14",
+            roomType: "lecture hall", //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+       );
+       newLoc.save();
     }
     //trial();
     app.listen(3000,function()
