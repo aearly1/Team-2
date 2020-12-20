@@ -386,46 +386,40 @@ router.get("/leave-do-reqs", async (req, res) => {
             staff.forEach(staffMem => 
                 staffMem.sentRequests.forEach(requestId => requestsAcc.push(requestId))
             )
+            res.json(requestsAcc)
+            //Now we have all the request Ids, we need to filter out the ones that are leave/change day off
             for(let i = 0; i<requestsAcc.length;i++){
                 let requests1 = await requestModel.findOne({"_id":ObjectId(requestsAcc[i])}) 
                 if(request1){
-                let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
-                let sender = await staffModel.findOne({"_id": ObjectId(requests1.senderId)})
-                leavesOutput.push({
-                    requestId : request1._id,
-                    reqSender : sender._id,
-                    reqreciever : reciever._id
-                })
+                    if(requests1.requestType == "annual leave" ||
+                    requests1.requestType == "maternal leave" ||
+                    requests1.requestType == "accidental leave" ||
+                    requests1.requestType == "sick leave" ||
+                    requests1.requestType == "compenation leave" ||
+                    requests1.requestType == "change day off"){
+                        
+                        let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
+                        let sender = await staffModel.findOne({"_id": ObjectId(requests1.senderId)})
+                        let leavesOutputItem = {requestId : request1._id,
+                            reqSenderId : sender._id, //
+                            reqSenderName : sender.name,//
+                            reqRecieverId : reciever._id,//
+                            reqRecieverName : reciever.name,//
+                        }
+                        if(requests1.requestReason){leavesOutputItem.requestReason =requests1.requestReason }
+                        if(requests1.status){leavesOutputItem.status =requests1.status }
+                        if(requests1.rejectionReason){leavesOutputItem.rejectionReason =requests1.rejectionReason }
+                        if(requests1.relevantDocuments){leavesOutputItem.relevantDocuments =requests1.relevantDocuments }
+                        if(requests1.DesiredDayoff){leavesOutputItem.DesiredDayoff =requests1.DesiredDayoff }
+                        if(requests1.startOfLeave){leavesOutputItem.startOfLeave =requests1.startOfLeave }
+                        if(requests1.endOfLeave){leavesOutputItem.endOfLeave =requests1.endOfLeave }
+                        leavesOutput.push(leavesOutputItem)
+                    }
                 }
                 else{
                     res.status(400).send("Request with that ID not found")
                 }
             }
-            // requestsAcc.forEach(async requestId => {
-            //     let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
-            //     res.json(requests1)
-            // })
-                    // {
-                    // //for each request, find it in the DB, and add its info to printables
-                    
-                    // let requests1 = await requestModel.findOne({"_id":ObjectId(requestId)}) 
-                    // let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
-                    // res.json(request1) 
-                    
-                    // if (requests1){
-                    //     if((requests1.requestType == "change day off") | (requests1.requestType == "leave")){
-                    //         let leavesOutputItem = {
-                    //             sendName: staffMem.name,
-                    //             senderID: staffMem.id,
-                    //             recieverName: reciever.name,
-                    //             recieverID: reciever.id,
-                    //             type:requestType,
-                    //             status:requests1.status,
-                    //         }
-                    //         if(requests1.requestReason){leavesOutputItem.requestReason= requests1.requestReason}
-                    //         if(requests1.rejectionReason){leavesOutputItem.rejectionReason= requests1.rejectionReason}
-                    //         leavesOutput.push(leavesOutputItem)
-                    //     }}}))
             res.status(200).json(leavesOutput)
 
         }

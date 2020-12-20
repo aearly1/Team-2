@@ -88,12 +88,12 @@ test('Location add test', async ()=>{
 
 test('Location add test #2', async ()=>{
     let location = new LocationModel({
-        roomNr: "C6.304",
-        roomType: "lab", //only posible values are lecture halls, tutorial rooms, labs and offices
+        roomNr: "C6.305",
+        roomType: "tutorial", //only posible values are lecture halls, tutorial rooms, labs and offices
         capacity: 23
      });
     await location.save()
-    expect(await LocationModel.find({ "roomType": "lab"})).toHaveLength(2);
+    expect(await LocationModel.find({ "roomType": "lab"})).toHaveLength(1);
 })
 
 
@@ -104,7 +104,6 @@ test('Slot add test', async ()=>{
     let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
     let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
     let location = await LocationModel.find({"roomNr":"C6.304"})
-    console.log(JSON.stringify(location))
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
         endTime: Date.now(), // end time of slot
