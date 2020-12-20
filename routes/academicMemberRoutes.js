@@ -18,12 +18,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         {
             var ObjectId = require('mongodb').ObjectId; 
             const userID=req.body.userID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
-            
-            //get user object
+            try{
+                 //get user object
             const user= await staffMembers.findOne({_id:ObjectId(userID)});
             const slotsArray=user.scheduleSlots;
             const schedule=[];
-
             if(user.type=="HR")
             {
                 res.status(401).send("User is not an academic staff member")
@@ -31,10 +30,28 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             
             if(slotsArray!=null)
             for (const element of slotsArray) {
-                const slot1= await slot.findOne({_id:element});
-                schedule.push(slot1);
+                var slot1= await slot.findOne({_id:element});
+                var coursE= await course.findOne({_id:slot1.courseTaughtInSlot});
+                var U = await staffMembers.findOne({_id: slot1.staffTeachingSlot})
+                var loc= await location.findOne({_id: slot1.slotLocation})
+                var user2 = await staffMembers.findOne({_id: slot1.replacementStaff})
+                var displayedSlot=
+                {
+                    "startTime": slot1.startTime,
+                    "endTime": slot1.endTime, // end time of slot
+                    "courseTaughtInSlot": coursE.name,
+                    "staffTeachingSlot": U==null?"NA":U.name,
+                    "slotLocation": loc.roomNr,
+                    "replacementStaff": user2==null?"NA":user2.name,
+                }
+                schedule.push(displayedSlot);
                }
             res.send(schedule);
+            }
+            catch(err)
+            {
+                console.log(err)
+            }
         }
     )
    app.route('/replacementRequest')
@@ -45,12 +62,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         const senderID=req.body.senderID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
         const recieverID=req.body.recieverID;//get id of reciever from request body
         const slotID=req.body.slotID;
+        try{
         //get sender object
         const senderObject= await staffMembers.findOne({_id:ObjectId(senderID)});
         //get reciever object
         const recieverObject= await staffMembers.findOne({_id:ObjectId(recieverID)});
-        console.log(senderObject.type);
-        if(recieverObject!=null && senderObject!=null)//check if users exist
+        //get slot object
+        const slotObject= await slot.findOne({_id:ObjectId(slotID)});
+        if(recieverObject!=null)//check if users exist
         {
             //check that user is not HR
             if(senderObject.type=="HR")
@@ -58,13 +77,20 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             res.status(401).send("User is not an academic staff member")
             }
             //check if they are in the same department
-            if(senderObject.facultyName!=recieverObject.facultyName)
+            else if(senderObject.facultyName!=recieverObject.facultyName)
             {
                 res.status(404).send("This staff member is not in the same department as you. Therefore, you can't send this replacement request")
             }
+            else  if(slotObject==null)//check if slot exist
+            {
+                res.status(404).send("The slot that you are trying to find a replacement staff for doesnt exist")
+            }
+            else if(slotObject.staffTeachingSlot==null || !slotObject.staffTeachingSlot.equals(senderObject._id))//check slot is actually yours
+            {
+                res.status(401).send("You don't teach this slot!!!!!!!!!!!")
+            }
             else //check if they are in the same course
             {
-                const slotObject= await slot.findOne({_id:ObjectId(slotID)});
                 var sameCourse=false;
                 for (const element of recieverObject.courses) {
                     var courseObject= await course.findOne({_id:element});
@@ -76,15 +102,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 {
                     res.status(404).send("This staff member is not in the same course as you. Therefore, you can't send this replacement request")
                 }
-                else{
+               else{
                     //we are done with the verifications, we can create and send the request
                     //create request
                     const newRequest= new request(
                     {
                         senderID: new ObjectId(senderID), //id of the staff member sending the request
                         recieverID: new ObjectId(recieverID), //id of the staff member recieving the request
-                        requestType: "Replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
-                        status: "Pending", //the value of status can either be accepted or rejected or pending
+                        requestType: "replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
+                        status: "pending", //the value of status can either be accepted or rejected or pending
                         replacementSlot: ObjectId(slotID)
                     }
                     );
@@ -92,23 +118,26 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                         ObjectId(senderID)},  { $push: { sentRequests: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
                         ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
+                    //TESTING
+                    const senderTest= await staffMembers.findOne({_id:ObjectId(senderID)})
+                    console.log(senderTest.sentRequests);
+                    const recieverTest= await staffMembers.findOne({_id:ObjectId(recieverID)})
+                    console.log(recieverTest.receivedRequests);
                    //save request in DB
-                    try
-                    {
-                        const result = await newRequest.save();
-                        res.send(result);
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                    }
-                 }
-            }
+                   const result = await newRequest.save();
+                   res.send(result);
+                }
+           }
         }
         else
         {
             res.status(404).send("User not found");
         }
+        }
+        catch(err){
+            console.log(err)
+        }
+        
     })
     .get(async(req,res)=>
     {
@@ -122,11 +151,21 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             res.status(401).send("User is not an academic staff member")
         }
         let array=[];
+        console.log(userObject.receivedRequests);
        if(userObject.receivedRequests!=null)
         for (const element of userObject.receivedRequests) {
             var requestObject= await request.findOne({_id:element});
-                if(requestObject.requestType=="replacement")requestObject.push(requestObject);
-           }
+            var U = await staffMembers.findOne({_id: requestObject.senderID})
+                var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                var requestDisplayed=
+                {
+                    "request sent by": U.name, 
+                    "requestType": requestObject.requestType,
+                    "status": requestObject.status,
+                    "replacementSlot": sloty,
+                }
+                if(requestObject.requestType=="replacement")array.push(requestDisplayed);
+                }
         res.send(array);
     })
     app.route('/acceptReplacementRequest')
@@ -304,7 +343,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    app.route('/changeDayOffRequest')
+    app.route('/leave')
     .post(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
@@ -384,19 +423,34 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         //CHANGE THIS TO TOKEN
         const userID=req.body.userID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+        try{
+            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
         }
         const requetsSent = userObject.sentRequests;
+        console.log(requetsSent);
+
         let array=[];
         if(requetsSent!=null)
          for (const element of requetsSent) {
-             var requestObject= await request.findOne({_id:element});
-                 array.push(requestObject);
+            var requestObject= await request.findOne({_id:element});
+            var U = await staffMembers.findOne({_id: requestObject.recieverID})
+                var requestDisplayed=
+                {
+                    "request sent to": U.name, 
+                    "requestType": requestObject.requestType,
+                    "status": requestObject.status,
+                }
+            array.push(requestDisplayed);
         }
         res.send(array);
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     })
     app.route('/requestStaus/accepted')
     .get(async(req,res)=>
@@ -405,20 +459,34 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         //CHANGE THIS TO TOKEN
         const userID=req.body.userID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
-        if(userObject.type=="HR")
+        try
         {
-            res.status(401).send("User is not an academic staff member")
+            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+            if(userObject.type=="HR")
+            {
+                res.status(401).send("User is not an academic staff member")
+            }
+            const requetsSent = userObject.sentRequests;
+            let array=[];
+            if(requetsSent!=null)
+             for (const element of requetsSent) {
+                var requestObject= await request.findOne({_id:element});
+                var U = await staffMembers.findOne({_id: requestObject.recieverID})
+                    var requestDisplayed=
+                    {
+                        "request sent to": U.name, 
+                        "requestType": requestObject.requestType,
+                        "status": requestObject.status,
+                    }
+                 if(requestObject.status=="accepted")
+                 array.push(requestDisplayed);
+                }
+            res.send(array);
         }
-        const requetsSent = userObject.sentRequests;
-        let array=[];
-        if(requetsSent!=null)
-         for (const element of requetsSent) {
-             var requestObject= await request.findOne({_id:element});
-             if(requestObject.status="accepted")
-                 array.push(requestObject);
+        catch(err)
+        {
+            console.log(err)
         }
-        res.send(array);
     })
     app.route('/requestStaus/rejected')
     .get(async(req,res)=>
@@ -427,7 +495,9 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         //CHANGE THIS TO TOKEN
         const userID=req.body.userID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+
+        try{
+            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -436,10 +506,23 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         let array=[];
         if(requetsSent!=null)
          for (const element of requetsSent) {
-            if(requestObject.status="rejected")
-                array.push(requestObject);
+            var requestObject= await request.findOne({_id:element});
+            var U = await staffMembers.findOne({_id: requestObject.recieverID})
+                var requestDisplayed=
+                {
+                    "request sent to": U.name, 
+                    "requestType": requestObject.requestType,
+                    "status": requestObject.status,
+                }
+             if(requestObject.status=="rejected")
+             array.push(requestDisplayed);
         }
         res.send(array);
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
     })
     app.route('/requestStaus/pending')
     .get(async(req,res)=>
@@ -448,7 +531,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         //CHANGE THIS TO TOKEN
         const userID=req.body.userID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+
+        try
+        {
+            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -457,10 +543,23 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         let array=[];
         if(requetsSent!=null)
          for (const element of requetsSent) {
-            if(requestObject.status="pending")
-            array.push(requestObject);
+            var requestObject= await request.findOne({_id:element});
+            var U = await staffMembers.findOne({_id: requestObject.recieverID})
+                var requestDisplayed=
+                {
+                    "request sent to": U.name, 
+                    "requestType": requestObject.requestType,
+                    "status": requestObject.status,
+                }
+             if(requestObject.status=="pending")
+             array.push(requestDisplayed);
         }
         res.send(array);
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     })
     app.route('/cancleRequest')
     .get(async(req,res)=>
@@ -470,28 +569,31 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         //CHANGE THIS TO TOKEN
         const userID=req.body.userID;
         const requestID=req.body.requestID;// id of the request that we want to cancel
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})//object of the user wanting to cancel the request
+        try
+        {
+            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})//object of the user wanting to cancel the request
+            const requestObject = await request.findOne({_id:ObjectId(requestID)});// reuest that he wants to cancle
         if(userObject.type=="HR")//if he is an HR staff member then this route is not for him
         {
             res.status(401).send("User is not an academic staff member")
         }
-
-        const requestObject = await request.findOne({_id:ObjectId(requestID)});// reuest that he wants to cancle
-        if(requestObject==null)//request doesn't exist
+        else if(requestObject==null)//request doesn't exist
         {
             res.status(404).send("Request not found");
         }
         //check if he is the one who sent the request
-        if(requestObject.senderID!=userObject._id)
+        else if(!requestObject.senderID.equals(userObject._id))
         {
             res.status(401).send("You are not authorized to cancel this request since you are not the sender");
         }
         //check if the request is still pending
-        if(requestObject.status!="Pending")
+        else if(requestObject.status!="pending")
         {
             res.status(401).send("You are not authorized to cancel this request since it is no longer pending");
         }
-        //since it passed all checks, remove it from both the sender and reciever
+        else
+        {
+            //since it passed all checks, remove it from both the sender and reciever
         //removed it from sender
         await staffMembers.findOneAndUpdate(
             {_id:requestObject.senderID},
@@ -503,19 +605,37 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             { $pull: { receivedRequests: ObjectId(requestID) } },
             { multi: true }
         )
-        res.send(requestObject);
+        const result= await request.deleteOne({_id:requestObject._id});
+        res.send("Successfully deleted");
+        }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     })
     async function funct()
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const user1= await staffMembers.findOne({_id: ObjectId("5fdde841c77a572248510f5b")});
+        /*await staffMembers.findOneAndUpdate({_id:ObjectId("5fdde841c77a572248510f5c")},{ $push: { sentRequests:ObjectId("5fddea993ca9aa1e9c41d2bd")}}, {new: true});
+        /*const user1= await staffMembers.findOne({_id: ObjectId("5fdde841c77a572248510f5b")});
         console.log(user1.name);
         console.log(user1.sentRequests);
         const user2= await staffMembers.findOne({_id: ObjectId("5fdde841c77a572248510f5c")});
         console.log(user2.name);
-        console.log(user2.receivedRequests);
+        console.log(user2.sentRequests);*/
+        const req= new request(
+            {
+                senderID: ObjectId("5fdde841c77a572248510f5b"),
+                recieverID: ObjectId("5fdde841c77a572248510f5b"),
+                requestType: "slot linking",
+                status: "pending"
+            }
+        );
+        await req.save();
+
     }
-   //funct();
+    //funct();
     app.listen(3000,function()
     {
         console.log("Server started at port 3000");
