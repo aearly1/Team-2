@@ -400,7 +400,7 @@ router.get("/leave-do-reqs", async (req, res) => {
                             if(requests1.rejectionReason){leavesOutputItem.rejectionReason= requests1.rejectionReason}
                             
                             
-                            leavesOutput.push({leavesOutputItem})
+                            leavesOutput.push(leavesOutputItem)
                         }}}))
             res.status(200).json(leavesOutput)
 
