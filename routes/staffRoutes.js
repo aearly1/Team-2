@@ -30,7 +30,14 @@ const missingdays = require('../functions/funcs').missingdays
         const verified = await bcrypt.compare(req.body.password,staffMem.password)
         if(!verified)
         return res.status(403).send("The password you entered is wrong")
-        const payload = {email:staffMem.email,type:staffMem.type}
+        const payload = {user: {
+            id: staffMem.id,
+            email: staffMem.email,
+            firstLogin: staffMem.firstLogin,
+            type: staffMem.type
+          }
+          //,  email:staffMem.email,type:staffMem.type
+        }
         const token = jwt.sign(payload,key)
         res.header('auth-token',token)
         res.status(200).send("Login successful")

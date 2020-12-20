@@ -1,20 +1,8 @@
-const mongoose = require('mongoose');
-const express= require('express');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const course = require('../models/course.js');
-const department= require('../models/department.js');
-const faculty = require('../models/faculty.js')
-const location= require('../models/location.js')
-const request = require('../models/request.js')
-const slot= require('../models/slot.js')
-const staffMembers = require('../models/staffMembers.js');
-const key = "qofhiqoh38hfqfh3109fjqpjf";
 const blacklist = []
-const connectDB = require("../config/db");
-const auth = require('../middleware/authenticate.js')
-const app= express();
-const { body, validationResult, check } = require('express-validator');
+const config = require("config");
+const key = config.get("jwtSecret")
+
 module.exports.func = function authenticate(req,res,next){
     if(!req.header('auth-token'))
     return res.status(403).send("Token was not found")
@@ -23,7 +11,13 @@ module.exports.func = function authenticate(req,res,next){
         return res.status(403).send("You already logged out")
     });
     try{
-        jwt.verify(req.header('auth-token'),key)
+        const decoded = jwt.verify(req.header('auth-token'),config.get("jwtSecret"))
+        req.user = decoded.user;
+        // console.log(JSON.stringify(req.user))
+        // if(!req.user.firstLogin){
+        //   console.log("firstLogin: "+req.user.firstLogin)
+        //   res.redirect("/passwordReset")
+        // }
         next();
     }
     catch(err){

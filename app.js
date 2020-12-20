@@ -13,7 +13,7 @@ app.use(express.json({extended: false}));
 //Define Routes
 app.use("/api/user", require("./routes/user"));
 app.use("/api/auth", require("./routes/auth"));
-//app.use(auth)
+//app.use(authenticate)
 app.use("/api/staffs",require("./routes/staffRoutes"))
 app.use("/api/hod", require("./routes/HOD"));
 
