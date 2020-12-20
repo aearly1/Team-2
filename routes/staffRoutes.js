@@ -2,45 +2,47 @@ const mongoose = require('mongoose');
 const express= require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const course = require('../models/course.js');
-const department= require('../models/department.js');
-const faculty = require('../models/faculty.js')
-const location= require('../models/location.js')
-const request = require('../models/request.js')
-const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-const key = "qofhiqoh38hfqfh3109fjqpjf";
-const blacklist = []
 const connectDB = require("../config/db");
-const auth = require('../middleware/auth.js')
-const app= express();
-connectDB()
-.then(async()=>{
+const auth = require('../middleware/authenticate.js')
+const app= express.Router();
+const blacklist = auth.blacklist
+const key = auth.key
+const { body, validationResult, check } = require('express-validator');
+//connectDB()
+//.then(async()=>{
     
     app.use(express.json());
-    app.post('/login',async(req,res)=>{
+    app.post('/login',
+    [
+        body('email').isEmail(),
+        body('password').isString()
+    ],async(req,res)=>{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         const staffMem =await staffMembers.findOne({email:req.body.email})
         if(!staffMem)
-        return res.status(403).send("go away big gay")
+        return res.status(403).send("The email you entered is not registered")
         const verified = await bcrypt.compare(req.body.password,staffMem.password)
         if(!verified)
-        return res.status(403).send("wrong pass, go away big gay")
+        return res.status(403).send("The password you entered is wrong")
         const payload = {email:staffMem.email,type:staffMem.type}
         const token = jwt.sign(payload,key)
         res.header('auth-token',token)
-        res.status(200).send("login successful")
+        res.status(200).send("Login successful")
     })
-    app.use(authenticate)
+    app.use(auth.func)
     app.post('/logout',(req,res)=>{
         blacklist.push(req.header('auth-token'))
-        res.status(200).send("logout successful")
+        res.status(200).send("Logout successful")
     })
-    app.get('/profile',auth,async(req,res)=>{
-        //const payload = jwt.verify(req.header('auth-token'),key);
-        let staffMem = req.user
+    app.get('/profile',async(req,res)=>{
+        const payload = jwt.verify(req.header('auth-token'),auth.key);
+        let staffMem = await staffMembers.findOne({email:payload.email});
         if(!staffMem)
-        return res.status(404).send("not found")
-        console.log(staffMem.facultyName)
+        return res.status(404).send("User not found")
         let out = {
             Name: staffMem.name,
             Email: staffMem.email,
@@ -57,14 +59,22 @@ connectDB()
         res.status(200).send(out);
     })
     
-    app.put('/profile/update',async(req,res)=>{
+    app.put('/profile/update',
+    [
+        check('office').isString().withMessage("Please Enter a Valid Office"),
+        check('email').isEmail().withMessage("Please Enter a Valid Email"),
+        check('salary').isNumeric().withMessage("Please Enter a Correct Value"),
+        check('department').isString().withMessage("Please Enter a Valid Department"),
+        check('faculty').isString().withMessage("Please Enter a Valid Faculty")
+    ],async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
+        if(!u)
+        return res.status(404).send("User not found")
         if(req.body.office)
         u.office = req.body.office
         if(req.body.email)
         u.email = req.body.email
-        console.log(payload.type)
         if(payload.type!="Academic"){
             if(req.body.salary)
             u.Salary=req.body.salary
@@ -87,10 +97,10 @@ connectDB()
         let oldpass = req.body.oldpassword
         let newpass = req.body.newpassword
         if(!(oldpass && newpass))
-        return res.status(403).send("Enter password")
+        return res.status(403).send("Enter Your Current & New Passwords")
         const verified = await bcrypt.compare(oldpass,u.password)
         if(!verified)
-        return res.status(403).send("wrong pass")
+        return res.status(403).send("Your current password does not match")
         const salt = await bcrypt.genSalt(12)
         const hashedPassword =await bcrypt.hash(newpass,salt)
         await staffMembers.findOneAndUpdate({email:payload.email},{password: hashedPassword})
@@ -103,7 +113,6 @@ connectDB()
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
-        console.log(lastop)
         if(lastop)
         if(lastop.op == "sign out")
         u.attendance.push(lastop)
@@ -118,8 +127,6 @@ connectDB()
         var today = new Date();
         var dayoff = 0;
         var minspent=0;
-        if(today.getHours()>19 || today.getHours()<7)
-        return res.status(401).send("Working hours start from 0700 to 1900")
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
         let lastop = u.attendance.pop()
@@ -153,6 +160,12 @@ connectDB()
         })
         if(lastop.op == "sign in"){
         minspent = (today.getTime()-lastop.time.getTime())/(1000*60)
+        if(today.getHours()>19 || today.getHours()<7)
+        {
+            let tmp = lastop;
+            tmp.setHours(19).setMinutes(0);
+        minspent = (tmp.getTime()-lastop.time.getTime())/(1000*60)
+        }
         if(dayoff==today.getDay()||(arr.length!=0))
         u.attendance.push({op:"sign out", time: today,net:minspent})
         else
@@ -161,17 +174,16 @@ connectDB()
         await staffMembers.findOneAndUpdate({email:payload.email},{attendance: u.attendance})
         }
         else
-        res.status(401).send("cannot sign out before signing in")
+        res.status(401).send("Cannot sign out before signing in")
     })
     app.get('/attendance/:month',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),key);
         let u = await staffMembers.findOne({email:payload.email});
-        console.log(u.attendance)
             let curr = new Date()
-            let month = req.params.month
+            let month = parseInt(req.params.month,10)
             let max = new Date()
             max.setMonth(month,10)
-            max.setHours(19)
+            max.setHours(20)
             let min = new Date()
             min.setMonth(month-1,11)
             min.setHours(6)
@@ -246,10 +258,11 @@ connectDB()
             let fil = att.filter(function(elem){
                 return elem.time.getDate()==i.getDate()
             })
-            console.log(i.getDate())
             if(fil.length==0)
-            missingdays.push(i.getDate()+"/"+i.getMonth)
+            if(i.getTime()<=today.getTime())
+            missingdays.push(i.getDate()+"/"+(i.getMonth()+1))
         }
+        
         res.send(missingdays)
 
     })
@@ -271,37 +284,20 @@ connectDB()
             let d = elem.time
             return elem.op == "sign out" && d.getTime()>min.getTime() && d.getTime() < max.getTime()
         })
-        console.log(min)
-        console.log(max)
-        console.log(curr)
         att.forEach(element => {
             sum+=element.net
         });
         let mins = ((sum/60)-Math.floor(sum/60))*60
-        res.send(Math.floor(sum/60)+" Hours "+mins +" Mins")
+        res.send(Math.ceil(sum/60)+" Hours "+Math.round(mins) +" Mins")
     })
 
-    function authenticate(req,res,next){
-        if(!req.header('auth-token'))
-        return res.status(403).send("feen el token ya less")
-        blacklist.forEach(element => {
-            if(element == req.header('auth-token'))
-            return res.status(403).send("You already logged out")
-        });
-        try{
-            jwt.verify(req.header('auth-token'),key)
-            next();
-        }
-        catch(err){
-            res.status(403).send("wrong token")
-        }
-    }
-    app.listen(3000,async function()
+    
+    /*app.listen(3000,async function()
     {
         console.log("Server started at port 3000");
     });
-})
+/*})
 .catch((err)=>{
     console.log(err)
-})
-module.exports.app = app
+})*/
+module.exports = app
