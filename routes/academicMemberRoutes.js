@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { check, validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
 const department= require('../models/department.js');
@@ -55,8 +55,16 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     )
    app.route('/replacementRequest')
-    .post(async(req,res)=>
+    .post([
+        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24"),
+        body('recieverID').isString().isLength(24).withMessage("recieverID must be a string of length 24")
+          ],async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const senderID=req.body.senderID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
@@ -166,8 +174,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         res.send(array);
     })
     app.route('/acceptReplacementRequest')
-    .post(async(req,res)=>
+    .post([
+        body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
+          ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -210,8 +225,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/rejectReplacementRequest')
-    .post(async(req,res)=>
+    .post([
+        body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
+          ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -253,8 +275,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/slotLinkingRequest')
-    .post(async(req,res)=>
+    .post([
+        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")
+          ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -301,7 +330,13 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/changeDayOffRequest')
-    .post(async(req,res)=>
+    .post(  [
+                body('reasonForChange').isString().withMessage("reasonForChange must be a string")
+            ],
+            [
+                body('desiredDayOff').isString().isLength(24).withMessage("desiredDayOff must be a string")
+            ],
+                  async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
@@ -370,7 +405,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     });
     app.route('/leave')
-    .post(async(req,res)=>
+    .post([
+        body('documents').isString().withMessage("documents must be a string")
+    ], [
+        body('reason').isString().withMessage("reason must be a string")
+    ],[
+        body('leaveType').isString().withMessage("leaveType must be a string")
+    ],[
+        body('replacementStaff').isString().withMessage("replacementStaff must be a string")
+    ],async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
@@ -592,7 +635,9 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/cancleRequest')
-    .get(async(req,res)=>
+    .get([
+        body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
+    ], async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
@@ -644,28 +689,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    async function funct()
-    {
-        var ObjectId = require('mongodb').ObjectId; 
-        /*await staffMembers.findOneAndUpdate({_id:ObjectId("5fdde841c77a572248510f5c")},{ $push: { sentRequests:ObjectId("5fddea993ca9aa1e9c41d2bd")}}, {new: true});
-        /*const user1= await staffMembers.findOne({_id: ObjectId("5fdde841c77a572248510f5b")});
-        console.log(user1.name);
-        console.log(user1.sentRequests);
-        const user2= await staffMembers.findOne({_id: ObjectId("5fdde841c77a572248510f5c")});
-        console.log(user2.name);
-        console.log(user2.sentRequests);*/
-        const req= new request(
-            {
-                senderID: ObjectId("5fdde841c77a572248510f5b"),
-                recieverID: ObjectId("5fdde841c77a572248510f5b"),
-                requestType: "slot linking",
-                status: "pending"
-            }
-        );
-        await req.save();
-
-    }
-    //funct();
+ 
     app.listen(3000,function()
     {
         console.log("Server started at port 3000");

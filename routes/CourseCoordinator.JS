@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { check, validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
 const department= require('../models/department.js');
@@ -14,7 +14,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     const app= express();
     app.use(express.json());
     app.route('/slotLinkingRequest')
-    .get(async(req,res)=>{
+    .get([
+        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+    ],async(req,res)=>{
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         //CHANGE THIS TO TOKEN
@@ -50,8 +57,17 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         res.send(array);
     })
     app.route('/acceptRejectslotLinkingRequest')
-    .post(async(req,res)=>
+    .post([
+        body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
+    ], [
+        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+    ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -143,13 +159,20 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     })
     app.route('/addCourseSlot')
     .post([
-        check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-        check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-        check("startTime", "Invalid data type. userID must be of type string").isString(),
-        check("endTime", "Invalid data type. userID must be of type string").isString(),
-        check("slotLocation", "Invalid data type. userID must be of type string").isString().isLength(24)
-      ], async(req,res)=>
+        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+    ],[
+        body('startTime').isString().withMessage("startTime must be a string")
+    ],[
+        body('endTime').isString().withMessage("requestID must be a string")
+    ], [
+        body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
+    ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -202,8 +225,23 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/updateCourseSlot')
-    .put(async(req,res)=>
+    .put([
+        body('userID').isString().isLength(24).withMessage("userID must be a string of length 24")
+    ],[
+        body('courseID').isString().isLength(24).withMessage("courseID must be a string")
+    ],[
+        body('slotID').isString().isLength(24).withMessage("slotID must be a string")
+    ], [
+        body('staffTeachingSlot').isString().isLength(24).withMessage("staffTeachingSlot must be a string of length 24")
+    ],[
+        body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
+    ],async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
@@ -303,8 +341,17 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
     })
     app.route('/deleteCourseSlot')
-    .post(async(req,res)=>
+    .post([
+        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+    ],[
+        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")
+    ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //(TO BE CHANGED TO TOKEN)
@@ -355,36 +402,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         
     })
-    async function trial()
-    {
-        var ObjectId = require('mongodb').ObjectId; 
-
-        var coordinator = new staffMembers(
-            {
-                email: "zulu@guc.com",
-                password: "123",
-                id: "1234432", // Generated using uuidv4
-                name: "zulu",
-                gender:"male",
-                type: "academic", // can either be HR or academic
-                office: "C7-201",
-                dayOff: "Sunday",
-                facultyName: "MET", //null for HR
-                departmentName: "CSEN", //null for HR or just set to HR
-                attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
-                courses: [], //array with course ids of courses they teach && empty list in case of HR
-                scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
-                sentRequests: [], //stores request models sent by this particular staff member
-                receivedRequests: [], //stores request models submitted to this particular staff
-                annualLeaves: 50,
-                accidentalLeavesLeft: 5,
-                Salary: 100000000
-            }
-        );
-        await coordinator.save();
-
-    }
-   //trial();
+    
     app.listen(3000,function()
     {
         console.log("Server started at port 3000");
