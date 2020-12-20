@@ -14,7 +14,7 @@ const { body, validationResult, check } = require('express-validator');
     app.post('/',
     [
         body('email').isEmail(),
-        body('password').isString()
+        body('password').isString().isLength({ min: 5 })
     ],async(req,res)=>{
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -24,8 +24,8 @@ const { body, validationResult, check } = require('express-validator');
         if(!staffMem)
         return res.status(403).send("The email you entered is not registered")
         const verified = await bcrypt.compare(req.body.password,staffMem.password)
-        //if(!verified)
-        //return res.status(403).send("The password you entered is wrong")
+        if(!verified)
+        return res.status(403).send("The password you entered is wrong")
 
         const payload = {user: {
             id: staffMem.id,

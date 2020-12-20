@@ -5,7 +5,7 @@
 =================================================================================
 
 Functionality: Logs the staff member in
-Route: /login
+Route: /api/staffs/login
 Request type: POST
 Request Body: {"email":"sexysoso@hotmail.com",
 	"password":"passwordsha2y"}
@@ -13,13 +13,13 @@ Request Body: {"email":"sexysoso@hotmail.com",
 ---------------------------------------------------------------------------------
 
 Functionality: Logs the staff member out
-Route: /logout
+Route: /api/staffs/logout
 Request type: POST
 
 ---------------------------------------------------------------------------------
 
 Functionality: Views the profile of the staff member
-Route: /profile
+Route: /api/staffs/profile
 Request type: GET
 Response: JSON Object containing staff member details
 Example: {
@@ -42,7 +42,7 @@ Example: {
 ---------------------------------------------------------------------------------
 
 Functionality: Updates the profile of a staff member with the entered data
-Route: /profile/update
+Route: /api/staffs/profile/update
 Request type: PUT
 Request Body: {
 	"email":"sexysoso2@hotmail.com",
@@ -56,7 +56,7 @@ NOTE: faculty, department & salary only update in the DB only if the logged in m
 ---------------------------------------------------------------------------------
 
 Functionality: Resets the password of the staff member
-Route: /passwordreset
+Route: /api/staffs/passwordreset
 Request type: PUT
 Request Body: {
 	"oldpassword":"passwordsha2y",
@@ -66,7 +66,7 @@ Request Body: {
 ---------------------------------------------------------------------------------
 
 Functionality: Signs the staff member in to mark their attendance
-Route: /signin
+Route: /api/staffs/signin
 Request type: POST
 Response: Returns the overall attendance record
 Example: [
@@ -79,7 +79,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Signs the staff member out to mark them leaving
-Route: /signout
+Route: /api/staffs/signout
 Request type: POST
 Response: Returns the overall attendance record
 Example: [
@@ -97,7 +97,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Views the attendance of the staff member for a specified month
-Route: /attendance/:month
+Route: /api/staffs/attendance/:month
 Request type: GET
 Parameters: month is the month of the attendance viewed
 Example of how to call the route: /attendance/12
@@ -135,7 +135,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Views the overall attendance 
-Route: /attendance
+Route: /api/staffs/attendance
 Request type: GET
 Response: Array of JSON Objects representing the attendance
 Example: [
@@ -171,7 +171,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Views the days missed by a staff member (that was not signed) where it was not neither a dayoff nor a friday
-Route: /missingdays
+Route: /api/staffs/missingdays
 Request type: GET
 Response: Array of the days missed
 Example: [
@@ -187,7 +187,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Views the net missing hours of the current month
-Route: /missinghours
+Route: /api/staffs/missinghours
 Request type: GET
 Response: The number of missing hours
 Example: -8 Hours 37 Mins
