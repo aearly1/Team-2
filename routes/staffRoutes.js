@@ -13,9 +13,10 @@ const key = "qofhiqoh38hfqfh3109fjqpjf";
 const blacklist = []
 const connectDB = require("../config/db");
 const auth = require('../middleware/auth.js')
+const app= express();
 connectDB()
 .then(async()=>{
-    const app= express();
+    
     app.use(express.json());
     app.post('/login',async(req,res)=>{
         const staffMem =await staffMembers.findOne({email:req.body.email})
@@ -34,9 +35,9 @@ connectDB()
         blacklist.push(req.header('auth-token'))
         res.status(200).send("logout successful")
     })
-    app.get('/profile',async(req,res)=>{
-        const payload = jwt.verify(req.header('auth-token'),key);
-        let staffMem = await staffMembers.findOne({email:payload.email})
+    app.get('/profile',auth,async(req,res)=>{
+        //const payload = jwt.verify(req.header('auth-token'),key);
+        let staffMem = req.user
         if(!staffMem)
         return res.status(404).send("not found")
         console.log(staffMem.facultyName)
@@ -303,4 +304,4 @@ connectDB()
 .catch((err)=>{
     console.log(err)
 })
-//module.exports.app = app
+module.exports.app = app
