@@ -120,9 +120,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                         ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
                     //TESTING
                     const senderTest= await staffMembers.findOne({_id:ObjectId(senderID)})
-                    console.log(senderTest.sentRequests);
                     const recieverTest= await staffMembers.findOne({_id:ObjectId(recieverID)})
-                    console.log(recieverTest.receivedRequests);
                    //save request in DB
                    const result = await newRequest.save();
                    res.send(result);
@@ -151,7 +149,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             res.status(401).send("User is not an academic staff member")
         }
         let array=[];
-        console.log(userObject.receivedRequests);
        if(userObject.receivedRequests!=null)
         for (const element of userObject.receivedRequests) {
             var requestObject= await request.findOne({_id:element});
@@ -180,7 +177,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         const user= await staffMembers.findOne({_id:ObjectId(userID)});
         //get request
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
-        console.log(newRequest)
         //check that user is not HR
         if(user.type=="HR")
         {
@@ -387,7 +383,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         try
         {
             //get user sending the slot linking using the userID
-            const user= await staffMembers.findOne({_id:ObjectId(userID)});
+            const user= await staffMembers.findOne({_id:ObjectId(sndrID)});
             //get department of user
             const departmentName=user.departmentName;
             if(user.type=="HR")//check that user is academic
@@ -402,11 +398,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(404).send("Invalid leave type")
             }
-            else if(documents==null && (leaveType!="sick leave" && leaveType!="maternity leave"))
+            else if(documents==null && (leaveType=="sick leave" || leaveType=="maternity leave"))
             {
                 res.status(404).send("Didn't submit relavent documents with request. Therefore, cannot submit leave request")
             }
-            else if(requestReason==null && leaveType!="compensation leave")
+            else if(reason==null && leaveType=="compensation leave")
             {
                 res.status(404).send("You must submit a reason for the compensation leave")
             }
@@ -441,6 +437,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                }
                const resulto=await await request.findOne({_id :
                 leave._id});
+                await staffMembers.findOneAndUpdate({_id :ObjectId(sndrID)}, { $push: { sentRequests: leave._id }}, {new: true});
+                await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: leave._id }}, {new: true});
                 res.send(resulto);
             }
         }
@@ -463,7 +461,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             res.status(401).send("User is not an academic staff member")
         }
         const requetsSent = userObject.sentRequests;
-        console.log(requetsSent);
 
         let array=[];
         if(requetsSent!=null)

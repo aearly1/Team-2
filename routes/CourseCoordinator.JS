@@ -35,8 +35,17 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         if(requetsRec!=null)
          for (const element of requetsRec) {
              var requestObject= await request.findOne({_id:element});
+            var U = await staffMembers.findOne({_id: requestObject.senderID})
+                var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                var requestDisplayed=
+                {
+                    "request sent by": U.name, 
+                    "requestType": requestObject.requestType,
+                    "status": requestObject.status,
+                    "Desired slot": sloty,
+                }
              if(requestObject.requestType="slot linking")
-                 array.push(requestObject);
+                 array.push(requestDisplayed);
         }
         res.send(array);
     })
@@ -82,40 +91,46 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(401).send("You can only accept/reject pending requests")
             }
+           
             //passed all these checks then accept or reject request request
-           const wantedSlot = await slot.find({_id:newRequest.replacementSlot});
-           if(wantedSlot.courseTaughtInSlot!=courseObject.courseName)// slot doesnt belong to course
+           const wantedSlot = await slot.findOne({_id:newRequest.replacementSlot});
+         
+           if(!wantedSlot.courseTaughtInSlot.equals(courseObject._id))// slot doesnt belong to course
            {
                 await request.findOneAndUpdate({_id: requestID}, {status:"rejected"}, {new: true});
-                res.send("rejected");
+                res.send("Rejected because this is not a slot in course");
            }
            else if(wantedSlot.staffTeachingSlot!=null)//slot is taught by someone else
            {
                 await request.findOneAndUpdate({_id: requestID}, {status:"rejected"}, {new: true});
-                res.send("rejected");
+                res.send("Rejected because some other staff member is already teaching this slot");
            }
            else
            {
+               const person = await staffMembers.findOne({_id:newRequest.senderID});
+               console.log(person)
                 //check if staff have teaching ativity during the slot
-                const schedule = userObject.receivedRequests;
+                const schedule = person.receivedRequests;
                 const busy=false;
                 if(schedule!=null)
                  for (const element of schedule) {
                      var slot1= await slot.findOne({_id:element});
-                     if(slot1.startTime==wantedSlot.startTime)
+                     if(slot1!=null && slot1.startTime==wantedSlot.startTime)
                      {
-                        busy -true;break;
+                        busy =true;break;
                      }  
                 }
                 if(busy)
                 {
                     await request.findOneAndUpdate({_id: requestID}, {status:"rejected"}, {new: true});
-                    res.send("rejected");
+                    res.send("Rejected because you are already teaching a slt during the same time");
                 }
                 else{
                     //passed all checks, can accept
+                    await staffMembers.findOneAndUpdate({_id :
+                        person._id}, {$push: { courses:ObjectId(courseID)}}, {new: true});
                     await request.findOneAndUpdate({_id: ObjectId(requestID)}, {status:"accepted"}, {new: true});
-                    await slot.findOneAndUpdate({_id: wantedSlot._id}, {staffTeachingSlot:user.name}, {new: true});
+                    await slot.findOneAndUpdate({_id: wantedSlot._id}, {staffTeachingSlot:person._id}, {new: true});
                     await course.findOneAndUpdate({_id:ObjectId(courseID)}, {unassignedSlots:courseObject.unassignedSlots-1}, {new: true});
                     res.send("accepted");
                 }
@@ -344,12 +359,32 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     {
         var ObjectId = require('mongodb').ObjectId; 
 
-        var result= await staffMembers.findOne({_id :
-            ObjectId("5fdde841c77a572248510f5b")});
-        console.log(result.scheduleSlots);
+        var coordinator = new staffMembers(
+            {
+                email: "zulu@guc.com",
+                password: "123",
+                id: "1234432", // Generated using uuidv4
+                name: "zulu",
+                gender:"male",
+                type: "academic", // can either be HR or academic
+                office: "C7-201",
+                dayOff: "Sunday",
+                facultyName: "MET", //null for HR
+                departmentName: "CSEN", //null for HR or just set to HR
+                attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+                courses: [], //array with course ids of courses they teach && empty list in case of HR
+                scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+                sentRequests: [], //stores request models sent by this particular staff member
+                receivedRequests: [], //stores request models submitted to this particular staff
+                annualLeaves: 50,
+                accidentalLeavesLeft: 5,
+                Salary: 100000000
+            }
+        );
+        await coordinator.save();
 
     }
-   // trial();
+   //trial();
     app.listen(3000,function()
     {
         console.log("Server started at port 3000");
