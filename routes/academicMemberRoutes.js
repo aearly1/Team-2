@@ -263,12 +263,27 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
         const slotID=req.body.slotID;// id of slot that you want to teach
-        //get user sending the slot linking using the userID
+        try
+        {
+            //get user sending the slot linking using the userID
         const user= await staffMembers.findOne({_id:ObjectId(userID)});
         //get the object of the desired slot
         const desiredSlot= await slot.findOne({_id:ObjectId(slotID)});
-        const slotCourse = await course.findOne({courseName: desiredSlot.courseTaughtInSlot})//get the course in order to know the course coordinator
-        //create request
+        if(user.type=="HR")//check that user is academic
+        {
+        res.status(401).send("User is not an academic staff member")
+        }
+        else if(desiredSlot==null)
+        {
+            res.status(404).send("The desired slot doesnt exist")
+        }
+        else{
+             //create request
+        const slotCourse = await course.findOne({_id: desiredSlot.courseTaughtInSlot})//get the course in order to know the course coordinator
+        if(slotCourse==null)
+        {
+            res.status(404).send("The desired slot doesnt belong to a course. Therefore, failed to send to coordinator.")
+        }
         const newRequest = new request(
             {
                 senderID: ObjectId(userID), //id of the staff member sending the request
@@ -278,17 +293,16 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 replacementSlot: ObjectId(slotID), //id of slot for replacement request
             }
         );
-        try{
-            newRequest.save();
-            await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
-            await staffMembers.findOneAndUpdate({_id :slotCourse.coordinator}, { $push: { receivedRequests: newRequest._id }}, {new: true});
-            res.send(newRequest);
+        newRequest.save();
+        await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
+        await staffMembers.findOneAndUpdate({_id :slotCourse.coordinator}, { $push: { receivedRequests: newRequest._id }}, {new: true});
+        res.send(newRequest);
+        }
         }
         catch(err)
         {
             console.log(err);
         }
-        
     })
     app.route('/changeDayOffRequest')
     .post(async(req,res)=>
@@ -296,17 +310,29 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the change day off request from request body (TO BE CHANGED TO TOKEN)
-        const reasonForChange=req.body.reason;// id of slot that you want to teach
+        const reasonForChange=req.body.reasonForChange;// this is optional
+        const desiredDayOff= req.body.desiredDayOff;
         //get user sending the slot linking using the userID
         const user= await staffMembers.findOne({_id:ObjectId(userID)});
         //get department of user
         const departmentName=user.departmentName;
-        if(departmentName==null)
+        if(user.type=="HR")//check that user is academic
         {
-            res.status(404).send("user is not in a department/ Thus, there is not HOD of department to send this request to")
+        res.status(401).send("User is not an academic staff member")
         }
-        //get the object of the department
+        else if(departmentName==null)
+        {
+            res.status(404).send("user is not in a department. Thus, there is no HOD of department to send this request to")
+        }
+        else if(desiredDayOff==null || (desiredDayOff!="SAT" && desiredDayOff!="SUN" && desiredDayOff!="MON" && desiredDayOff!="TUES" && desiredDayOff!="WED" && desiredDayOff!="THURS"))
+        {
+            res.status(404).send("Not a valid day of the week")
+        }
+        else
+        {
+            //get the object of the department
         const departmentObj= await department.findOne({departmentName:departmentName});
+        console.log(reasonForChange);
         //create request
         var newRequest=null;
         if(reasonForChange!=null)
@@ -317,6 +343,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                     recieverID: departmentObj.HOD_id, //id of the staff member recieving the request
                     requestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
                     status: "pending", //the value of status can either be accepted or rejected or pending
+                    DesiredDayOff:desiredDayOff,
                     requestReason: reasonForChange
                 }
             );
@@ -328,21 +355,17 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                     senderID: ObjectId(userID), //id of the staff member sending the request
                     recieverID: departmentObj.HOD_id, //id of the staff member recieving the request
                     requestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
+                    DesiredDayOff:desiredDayOff,
                     status: "pending", //the value of status can either be accepted or rejected or pending
                 }
             );
         }
-        try{
-            newRequest.save();
-            await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
-            await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: newRequest._id }}, {new: true});
-            res.send(newRequest);
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-    })
+        newRequest.save();
+        await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
+        await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: newRequest._id }}, {new: true});
+        res.send(newRequest);
+    }  
+    });
     app.route('/leave')
     .post(async(req,res)=>
     {
