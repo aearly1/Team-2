@@ -18,7 +18,8 @@ const staffSchema = new schema ({
     receivedRequests: [mongoose.Types.ObjectId], //stores request models submitted to this particular staff
     annualLeaves: Number,
     accidentalLeavesLeft: Number,
-    Salary: Number
+    Salary: Number,
+    firstLogin:   {Boolean}
 })
 
 module.exports = mongoose.model('Staff',staffSchema)
