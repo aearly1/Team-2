@@ -465,12 +465,13 @@ router.post("/leave-req-a",[
 
 // @status  Untouched
 // @route   POST api/hod/leave-req-r
-// @input   reqId
+// @input   reqId, reqRejectReason
 // @desc    Reject a request, and optionally leave a comment as to why this
 //          request was rejected
 // @access  Private
 router.post("/leave-req-r",[
-    check("reqId", "Request Id incorrect <backend problem>").isLength(24)
+    check("reqId", "Request Id incorrect <backend problem>").isLength(24),
+    check("reqRejectReason", "Request Id incorrect <backend problem>").optional().isEmpty()
   ]
   , async (req, res) => {
       const errors = validationResult(req);

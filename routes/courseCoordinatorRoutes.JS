@@ -161,10 +161,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .post([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],[
-        body('startTime').isString().withMessage("startTime must be a string")
+        body('startTimeHours').isString().withMessage("startTimeHours must be a string")
     ],[
-        body('endTime').isString().withMessage("requestID must be a string")
+        body('startTimeMinutes').isString().withMessage("startTimeMinutes must be a string")
+    ][
+        body('endTimeHours').isString().withMessage("endTimeHours must be a string")
     ], [
+        body('endTimeMinutes').isString().withMessage("endTimeMinutes must be a string")
+    ][
         body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
     ], async(req,res)=>
     {
@@ -177,8 +181,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
         const courseID=req.body.courseID;
-        const STARTTIME=req.body.startTime;
-        const ENDTIME=req.body.endTime;
+        const startTimeHours=req.body.startTimeHours;
+        const startTimeMinutes=req.body.startTimeMinutes;
+        const endTimeHours=req.body.endTimeHours;
+        const endTimeMinutes=req.body.endTimeMinutes;
         const SLOTLOCATION=req.body.slotLocation;
         try
         {
@@ -231,10 +237,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         body('courseID').isString().isLength(24).withMessage("courseID must be a string")
     ],[
         body('slotID').isString().isLength(24).withMessage("slotID must be a string")
-    ], [
-        body('staffTeachingSlot').isString().isLength(24).withMessage("staffTeachingSlot must be a string of length 24")
-    ],[
-        body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
     ],async(req,res)=>
     {
         const errors = validationResult(req);

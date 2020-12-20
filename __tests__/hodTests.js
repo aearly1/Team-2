@@ -86,6 +86,18 @@ test('Location add test', async ()=>{
     expect(await LocationModel.find({ "roomType": "lab"})).toHaveLength(1);
 })
 
+test('Location add test #2', async ()=>{
+    let location = new LocationModel({
+        roomNr: "C6.304",
+        roomType: "lab", //only posible values are lecture halls, tutorial rooms, labs and offices
+        capacity: 23
+     });
+    await location.save()
+    expect(await LocationModel.find({ "roomType": "lab"})).toHaveLength(2);
+})
+
+
+
 test('Slot add test', async ()=>{
     await SlotModel.deleteMany({})
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })

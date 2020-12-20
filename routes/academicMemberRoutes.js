@@ -338,6 +338,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             ],
                   async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.body.userID; //get id of user sending the change day off request from request body (TO BE CHANGED TO TOKEN)
@@ -415,6 +420,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         body('replacementStaff').isString().withMessage("replacementStaff must be a string")
     ],async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const sndrID= req.body.sndrID;
@@ -639,6 +649,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
     ], async(req,res)=>
     {
+        const errors = validationResult(req);
+         if (!errors.isEmpty()) 
+         {
+            return res.status(400).json({ errors: errors.array() });
+        }
         var ObjectId = require('mongodb').ObjectId; 
 
         //CHANGE THIS TO TOKEN

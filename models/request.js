@@ -11,6 +11,8 @@ const RequestModel = new mongoose.Schema(
         relaventLeaveDocuments: String,
         requestReason: String,// this field is used by the person sending the request in case this a leave request or a request to change day off
         rejectionReason: String ,//this field is used by the HOD to state why he rejects the request in case the request is for changing day off or it is aleave request
+        startOfLeave: Date,
+        endOfLeave: Date
     }
 );
 module.exports=mongoose.model("request",RequestModel);
