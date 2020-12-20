@@ -66,7 +66,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-
+        /*const senderTest= await staffMembers.findOneAndUpdate({_id :
+            ObjectId("5fdf4d1574d9742bd8705f42")},  { $push: { receivedRequests: ObjectId("5fde50634697eb0980b6b6b4") }}, {new: true});
+        const recieverTest= await staffMembers.findOneAndUpdate({_id :
+            ObjectId("5fdde841c77a572248510f5c")},  { $push: { receivedRequests: ObjectId("5fde50634697eb0980b6b6b4") }}, {new: true});*/
         const senderID=req.body.senderID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
         const recieverID=req.body.recieverID;//get id of reciever from request body
         const slotID=req.body.slotID;
@@ -102,7 +105,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 var sameCourse=false;
                 for (const element of recieverObject.courses) {
                     var courseObject= await course.findOne({_id:element});
-                        sameCourse=courseObject.courseName==slotObject.courseTaughtInSlot?true:sameCourse;
+                    console.log(courseObject._id+" "+slotObject.courseTaughtInSlot)
+                        sameCourse=courseObject._id.equals(slotObject.courseTaughtInSlot)?true:sameCourse;
                    }
                
 
@@ -123,12 +127,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(senderID)},  { $push: { sentRequests: newRequest._id }}, {new: true});
+                        ObjectId(senderID)},  { $push: { courses: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
                         ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
-                    //TESTING
-                    const senderTest= await staffMembers.findOne({_id:ObjectId(senderID)})
-                    const recieverTest= await staffMembers.findOne({_id:ObjectId(recieverID)})
+                
                    //save request in DB
                    const result = await newRequest.save();
                    res.send(result);
@@ -160,7 +162,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
        if(userObject.receivedRequests!=null)
         for (const element of userObject.receivedRequests) {
             var requestObject= await request.findOne({_id:element});
-            var U = await staffMembers.findOne({_id: requestObject.senderID})
+                var U = await staffMembers.findOne({_id: requestObject.senderID})
                 var sloty= await slot.findOne({_id: requestObject.replacementSlot})
                 var requestDisplayed=
                 {
@@ -170,7 +172,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                     "replacementSlot": sloty,
                 }
                 if(requestObject.requestType=="replacement")array.push(requestDisplayed);
-                }
+            
+            }
         res.send(array);
     })
     app.route('/acceptReplacementRequest')
@@ -331,11 +334,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     })
     app.route('/changeDayOffRequest')
     .post(  [
-                body('reasonForChange').isString().withMessage("reasonForChange must be a string")
-            ],
+                body('reasonForChange').isString().optional().withMessage("reasonForChange must be a string")
+            ]/*,
             [
                 body('desiredDayOff').isString().isLength(24).withMessage("desiredDayOff must be a string")
-            ],
+            ]*/,
                   async(req,res)=>
     {
         const errors = validationResult(req);
@@ -411,13 +414,17 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     });
     app.route('/leave')
     .post([
-        body('documents').isString().withMessage("documents must be a string")
+        body('documents').isString().optional().withMessage("documents must be a string")
     ], [
-        body('reason').isString().withMessage("reason must be a string")
+        body('reason').isString().optional().withMessage("reason must be a string")
     ],[
         body('leaveType').isString().withMessage("leaveType must be a string")
     ],[
-        body('replacementStaff').isString().withMessage("replacementStaff must be a string")
+        body('replacementStaff').isString().optional().withMessage("replacementStaff must be a string")
+    ],[
+        body('startLeave').isString().withMessage("startLeave must be a string")
+    ],[
+        body('endLeave').isString().withMessage("endLeave must be a string")
     ],async(req,res)=>
     {
         const errors = validationResult(req);
@@ -432,6 +439,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         const reason= req.body.reason;
         const leaveType= req.body.leaveType;
         const replacementStaff= req.body.replacementStaff;
+        const startLeave=req.body.startOfLeave;
+        const endLeave= req.body.endOfLeave;
 
         try
         {
@@ -459,6 +468,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(404).send("You must submit a reason for the compensation leave")
             }
+            else if(startLeave==null || endLeave==null)
+            {
+                res.status(404).send("Must specify dates for leaves")
+            }
             else
             {
                 const departmentObj= await department.findOne({departmentName:departmentName});
@@ -470,6 +483,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                         recieverID: departmentObj.HOD_id,
                         requestType: leaveType,
                         status: "pending",
+                        startOfLeave: startLeave,
+                        endOfLeave: endLeave
                     }
                 );
                 leave.save();

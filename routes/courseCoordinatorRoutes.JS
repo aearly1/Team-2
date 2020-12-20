@@ -161,14 +161,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .post([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],[
-        body('startTimeHours').isString().withMessage("startTimeHours must be a string")
+        body('startTime').isString().withMessage("startTimeHours must be a string")
     ],[
-        body('startTimeMinutes').isString().withMessage("startTimeMinutes must be a string")
-    ][
-        body('endTimeHours').isString().withMessage("endTimeHours must be a string")
+        body('endTime').isString().withMessage("endTimeHours must be a string")
     ], [
-        body('endTimeMinutes').isString().withMessage("endTimeMinutes must be a string")
-    ][
         body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
     ], async(req,res)=>
     {
@@ -181,10 +177,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
         const courseID=req.body.courseID;
-        const startTimeHours=req.body.startTimeHours;
-        const startTimeMinutes=req.body.startTimeMinutes;
-        const endTimeHours=req.body.endTimeHours;
-        const endTimeMinutes=req.body.endTimeMinutes;
+        const startTime1=req.body.startTime;
+        const endTime1=req.body.endTime;
         const SLOTLOCATION=req.body.slotLocation;
         try
         {
@@ -212,8 +206,8 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
            {
             const newSlot=  new slot(
                 {
-                    startTime: new Date(STARTTIME), //start time of slot
-                    endTime: new Date(ENDTIME), // end time of slot
+                    startTime: new Date(startTime1), //start time of slot
+                    endTime: new Date(endTime1), // end time of slot
                     courseTaughtInSlot: ObjectId(courseID), //what course will be taught in the slot 
                     slotLocation: ObjectId(SLOTLOCATION), //ex. H14, C7.301
                 }
@@ -237,7 +231,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         body('courseID').isString().isLength(24).withMessage("courseID must be a string")
     ],[
         body('slotID').isString().isLength(24).withMessage("slotID must be a string")
-    ],async(req,res)=>
+    ],[
+        body('staffTeachingSlot').isString().isLength(24).optional().withMessage("staffTeachingSlot must be a string")
+    ],[
+        body('slotLocation').isString().isLength(24).optional().withMessage("slotLocation must be a string")
+    ], async(req,res)=>
     {
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -255,14 +253,19 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         {
             //get user
             let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+            //console.log(user)
             let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+            //console.log(courseObject)
             let sloteObject = await slot.findOne({_id:ObjectId(slotID)})//course of coordinator
+            //console.log(sloteObject)
             var loc = null;
             if(SLOTLOCATION!=null)
             loc=await location.findOne({_id:ObjectId(SLOTLOCATION)});
+            console.log(loc)
             var staffToBeAssigned = null;
             if(STAFFTEACHINGSLOT!=null)
             staffToBeAssigned=await staffMembers.findOne({_id:ObjectId(STAFFTEACHINGSLOT)});
+            console.log(staffToBeAssigned)
             //check that user is a coordinator
             if(courseObject==null)
             {
@@ -292,12 +295,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                if(STAFFTEACHINGSLOT!=null)
                 array=staffToBeAssigned.courses;
                if(array!=null)
-               for (const element of array) {
-                if(element==courseObject._id)
-                {
-                    teachesCourse=true;break;
-                }  
+               for (const element of array) 
+               {
+                    if(element==courseObject._id)
+                    {
+                        teachesCourse=true;break;
+                    }  
                 }
+                if(STAFFTEACHINGSLOT==null)teachesCourse=true
             if(!teachesCourse) 
             {
                 res.status(401).send("The person that you want to assign this slot to doesn't teach this course");

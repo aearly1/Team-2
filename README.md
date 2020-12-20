@@ -211,27 +211,28 @@ Example: [
         "requestType": "slot linking",
         "status": "accepted",
         "Desired slot": {
-            "_id": "5fdee7aac500ee0f14d630a7",
-            "startTime": "2012-01-01T22:00:00.000Z",
-            "endTime": "2012-01-01T22:00:00.000Z",
+            "_id": "5fdfbfe2685d492a48fbd302",
+            "startTime": "2020-12-20T12:08:15.000Z",
+            "endTime": "2020-12-20T12:10:45.000Z",
             "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-            "slotLocation": "5fde596463f84924107476f0",
-            "__v": 0,
-            "staffTeachingSlot": "5fdde841c77a572248510f5c"
+            "staffTeachingSlot": "5fdde841c77a572248510f5c",
+            "slotLocation": "5fde596463f84924107476f0"
+            "__v": 0
         }
     },
     {
         "request sent by": "Shaka",
         "requestType": "slot linking",
         "status": "pending",
-        "Desired slot": {
-            "_id": "5fdee7aac500ee0f14d630a7",
-            "startTime": "2012-01-01T22:00:00.000Z",
-            "endTime": "2012-01-01T22:00:00.000Z",
+        "Desired slot": 
+        {
+            "_id": "5fdfbfe2685d492a48fbd302",
+            "startTime": "2020-12-20T12:11:15.000Z",
+            "endTime": "2020-12-20T12:11:45.000Z",
             "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-            "slotLocation": "5fde596463f84924107476f0",
-            "__v": 0,
-            "staffTeachingSlot": "5fdde841c77a572248510f5c"
+            "staffTeachingSlot": "5fdde841c77a572248510f5c",
+            "slotLocation": "5fde596463f84924107476f0"
+            "__v": 0
         }
     }
 ]
@@ -257,24 +258,51 @@ NOTES:
 Functionality: Add course slot(s) in his/her course
 Route: /addCourseSlot
 Request type: POST
-Request body: {
-   
-}
-Response: Returns the newly created slot (a mongoose record of type slot)
-Example: {
-   
+Request body:
+{
+    "courseID":"5fde50634697eb0980b6b6b4",
+    "startTime":"2020-12-20T14:08:15",
+    "endTime":"2020-12-20T14:10:45",
+    "slotLocation":"5fde596463f84924107476f0"
 }
 
+Response: Returns the newly created slot (a mongoose record of type slot)
+Example: 
+{
+    "_id": "5fdfbfe2685d492a48fbd302",
+    "startTime": "2020-12-20T12:08:15.000Z",
+    "endTime": "2020-12-20T12:10:45.000Z",
+    "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
+    "slotLocation": "5fde596463f84924107476f0",
+    "__v": 0
+}
+
+NOTES: 
+"courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represents the course that will be taught in the newly created slot. It also represents the course that the course coordinator is responsible for.
+
+"slotLocation" is the object ID assigned by mongoose when the location object was created and placed in the location collection. It represents the object id of the location where the course will be taught in that particular slot
 ---------------------------------------------------------------------------------
 
 Functionality: Updates course slot(s) in his/her course (By updating I mean he can change the location of the slot or the staff member teaching the slot).
 Route: /updateCourseSlot
 Request type: PUT
-Request Body: {
+Request Body: 
+{
     "courseID":"5fde50634697eb0980b6b6b4",
-    "slotID":"5fde6e9457ea432df038adc7",
-    "staffTeachingSlot":"5fdde841c77a572248510f5b",
+    "slotID":"5fdfc265685d492a48fbd303",
+    "staffTeachingSlot":"5fdde841c77a572248510f5c",
     "slotLocation":"5fde596463f84924107476f0"
+}
+Response: the mongoose record of the updated slot
+Example:
+{
+    "_id": "5fdfc265685d492a48fbd303",
+    "startTime": "2020-12-20T12:08:15.000Z",
+    "endTime": "2020-12-20T12:10:45.000Z",
+    "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
+    "slotLocation": "5fde596463f84924107476f0",
+    "__v": 0,
+    "staffTeachingSlot": "5fdde841c77a572248510f5c"
 }
 
 NOTES: 
@@ -336,18 +364,27 @@ Route: /replacementRequest
 Request type: POST
 Request Body: 
 {
-    "recieverID": "5fdde841c77a572248510f5",
-    "slotID": "5fdde841c77a572248510f5b"
+    "recieverID": "5fdde841c77a572248510f5c",
+    "slotID": "5fdfc265685d492a48fbd303"
 }
-Response: Returns a mongoose record representing the newly created slot.
+Response: Returns a mongoose record representing the newly created request.
 Example:
+{
+    "_id": "5fdfcf033bfc780d309539d1",
+    "senderID": "5fdf4d1574d9742bd8705f42",
+    "recieverID": "5fdde841c77a572248510f5c",
+    "requestType": "replacement",
+    "status": "pending",
+    "replacementSlot": "5fdfc265685d492a48fbd303",
+    "__v": 0
+}
 
 NOTES:
 In order to replace a staff member for the ENTIRE day and not just a single slot, you will call this route for EVERY single slot of the day. 
 
 "recieverID" is the object ID assigned by mongoose when the staff member object was created and placed in the staff member collection. It represents the staff member that the raplacement request is being sent to.
 
-"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that te academic member is trying to find a replacement for.
+"slotID" and "replacementSlot" are the object ID assigned by mongoose when the slot object was created and placed in the slot collection. They represent the object id of the slot that te academic member is trying to find a replacement for.
 
 ---------------------------------------------------------------------------------
 
@@ -355,9 +392,22 @@ Functionality: View "replacement" request(s) sent to me from other academic staf
 Route: /replacementRequest
 Request type: GET
 Response: An array of JSON objects representing the replacement requests sent from other academic staff members
-Example: {
-    
-}
+Example: [
+    {
+        "request sent by": "Shaka zulu",
+        "requestType": "replacement",
+        "status": "pending",
+        "replacementSlot": {
+            "_id": "5fdfc265685d492a48fbd303",
+            "startTime": "2020-12-20T12:08:15.000Z",
+            "endTime": "2020-12-20T12:10:45.000Z",
+            "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
+            "slotLocation": "5fde596463f84924107476f0",
+            "__v": 0,
+            "staffTeachingSlot": "5fdf4d1574d9742bd8705f42"
+        }
+    }
+]
 
 ---------------------------------------------------------------------------------
 
@@ -432,6 +482,16 @@ Request body:
 }
 Response: Returns the newly created "change day off" request object
 Example:
+{
+    "_id": "5fdfd1e9d7f78907087d213b",
+    "senderID": "5fdde841c77a572248510f5c",
+    "recieverID": "5fdde841c77a572248510f5c",
+    "requestType": "change day off",
+    "status": "pending",
+    "DesiredDayOff": "SAT",
+    "requestReason": "I am bored",
+    "__v": 0
+}
 
 ---------------------------------------------------------------------------------
 
@@ -440,12 +500,28 @@ Route: '/leave'
 Request type: POST
 Request body:
 {
-
+    "sndrID":"5fdde841c77a572248510f5c",
+    "documents":"These are my documents that have to be submitted with the leave. Here are the blood test results and the xrays to prove that I was indeed sick.",
+    "reason":"And this is my reason",
+    "leaveType":"sick leave",
+    "replacementStaff":"Loaa ElZahar",
+    "startOfLeave":"01.02.2012",
+    "endOfLeave":"01.05.2012"
 }
 Response: Returns the newly created "leave" request object
 Example:
 {
-
+    "_id": "5fdfd9d313745c1b44740013",
+    "senderID": "5fdde841c77a572248510f5c",
+    "recieverID": "5fdde841c77a572248510f5c",
+    "requestType": "maternity leave",
+    "status": "pending",
+    "startOfLeave": "2012-01-01T22:00:00.000Z",
+    "endOfLeave": "2012-01-04T22:00:00.000Z",
+    "__v": 0,
+    "replacementStaffName": "sddd",
+    "requestReason": "And this is my reason",
+    "relaventLeaveDocuments": "frhhhhhhhhiedqaawsdefr"
 }
 ---------------------------------------------------------------------------------
 
