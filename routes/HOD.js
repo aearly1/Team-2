@@ -7,6 +7,7 @@ const courseModel = require('../models/course');
 const staffModel = require('../models/staffMembers');
 const { check, validationResult } = require("express-validator");
 const { Server, ObjectId } = require('mongodb');
+const { request } = require('express');
 
 
 
@@ -378,30 +379,53 @@ router.get("/leave-do-reqs", async (req, res) => {
          //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             let staff = await staffModel.find({"departmentName" : depart.departmentName});
+            let requestsAcc = [];
             let leavesOutput = [];
-           
+                
             //for Each staff member get their requests
             staff.forEach(staffMem => 
-                staffMem.sentRequests.forEach( async requestId =>{
-                    //for each request, find it in the DB, and add its info to printables
-                    let requests1 = await requestModel.findOne({"_id":ObjectId(requestId)}) 
-                    let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
-                    if (requests1){
-                        if((requests1.requestType == "change day off") | (requests1.requestType == "leave")){
-                            let leavesOutputItem = {
-                                sendName: staffMem.name,
-                                senderID: staffMem.id,
-                                recieverName: reciever.name,
-                                recieverID: reciever.id,
-                                type:requestType,
-                                status:requests1.status,
-                            }
-                            if(requests1.requestReason){leavesOutputItem.requestReason= requests1.requestReason}
-                            if(requests1.rejectionReason){leavesOutputItem.rejectionReason= requests1.rejectionReason}
-                            
-                            
-                            leavesOutput.push(leavesOutputItem)
-                        }}}))
+                staffMem.sentRequests.forEach(requestId => requestsAcc.push(requestId))
+            )
+            for(let i = 0; i<requestsAcc.length;i++){
+                let requests1 = await requestModel.findOne({"_id":ObjectId(requestsAcc[i])}) 
+                if(request1){
+                let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
+                let sender = await staffModel.findOne({"_id": ObjectId(requests1.senderId)})
+                leavesOutput.push({
+                    requestId : request1._id,
+                    reqSender : sender._id,
+                    reqreciever : reciever._id
+                })
+                }
+                else{
+                    res.status(400).send("Request with that ID not found")
+                }
+            }
+            // requestsAcc.forEach(async requestId => {
+            //     let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
+            //     res.json(requests1)
+            // })
+                    // {
+                    // //for each request, find it in the DB, and add its info to printables
+                    
+                    // let requests1 = await requestModel.findOne({"_id":ObjectId(requestId)}) 
+                    // let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
+                    // res.json(request1) 
+                    
+                    // if (requests1){
+                    //     if((requests1.requestType == "change day off") | (requests1.requestType == "leave")){
+                    //         let leavesOutputItem = {
+                    //             sendName: staffMem.name,
+                    //             senderID: staffMem.id,
+                    //             recieverName: reciever.name,
+                    //             recieverID: reciever.id,
+                    //             type:requestType,
+                    //             status:requests1.status,
+                    //         }
+                    //         if(requests1.requestReason){leavesOutputItem.requestReason= requests1.requestReason}
+                    //         if(requests1.rejectionReason){leavesOutputItem.rejectionReason= requests1.rejectionReason}
+                    //         leavesOutput.push(leavesOutputItem)
+                    //     }}}))
             res.status(200).json(leavesOutput)
 
         }
