@@ -17,7 +17,7 @@ function missinghrs(u) {
     att.forEach(element => {
         sum+=element.net
     });
-    let mins = ((sum/60)-Math.sign(sum)*Math.floor(Math.abs(sum)/60))*60
+    let mins = Math.sign(sum)*((sum/60)-Math.floor(sum/60))*60
     return {Hours: Math.sign(sum)*Math.floor(Math.abs(sum)/60), Mins:Math.round(mins)}
 }
 

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const staffMembers = require('../models/staffMembers.js');
 const connectDB = require("../config/db");
-const auth = require('../middleware/authenticate.js')
+const auth = require('../middleware/auth.js')
 const app= express.Router();
 const blacklist = auth.blacklist
 const key = auth.key
@@ -14,42 +14,15 @@ const missingdays = require('../functions/funcs').missingdays
 //connectDB()
 //.then(async()=>{
     
-    app.use(express.json());
-    app.post('/login',
-    [
-        body('email').isEmail(),
-        body('password').isString()
-    ],async(req,res)=>{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        const staffMem =await staffMembers.findOne({email:req.body.email})
-        if(!staffMem)
-        return res.status(403).send("The email you entered is not registered")
-        const verified = await bcrypt.compare(req.body.password,staffMem.password)
-        if(!verified)
-        return res.status(403).send("The password you entered is wrong")
-        const payload = {user: {
-            id: staffMem.id,
-            email: staffMem.email,
-            firstLogin: staffMem.firstLogin,
-            type: staffMem.type
-          }
-          //,  email:staffMem.email,type:staffMem.type
-        }
-        const token = jwt.sign(payload,key)
-        res.header('auth-token',token)
-        res.status(200).send("Login successful")
-    })
-    app.use(auth.func)
+    
+    //app.use(auth.func)
     app.post('/logout',(req,res)=>{
         blacklist.push(req.header('auth-token'))
         res.status(200).send("Logout successful")
     })
     app.get('/profile',async(req,res)=>{
         const payload = jwt.verify(req.header('auth-token'),auth.key);
-        let staffMem = await staffMembers.findOne({email:payload.email});
+        let staffMem = await staffMembers.findOne({email:req.user.email});
         if(!staffMem)
         return res.status(404).send("User not found")
         let out = {

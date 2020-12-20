@@ -11,9 +11,10 @@ connectDB();
 app.use(express.json({extended: false}));
 
 //Define Routes
-app.use("/api/user", require("./routes/user"));
-app.use("/api/auth", require("./routes/auth"));
-//app.use(authenticate)
+//app.use("/api/user", require("./routes/user"));
+//app.use("/api/auth", require("./routes/auth"));
+app.use("/api/login", require("./routes/login"))
+app.use(auth.func)
 app.use("/api/staffs",require("./routes/staffRoutes"))
 app.use("/api/hod", require("./routes/HOD"));
 

@@ -1,28 +1,28 @@
-//middleware is just a function that has access to
-//the request and respone objects
-
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+const blacklist = []
 const config = require("config");
+const key = config.get("jwtSecret")
 
-module.exports = function (req, res, next) {
-  // Get token from header
-  const token = req.header("x-auth-token");
-
-  // Check if not token
-  if (!token) {
-    //status 401 = unauthorized
-    return res.status(401).json({ msg: "No token, authorization denied" });
-  }
-  try {
-    const decoded = jwt.verify(token, config.get("jwtSecret"));
-    req.user = decoded.user;
-    // console.log(JSON.stringify(req.user))
-    // if(!req.user.firstLogin){
-    //   console.log("firstLogin: "+req.user.firstLogin)
-    //   res.json("User should reset password")
-    // }
-    next();
-  } catch (err) {
-    res.status(401).json({ msg: "Token is not valid" });
-  }
-};
+module.exports.func = function authenticate(req,res,next){
+    if(!req.header('auth-token'))
+    return res.status(403).send("Token was not found")
+    blacklist.forEach(element => {
+        if(element == req.header('auth-token'))
+        return res.status(403).send("You already logged out")
+    });
+    try{
+        const decoded = jwt.verify(req.header('auth-token'),config.get("jwtSecret"))
+        req.user = decoded.user;
+        // console.log(JSON.stringify(req.user))
+        // if(!req.user.firstLogin){
+        //   console.log("firstLogin: "+req.user.firstLogin)
+        //   res.redirect("/passwordReset")
+        // }
+        next();
+    }
+    catch(err){
+        res.status(403).send("Invalid token")
+    }
+}
+module.exports.key=key;
+module.exports.blacklist=blacklist;
