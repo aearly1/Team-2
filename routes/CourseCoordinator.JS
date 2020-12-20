@@ -202,39 +202,85 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
             let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
             let sloteObject = await slot.findOne({_id:ObjectId(slotID)})//course of coordinator
-
+            var loc = null;
+            if(SLOTLOCATION!=null)
+            loc=await location.findOne({_id:ObjectId(SLOTLOCATION)});
+            var staffToBeAssigned = null;
+            if(STAFFTEACHINGSLOT!=null)
+            staffToBeAssigned=await staffMembers.findOne({_id:ObjectId(STAFFTEACHINGSLOT)});
             //check that user is a coordinator
             if(courseObject==null)
             {
                 res.status(404).send("Course doesn't exist")
             }
-            if(!courseObject.coordinator.equals(user._id))
+            else if(!courseObject.coordinator.equals(user._id))
             {
                 res.status(401).send("User is not the course coordinator of this course")
             }
-            //update person teaching slot
+            else if(STAFFTEACHINGSLOT==null && SLOTLOCATION==null)
+            {
+                res.status(404).send("Can't update the slot since all slots attributes that could be updated were passed as null");
+            }
+            else if(SLOTLOCATION!=null &&loc==null)
+            {
+                res.status(404).send("Location doesnt exist. It might exist in lala land. Who knows?");
+            }
+            else  if((STAFFTEACHINGSLOT!=null&&staffToBeAssigned==null))
+            {
+                res.status(404).send("The person that you want to assign this slot to doesn't exist");
+            }
+           else
+           {
+               var teachesCourse=false;
+               //check if the person you want to assing the slot teaches this course in the first place
+               var array=null;
+               if(STAFFTEACHINGSLOT!=null)
+                array=staffToBeAssigned.courses;
+               if(array!=null)
+               for (const element of array) {
+                if(element==courseObject._id)
+                {
+                    teachesCourse=true;break;
+                }  
+                }
+            if(!teachesCourse) 
+            {
+                res.status(401).send("The person that you want to assign this slot to doesn't teach this course");
+            }
+            else
+            {
+                 //update person teaching slot
             if(sloteObject.staffTeachingSlot!=null)
             await staffMembers.findOneAndUpdate({_id :
                 sloteObject.staffTeachingSlot}, {$pull: { teachingSlots: sloteObject._id}}, {new: true});
-            if(SLOTLOCATION==null)
+            var result=null;
+            if(STAFFTEACHINGSLOT==null)
             {
-                const result=await slot.findOneAndUpdate({_id :
+                result=await slot.findOneAndUpdate({_id :
+                    ObjectId(slotID)}, {slotLocation:ObjectId(SLOTLOCATION)}, {new: true})
+                    res.send(result);
+            }
+            else if(SLOTLOCATION==null)
+            {
+                 result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT)}, {new: true})
                     res.send(result);
             }
             else
             {
-                const result=await slot.findOneAndUpdate({_id :
+                result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT), slotLocation:ObjectId(SLOTLOCATION)}, {new: true});
                     res.send(result);
 
             }
             //update person teaching slot
-            if(sloteObject.staffTeachingSlot!=null)
+            if(result.staffTeachingSlot!=null)
             {
                 await staffMembers.findOneAndUpdate({_id :
                     sloteObject.staffTeachingSlot}, {$push: { teachingSlots: sloteObject._id}}, {new: true});
             }
+            }
+            }   
         }
         catch(err)
         {
@@ -260,12 +306,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             {
                 res.status(404).send("Course doesn't exist")
             }
-            if(!courseCoordinated.coordinator.equals(user._id))
+            if(!courseCoordinated.coordinator.equals(ObjectId(user._id)))
             {
                 res.status(401).send("User is not the course coordinator of this course")
             }
             //check that slot exists in course
-            const slotToBeDeleted= await slot.find({_id:ObjectId(slotID)});
+            const slotToBeDeleted= await slot.findOne({_id:ObjectId(slotID)});
             if(slotToBeDeleted==null)
             {
                 res.status(404).send("Slot doesnt exist")
@@ -284,7 +330,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 //passed all checks delete slot
                 const result= await slot.deleteOne({_id :
                     slotToBeDeleted._id})
-                    res.send(result)
+                    res.send("Successfully deleted slot")
             }
         }
         catch(err)
@@ -298,16 +344,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     {
         var ObjectId = require('mongodb').ObjectId; 
 
-       const newLoc = new location(
-        {
-            roomNr: "H14",
-            roomType: "lecture hall", //only posible values are lecture halls, tutorial rooms, labs and offices
-            capacity: 300
-        }
-       );
-       newLoc.save();
+        var result= await staffMembers.findOne({_id :
+            ObjectId("5fdde841c77a572248510f5b")});
+        console.log(result.scheduleSlots);
+
     }
-    //trial();
+   // trial();
     app.listen(3000,function()
     {
         console.log("Server started at port 3000");
