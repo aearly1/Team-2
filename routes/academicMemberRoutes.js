@@ -312,7 +312,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         const userID=req.body.userID; //get id of user sending the change day off request from request body (TO BE CHANGED TO TOKEN)
         const reasonForChange=req.body.reasonForChange;// this is optional
         const desiredDayOff= req.body.desiredDayOff;
-        //get user sending the slot linking using the userID
+
+        try
+        {
+            //get user sending the slot linking using the userID
         const user= await staffMembers.findOne({_id:ObjectId(userID)});
         //get department of user
         const departmentName=user.departmentName;
@@ -332,7 +335,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         {
             //get the object of the department
         const departmentObj= await department.findOne({departmentName:departmentName});
-        console.log(reasonForChange);
         //create request
         var newRequest=null;
         if(reasonForChange!=null)
@@ -364,79 +366,87 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
         await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: newRequest._id }}, {new: true});
         res.send(newRequest);
-    }  
+    }
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
     });
     app.route('/leave')
     .post(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
 
-        const senderID=req.body.senderID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
-        const recieverID=req.body.recieverID;//get id of reciever from request body
-        const slotID=req.body.slotID;
-        //get sender object
-        const senderObject= await staffMembers.findOne({_id:ObjectId(senderID)});
-        //get reciever object
-        const recieverObject= await staffMembers.findOne({_id:ObjectId(recieverID)});
-        console.log(senderObject.type);
-        if(recieverObject!=null && senderObject!=null)//check if users exist
+        const sndrID= req.body.sndrID;
+        const documents=req.body.documents;
+        const reason= req.body.reason;
+        const leaveType= req.body.leaveType;
+        const replacementStaff= req.body.replacementStaff;
+
+        try
         {
-            //check that user is not HR
-            if(senderObject.type=="HR")
+            //get user sending the slot linking using the userID
+            const user= await staffMembers.findOne({_id:ObjectId(userID)});
+            //get department of user
+            const departmentName=user.departmentName;
+            if(user.type=="HR")//check that user is academic
             {
             res.status(401).send("User is not an academic staff member")
             }
-            //check if they are in the same department
-            if(senderObject.facultyName!=recieverObject.facultyName)
+            else if(departmentName==null)
             {
-                res.status(404).send("This staff member is not in the same department as you. Therefore, you can't send this replacement request")
+                res.status(404).send("user is not in a department. Thus, there is no HOD of department to send this request to")
             }
-            else //check if they are in the same course
+            else if(leaveType!="annual leave" && leaveType!="accidental leave" && leaveType!="sick leave" && leaveType!="maternity leave" && leaveType!="compensation leave")
             {
-                const slotObject= await slot.findOne({_id:ObjectId(slotID)});
-                var sameCourse=false;
-                for (const element of recieverObject.courses) {
-                    var courseObject= await course.findOne({_id:element});
-                        sameCourse=courseObject.courseName==slotObject.courseTaughtInSlot?true:sameCourse;
-                   }
-               
-
-                if(!sameCourse)
-                {
-                    res.status(404).send("This staff member is not in the same course as you. Therefore, you can't send this replacement request")
-                }
-                else{
-                    //we are done with the verifications, we can create and send the request
-                    //create request
-                    const newRequest= new request(
+                res.status(404).send("Invalid leave type")
+            }
+            else if(documents==null && (leaveType!="sick leave" && leaveType!="maternity leave"))
+            {
+                res.status(404).send("Didn't submit relavent documents with request. Therefore, cannot submit leave request")
+            }
+            else if(requestReason==null && leaveType!="compensation leave")
+            {
+                res.status(404).send("You must submit a reason for the compensation leave")
+            }
+            else
+            {
+                const departmentObj= await department.findOne({departmentName:departmentName});
+                //submit leave
+                var leave = new request
+                (
                     {
-                        senderID: new ObjectId(senderID), //id of the staff member sending the request
-                        recieverID: new ObjectId(recieverID), //id of the staff member recieving the request
-                        requestType: "Replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
-                        status: "Pending", //the value of status can either be accepted or rejected or pending
-                        replacementSlot: ObjectId(slotID)
+                        senderID: ObjectId(sndrID),
+                        recieverID: departmentObj.HOD_id,
+                        requestType: leaveType,
+                        status: "pending",
                     }
-                    );
-                   await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(senderID)},  { $push: { sentRequests: newRequest._id }}, {new: true});
-                    await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(recieverID)},  { $push: { courses: newRequest._id }}, {new: true});
-                   //save request in DB
-                    try
-                    {
-                        const result = await newRequest.save();
-                        res.send(result);
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                    }
-                 }
+                );
+                leave.save();
+               if(replacementStaff!=null)
+               {
+                const result= await request.findOneAndUpdate({_id :
+                    leave._id}, {replacementStaffName:replacementStaff}, {new: true})
+               }
+               if(reason!=null)
+               {
+                const result= await request.findOneAndUpdate({_id :
+                    leave._id}, {requestReason:reason}, {new: true})
+               }
+               if(documents!=null)
+               {
+                const result= await request.findOneAndUpdate({_id :
+                    leave._id}, {relaventLeaveDocuments:documents}, {new: true})
+               }
+               const resulto=await await request.findOne({_id :
+                leave._id});
+                res.send(resulto);
             }
         }
-        else
+        catch(err)
         {
-            res.status(404).send("User not found");
+            console.log(err);
         }
     })
     app.route('/requestStatus')
