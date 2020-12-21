@@ -4,6 +4,7 @@ const departmentModel = require('../models/department');
 const requestModel = require('../models/request');
 const courseModel = require('../models/course');
 const slotModel = require('../models/slot');
+const locationModel = require('../models/location');
 const staffModel = require('../models/staffMembers');
 const { check, validationResult } = require("express-validator");
 const { ObjectId } = require('mongodb');
@@ -64,7 +65,7 @@ router.post("/assign-instr-course",
                     else{
                         res.status(400).send("Course is already assigned to instructor, but instructor not assigned to course")
                     }
-                    res.status(200).send("hod user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName);   
+                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName);   
                 } 
                 else{
                     res.status(400).send("Course is not under this department or does not exist")
@@ -130,7 +131,7 @@ router.delete("/del-instr-course",[
                         await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{"courses" : coursesArray})
                     }
                     else{res.status(400).send("Course is not assigned to instructor, but instructor is assigned to course")}
-                    res.status(200).send("hod user: "+currentUser.name+" made change: instructor " + instr.name + " is now removed from course "+ course1.courseName);   
+                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now removed from course "+ course1.courseName);   
                 } 
                 else{res.status(400).send("Course is not under this department or does not exist")}
             }
@@ -197,7 +198,7 @@ router.post("/update-instr-course",[
                         "courses" : coursesArray
                     })
                     
-                    res.status(200).send("hod user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly)");   
+                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly)");   
                 } 
                 else{
                     res.status(400).send("Course is not under this department or does not exist")
@@ -274,7 +275,8 @@ router.get("/staff-crs",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
         let staff = await staffModel.find({"departmentName" : depart.departmentName});
-        staff = staff.filter((x) => x.courses.includes(ObjectId(req.body.courseId)))
+        let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)})
+        staff = staff.filter((x) => x.courses.includes(course.courseName))
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             userCode: staffMem.id,
@@ -312,6 +314,7 @@ router.get("/staff-do",  async (req, res) => {
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             id : staffMem.id,
+            staffMemberName: staffMem.name,
             dayOff: staffMem.dayOff,
         }))
         res.status(200).json(staffOutput)
@@ -350,6 +353,7 @@ router.get("/staff-dos",[
         let staff = await staffModel.findOne({"_id": ObjectId(req.body.staffId),"departmentName" : depart.departmentName});
         let staffMem = {
             id : staff.id,
+            staffMemberName: staff.name,
             dayOff: staff.dayOff
         }
         res.status(200).json(staffMem)
@@ -549,7 +553,7 @@ router.get("/course-cov", [
                     if(course.teachingSlots.length!=0){
                         let CourseCov = ((course.teachingSlots.length-course.unassignedSlots)/  course.teachingSlots.length)
                         
-                        res.status(200).json("course coverage is "+ CourseCov*100 +"%, course "+course.courseName+" has "+course.unassignedSlots+" unassigned slots")
+                        res.status(200).json("course " +course.courseName+" has coverage "+ CourseCov*100 +"%, and "+course.unassignedSlots+" unassigned slots")
                     }
                     else{res.status(400).send("Course has no teaching slots")}
                 }
@@ -593,13 +597,20 @@ router.get("/teaching-assignments",[
             if(course){
                 for (let i=0; i<course.teachingSlots.length;i++){
                     let slot = await slotModel.findOne(ObjectId(course.teachingSlots[i]))
+                    
                     if(slot){
                         let printableTemp = {
-                            slotId : slot._id, startTime: slot.startTime,
+                            slotId : slot._id, 
+                            startTime: slot.startTime,
                             endTime: slot.endTime, 
-                            location: slot.slotLocation
                         }
-                        
+                        if(slot.slotLocation){
+                            let Loc = await locationModel.findOne({"_id":ObjectId(slot.slotLocation)})
+                            if(Loc){printableTemp.location = Loc.roomNr;}
+                            else{
+                                res.status(400).send("Location was not found")
+                            }
+                        }
                         if(slot.staffTeachingSlot){
                             let staffMem = await staffModel.findOne({"_id":ObjectId(slot.staffTeachingSlot)})
                             if(staffMem){
@@ -608,7 +619,7 @@ router.get("/teaching-assignments",[
                                 printableTemp.staffTeachingSlotName = staffMem.name
                             }
                             else{
-                                res.status(400).send("Staff teaching course was not found?")
+                                res.status(400).send("Staff teaching course was not found")
                             }
                         }
                         else{

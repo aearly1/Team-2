@@ -728,3 +728,253 @@ Response: A statement that indicates that the deletion process was successful
 Example: "Successfully deleted"
 
 
+=================================================================================
+----------------------------HeadOfDepartmentRoutes-------------------------------
+=================================================================================
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can assign a course instructor to a course in his department.
+Route: '/api/hod/assign-instr-course'
+Request type: POST
+Request body:
+	{
+		"courseId":     "5fdfc5f06a48390480a49e5d",
+		"instructorId": "5fdfc4736d5db10be4c36277"    
+	}
+Response: Statement to indicate assignment
+Response Example: 
+	"HOD user: Slim made change: instructor Milad Ghantous is now assigned to course CSEN 701 - Embedded Systems"
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can remove a course instructor from a course in his department.
+Route: '/api/hod/del-instr-course'
+Request type: DELETE
+Request body:
+	{
+		"courseId":     "5fdfc5f06a48390480a49e5d",
+		"instructorId": "5fdfc4736d5db10be4c36277"    
+	}	
+Response: Statement to indicate deletion
+Response Example: 
+	"HOD user: Slim made change: instructor Milad Ghantous is now removed from course CSEN 701 - Embedded Systems"
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can update a course instructor for one of his courses
+Note: 
+==>  since assignment and removal of instructor to course are already implemented, and since your 	
+==>  description is very vague about this, I decided to implement update as in an OverWriting
+==>  Assignment. (i.e. make the instructor given in body the only instructor )
+Route: '/api/hod/update-instr-course'
+Request type: POST
+Request body:
+	{
+		"courseId":     "5fdfc5f06a48390480a49e5d",
+		"instructorId": "5fdfc4736d5db10be4c36277"    
+	}
+Response: Statement to indicate update
+Response Example: 
+	"HOD user: Slim made change: instructor Milad Ghantous is now assigned to course CSEN 701 - Embedded Systems"(Overwritingly)
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view all staff members in his department.
+Route: '/api/hod/staff'
+Request type: GET
+Response: All staff members' name,email, id(userCode)
+Note: (I'm just using userCode ^^ to avoid confusion between "_id" and "id", "_id" is the mongoose ObjectId, and "id" is the user's id like "hr-33051")
+Response Example: 
+	[
+		{
+			"userCode": "hod-1",
+			"email": "Slim@gmail.com",
+			"name": "Slim"
+		},
+		{
+			"userCode": "instr-2",
+			"email": "MGhantous@gmail.com",
+			"name": "Milad Ghantous"
+		},
+		{
+			"userCode": "instr-1",
+			"email": "HSoubra@gmail.com",
+			"name": "Hassan Soubra"
+		}
+	]
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view all staff members in his department.
+Route: '/api/hod/staff-crs'
+Request type: GET
+Request body:
+	{
+		"courseId": "5fdff79bc5acf437a4cb29cf"
+	}
+Response: Staff members' name,email, id(userCode)
+Note: (I'm just using userCode ^^ to avoid confusion between "_id" and "id", "_id" is the mongoose ObjectId, and "id" is the user's id like "hr-33051")
+Response Example: 
+	[
+		{
+			"userCode": "instr-2",
+			"email": "MGhantous@gmail.com",
+			"name": "Milad Ghantous"
+		}
+	]
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view all staff members in his department's day offs.
+Route: '/api/hod/staff-do'
+Request type: GET
+Response: array of objects containing All staff members' id, name, day off.
+Response Example: 
+[
+    {
+        "id": "hod-1",
+        "staffMemberName": "Slim",
+        "dayOff": "Saturday"
+    },
+    {
+        "id": "instr-2",
+        "staffMemberName": "Milad Ghantous",
+        "dayOff": "Wednesday"
+    },
+    {
+        "id": "instr-1",
+        "staffMemberName": "Hassan Soubra",
+        "dayOff": "Saturday"
+    }
+]
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view a single staff members in his department's day offs.
+Route: '/api/hod/staff-dos'
+Request type: GET
+Request body:
+	{
+	"staffId": "5fdfc4756d5db10be4c36278"
+	}
+Response: object containing the staff members' id, name, day off.
+Response Example: 
+{
+    "id": "instr-1",
+    "staffMemberName": "Hassan Soubra",
+    "dayOff": "Saturday"
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view all the requests “change day off/leave” sent by staff members in his/her department
+Route: '/api/hod/leave-do-reqs'
+Request type: GET
+Response: Array of Objects, each object containing a request's information (for all requests in hod's department)
+Response Example: 
+[
+    {
+        "requestId": "5fdff79ec5acf437a4cb29d6",
+        "reqSenderId": "inst-1",
+        "reqSenderName": "Hassan Soubra",
+        "reqRecieverId": "hod-1",
+        "reqRecieverName": "Slim",
+        "requestReason": "My horse is stuck in a fridge",
+        "status": "pending",
+        "startOfLeave": "2020-12-21T01:17:18.632Z",
+        "endOfLeave": "2020-12-21T01:17:18.632Z",
+        "replacementSlot": "5fdff79dc5acf437a4cb29d4"
+    }
+]
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can Accept a <leave> or <change day off> request.
+Note: 
+==>  I didn't put a limit that you can't accept an already rejected request. only because I thought HOD should have option to change his mind later.
+Route: '/api/hod/leave-do-req-a'
+Request type: POST
+Request body: 
+	{
+    "reqId" : "5fdff79ec5acf437a4cb29d6"
+	}
+Response: Indication of operation success
+Response Example: 
+	"Request Acceptance successful!"
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can Decline a <leave> or <change day off> request.
+Note: 
+==>  Same as with accept, I didn't put a limit that you can't reject an already accepted request. Only because I thought 
+==>  HOD should have option to change his mind later.
+Route: '/api/hod/leave-do-req-r'
+Request type: POST
+Request body: note that reqRejectReason field is OPTIONAL, and could be removed
+	{
+    "reqId" : "5fdff79ec5acf437a4cb29d6",
+    "reqRejectReason" : "my house is on fire"
+	}
+Response: Indication of operation success
+Response Example: 
+	"Request Rejection successful!"
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view Course Coverage for course in his department
+Route: '/api/hod/course-cov'
+Request type: GET
+Request body: 
+	{
+	"courseId": "5fdff79bc5acf437a4cb29cf"
+	}
+Response: The course coverage of the course in %, and the number of unassigned slots 
+Response Example: 
+	"course CSEN 701 - Embedded Systems has coverage 50%, and 1 unassigned slots"
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: HOD can view Teaching Assignment for course in his department
+Route: '/api/hod/teaching-assignments'
+Request type: GET
+Request body: 
+	{
+	"courseId": "5fdff79bc5acf437a4cb29cf"
+	}
+Response: The slots of the course, their general info, whether they're assigned to someone or not, and if they are, then the person they are assigned to.
+Response Example: 
+	[
+		{
+			"slotId": "5fdff79dc5acf437a4cb29d4",
+			"startTime": "2020-12-21T01:17:17.062Z",
+			"endTime": "2020-12-21T01:17:17.062Z",
+			"location": "C6.304",
+			"isAssigned": false
+		},
+		{
+			"slotId": "5fdff79dc5acf437a4cb29d5",
+			"startTime": "2020-12-21T01:17:17.523Z",
+			"endTime": "2020-12-21T01:17:17.523Z",
+			"location": "C6.305",
+			"isAssigned": true,
+			"staffTeachingSlotId": "instr1",
+			"staffTeachingSlotName": "Hassan Soubra"
+		}
+	]
+

@@ -36,14 +36,10 @@ test('Make Staff HOD 1', async ()=>{
 })
 
 
-test.only('Course add test', async ()=>{
+test('Course add test', async ()=>{
     await CourseModel.deleteMany({})
-    let slot = await SlotModel.findOne({"_id": ObjectId("5fdfebd1c300a64290068613")})
-    let slot1 = await SlotModel.findOne({"_id": ObjectId("5fdfebd1c300a64290068611")})
     let course = new CourseModel({
         courseName: "CSEN 701 - Embedded Systems",
-        teachingSlots : [slot._id,slot1.id],
-        unassignedSlots: 2
       //  instructors: [1], //array stores ids of instructors teaching this course
        // teachingAssistants: [6,7], //array stores ids of teaching assitants of this course
       //  coordinator: 2, // id of the coordinator of this course
@@ -107,7 +103,7 @@ test('Slot add test', async ()=>{
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
     //let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
     //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
-    let location = await LocationModel.find({"roomNr":"C6.304"})
+    let location = await LocationModel.findOne({"roomNr":"C6.304"})
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
         endTime: Date.now(), // end time of slot
@@ -123,7 +119,7 @@ test('Slot add test #2', async ()=>{
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
     let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
     //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
-    let location = await LocationModel.find({"roomNr":"C6.305"})
+    let location = await LocationModel.findOne({"roomNr":"C6.305"})
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
         endTime: Date.now(), // end time of slot
@@ -136,7 +132,19 @@ test('Slot add test #2', async ()=>{
     expect(await SlotModel.find({ "_id": slot._id})).toHaveLength(1);
 })
 
+test.only('Course edit test', async () => {
+    let location1 = await LocationModel.findOne({"roomNr":"C6.304" })
+    let location2 = await LocationModel.findOne({"roomNr":"C6.305" })
+    console.log(JSON.stringify(location1._id))
+    let slot1 = await SlotModel.findOne({"slotLocation": ObjectId(location1._id)})
+    let slot2 = await SlotModel.findOne({"slotLocation": ObjectId(location2._id)})
+    await CourseModel.updateOne({"courseName":"CSEN 701 - Embedded Systems"},{
+        "teachingSlots" : [slot1._id, slot2._id],
+        "unassignedSlots": 1
+    });
+    expect(await CourseModel.find({ "courseName": "CSEN 701 - Embedded Systems"})).toHaveLength(1);
 
+})
 
 
 test('Request add test', async ()=>{
