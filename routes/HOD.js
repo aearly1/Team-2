@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-//const auth = require("../middleware/auth");
 const departmentModel = require('../models/department');
 const requestModel = require('../models/request');
 const courseModel = require('../models/course');
+const slotModel = require('../models/slot');
 const staffModel = require('../models/staffMembers');
 const { check, validationResult } = require("express-validator");
-const { Server, ObjectId } = require('mongodb');
-const { request } = require('express');
+const { ObjectId } = require('mongodb');
+const e = require('express');
 
 
 
@@ -299,7 +299,7 @@ router.get("/staff-crs",[
 // @desc    View the day off of all the staff in his/her department.
 // @access  Private
 router.get("/staff-do",  async (req, res) => {
-    console.log("you have reached staff-do")
+
     try {
         //Get the Logged in User's department
         let userCode = req.user.id;
@@ -364,7 +364,7 @@ router.get("/staff-dos",[
 });
 //=========================================================================//
 
-// @status  WIP
+// @status  Done & Tested
 // @route   GET api/hod/leave-reqs
 // @input   -
 // @desc    View all the requests “change day off/leave” sent by staff members 
@@ -386,34 +386,42 @@ router.get("/leave-do-reqs", async (req, res) => {
             staff.forEach(staffMem => 
                 staffMem.sentRequests.forEach(requestId => requestsAcc.push(requestId))
             )
-            res.json(requestsAcc)
+            
             //Now we have all the request Ids, we need to filter out the ones that are leave/change day off
             for(let i = 0; i<requestsAcc.length;i++){
-                let requests1 = await requestModel.findOne({"_id":ObjectId(requestsAcc[i])}) 
-                if(request1){
-                    if(requests1.requestType == "annual leave" ||
-                    requests1.requestType == "maternal leave" ||
-                    requests1.requestType == "accidental leave" ||
-                    requests1.requestType == "sick leave" ||
-                    requests1.requestType == "compenation leave" ||
-                    requests1.requestType == "change day off"){
+                let requesto = await requestModel.findOne({"_id":ObjectId(requestsAcc[i])}) 
+                
+                if(requesto){
+                    if((requesto.requestType === "annual leave" ||
+                    requesto.requestType === "maternal leave" ||
+                    requesto.requestType === "accidental leave" ||
+                    requesto.requestType === "sick leave" ||
+                    requesto.requestType === "compenation leave" ||
+                    requesto.requestType === "change day off")){
                         
-                        let reciever = await staffModel.findOne({"_id": ObjectId(requests1.recieverID)})
-                        let sender = await staffModel.findOne({"_id": ObjectId(requests1.senderId)})
-                        let leavesOutputItem = {requestId : request1._id,
-                            reqSenderId : sender._id, //
-                            reqSenderName : sender.name,//
-                            reqRecieverId : reciever._id,//
-                            reqRecieverName : reciever.name,//
+                        let reciever = await staffModel.findOne({_id: ObjectId(requesto.recieverID)})
+                        let sender = await staffModel.findOne({_id: ObjectId(requesto.senderID)})
+                        if(reciever && sender){
+                            let leavesOutputItem = {
+                                requestId : requesto._id, 
+                                reqSenderId : sender.id, 
+                                reqSenderName : sender.name,
+                                reqRecieverId : reciever.id,
+                                reqRecieverName : reciever.name,
+                            }
+                            if(requesto.requestReason){leavesOutputItem.requestReason =requesto.requestReason }
+                            if(requesto.status){leavesOutputItem.status =requesto.status }
+                            if(requesto.rejectionReason){leavesOutputItem.rejectionReason =requesto.rejectionReason }
+                            if(requesto.relaventDocuments){leavesOutputItem.relaventDocuments =requesto.relaventDocuments }
+                            if(requesto.DesiredDayoff){leavesOutputItem.DesiredDayoff =requesto.DesiredDayoff }
+                            if(requesto.startOfLeave){leavesOutputItem.startOfLeave =requesto.startOfLeave }
+                            if(requesto.endOfLeave){leavesOutputItem.endOfLeave =requesto.endOfLeave }
+                            if(requesto.replacementSlot){leavesOutputItem.replacementSlot =requesto.replacementSlot }
+                            leavesOutput.push(leavesOutputItem)
                         }
-                        if(requests1.requestReason){leavesOutputItem.requestReason =requests1.requestReason }
-                        if(requests1.status){leavesOutputItem.status =requests1.status }
-                        if(requests1.rejectionReason){leavesOutputItem.rejectionReason =requests1.rejectionReason }
-                        if(requests1.relevantDocuments){leavesOutputItem.relevantDocuments =requests1.relevantDocuments }
-                        if(requests1.DesiredDayoff){leavesOutputItem.DesiredDayoff =requests1.DesiredDayoff }
-                        if(requests1.startOfLeave){leavesOutputItem.startOfLeave =requests1.startOfLeave }
-                        if(requests1.endOfLeave){leavesOutputItem.endOfLeave =requests1.endOfLeave }
-                        leavesOutput.push(leavesOutputItem)
+                        else{
+                            res.status(400).send("Request's reciever or sender are unidentified")
+                        }
                     }
                 }
                 else{
@@ -439,7 +447,7 @@ router.get("/leave-do-reqs", async (req, res) => {
 // @desc    Accept a request. if a request is accepted, appropriate logic should be
 //          executed to handlethis request.
 // @access  Private
-router.post("/leave-req-a",[
+router.post("/leave-do-req-a",[
     check("reqId", "Request Id incorrect <backend problem>").isLength(24)
   ]
   , async (req, res) => {
@@ -448,13 +456,30 @@ router.post("/leave-req-a",[
         return res.status(400).json({ errors: errors.array() });
       }
     try {
-        //Get the Logged in User's department
-        const department = await departmentModel.findOne({HOD_id : req.user.id});
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
+        //check if user is head of the department
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let request = await requestModel.findOne({"_id":ObjectId(req.body.reqId)});
+            if(request){
+                await requestModel.findOneAndUpdate({"_id":ObjectId(req.body.reqId)} , {"status": "accepted", "rejectionReason" : null})
+             }
+            else{
+                res.status(400).send("Request not found")
+            }
+            res.status(200).send("Request Acceptance successful!") 
+        }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department!")
+        }
+
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
-});
+})
 //=========================================================================//
 
 // @status  Untouched
@@ -463,9 +488,9 @@ router.post("/leave-req-a",[
 // @desc    Reject a request, and optionally leave a comment as to why this
 //          request was rejected
 // @access  Private
-router.post("/leave-req-r",[
+router.post("/leave-do-req-r",[
     check("reqId", "Request Id incorrect <backend problem>").isLength(24),
-    check("reqRejectReason", "Request Id incorrect <backend problem>").optional().isEmpty()
+    check("reqRejectReason", "invalid Reject Reason<backend problem>").optional().isString()
   ]
   , async (req, res) => {
       const errors = validationResult(req);
@@ -473,8 +498,27 @@ router.post("/leave-req-r",[
         return res.status(400).json({ errors: errors.array() });
       }
     try {
-        //Get the Logged in User's department
-        const department = await departmentModel.findOne({HOD_id : req.user.id});
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
+        //check if user is head of the department
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let request = await requestModel.findOne({"_id":ObjectId(req.body.reqId)});
+            if(request){
+                await requestModel.findOneAndUpdate({"_id":ObjectId(req.body.reqId)} , {"status": "rejected"})
+                
+                if (req.body.reqRejectReason){await requestModel.findOneAndUpdate({"_id":ObjectId(req.body.reqId)} , {"rejectionReason": req.body.reqRejectReason})}
+            }
+            else{
+                res.status(400).send("Request not found")
+            }
+            res.status(200).send("Request Rejection successful!") 
+        }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department!")
+        }
+
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
@@ -490,14 +534,35 @@ router.post("/leave-req-r",[
 router.get("/course-cov", [
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
   ]
-  , async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  ,  async (req, res) => {
     try {
         //Get the Logged in User's department
-        const department = await departmentModel.findOne({HOD_id : req.user.id});
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+        //check if user is head of the department
+
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)});
+            if(course){
+                if(course.unassignedSlots!=null){ 
+                    if(course.teachingSlots.length!=0){
+                        let CourseCov = ((course.teachingSlots.length-course.unassignedSlots)/  course.teachingSlots.length)
+                        
+                        res.status(200).json("course coverage is "+ CourseCov*100 +"%, course "+course.courseName+" has "+course.unassignedSlots+" unassigned slots")
+                    }
+                    else{res.status(400).send("Course has no teaching slots")}
+                }
+                else{
+                    res.status(400).send("UnassignedSlots value is null")
+                }
+                
+            }
+            else{res.status(400).send("course not found")}   
+        }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department")
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
@@ -514,14 +579,52 @@ router.get("/course-cov", [
 router.get("/teaching-assignments",[
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
   ]
-  , async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  ,  async (req, res) => {
     try {
         //Get the Logged in User's department
-        const department = await departmentModel.findOne({HOD_id : req.user.id});
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+        //check if user is head of the department
+
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)});
+            let printable = [];
+            if(course){
+                for (let i=0; i<course.teachingSlots.length;i++){
+                    let slot = await slotModel.findOne(ObjectId(course.teachingSlots[i]))
+                    if(slot){
+                        let printableTemp = {
+                            slotId : slot._id, startTime: slot.startTime,
+                            endTime: slot.endTime, 
+                            location: slot.slotLocation
+                        }
+                        
+                        if(slot.staffTeachingSlot){
+                            let staffMem = await staffModel.findOne({"_id":ObjectId(slot.staffTeachingSlot)})
+                            if(staffMem){
+                                printableTemp.isAssigned = true,
+                                printableTemp.staffTeachingSlotId = staffMem.id,
+                                printableTemp.staffTeachingSlotName = staffMem.name
+                            }
+                            else{
+                                res.status(400).send("Staff teaching course was not found?")
+                            }
+                        }
+                        else{
+                            printableTemp.isAssigned = false
+                        }
+                        printable.push(printableTemp)
+                    }
+                    else{console.log("A slot was not found in Database")}
+                }
+                res.json(printable)
+            }
+            else{res.status(400).send("course not found")}   
+        }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department")
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");

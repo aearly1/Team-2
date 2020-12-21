@@ -36,10 +36,14 @@ test('Make Staff HOD 1', async ()=>{
 })
 
 
-test('Course add test', async ()=>{
+test.only('Course add test', async ()=>{
     await CourseModel.deleteMany({})
+    let slot = await SlotModel.findOne({"_id": ObjectId("5fdfebd1c300a64290068613")})
+    let slot1 = await SlotModel.findOne({"_id": ObjectId("5fdfebd1c300a64290068611")})
     let course = new CourseModel({
         courseName: "CSEN 701 - Embedded Systems",
+        teachingSlots : [slot._id,slot1.id],
+        unassignedSlots: 2
       //  instructors: [1], //array stores ids of instructors teaching this course
        // teachingAssistants: [6,7], //array stores ids of teaching assitants of this course
       //  coordinator: 2, // id of the coordinator of this course
@@ -101,21 +105,39 @@ test('Location add test #2', async ()=>{
 test('Slot add test', async ()=>{
     await SlotModel.deleteMany({})
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
-    let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
-    let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
+    //let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
+    //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
     let location = await LocationModel.find({"roomNr":"C6.304"})
+    let slot = new SlotModel({
+        startTime: Date.now(), //start time of slot
+        endTime: Date.now(), // end time of slot
+        courseTaughtInSlot: course._id, //what course will be taught in the slot 
+        //staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
+        slotLocation: ObjectId(location._id), //ex. H14, C7.301
+        //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
+    });
+    await slot.save()
+    expect(await SlotModel.find({ "_id": slot._id})).toHaveLength(1);
+})
+test('Slot add test #2', async ()=>{
+    let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
+    let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
+    //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
+    let location = await LocationModel.find({"roomNr":"C6.305"})
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
         endTime: Date.now(), // end time of slot
         courseTaughtInSlot: course._id, //what course will be taught in the slot 
         staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
         slotLocation: ObjectId(location._id), //ex. H14, C7.301
-        replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
-   
+        //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
     });
     await slot.save()
     expect(await SlotModel.find({ "_id": slot._id})).toHaveLength(1);
 })
+
+
+
 
 test('Request add test', async ()=>{
     await RequestModel.deleteMany({})
@@ -126,20 +148,22 @@ test('Request add test', async ()=>{
     let request = new RequestModel({
         senderID: staffMem1._id, //id of the staff member sending the request
         recieverID: staffMem2._id, //id of the staff member recieving the request
-        requestType: "leave", //the available request types are change day off OR slot linking OR leave OR replacement)
+        requestType: "annual leave", //the available request types are change day off OR slot linking OR leave OR replacement)
         status: "pending", //the value of status can either be accepted or rejected or pending
         replacementSlot: replaceSlot._id, //id of slot for replacement request
         requestReason: "My horse is stuck in a fridge",// this field is used by the person sending the request in case this a leave request or a request to change day off
-       
+        startOfLeave: Date.now(),
+        endOfLeave: Date.now()
+
     });
     await request.save()
-    expect(await RequestModel.find({ "requestType": "leave"})).toHaveLength(1);
+    expect(await RequestModel.find({ "requestType": "annual leave"})).toHaveLength(1);
 })
 
 test('Update HOD', async ()=>{
     let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
     let department = await DepartmentModel.findOne({"departmentName": "MET"})
-    let request = await RequestModel.findOne({"requestType": "leave"})
+    let request = await RequestModel.findOne({"requestType": "annual leave"})
     await StaffModel.updateOne({"name":"Head of Department 1"},{
         "type": "hod",
         "facultyName": faculty.facultyName,
@@ -158,7 +182,7 @@ test('Update HOD', async ()=>{
 test('Make Staff instructor', async ()=>{
     let faculty = await FacultyModel.findOne({"facultyName": "Engineering"});
     let department = await DepartmentModel.findOne({"departmentName": "MET"});
-    let request = await RequestModel.findOne({"requestType": "leave"});
+    let request = await RequestModel.findOne({"requestType": "annual leave"});
     await StaffModel.updateOne({"name":"Instructor 1"},{
         "type": "instructor",
         "facultyName": faculty.facultyName,
