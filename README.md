@@ -6,6 +6,7 @@ The file that should be run is the app.js. It is under the root.
 The server is listening to port 3000.
 3. Write npmrun dev in the terminal to run the server
 4. Paste your mongoDB cnnection string in the config/default.json to connect to your database
+5. Run the route /api/init to seed the database
 =================================================================================
 -----------------------------------staffRoutes-----------------------------------
 =================================================================================
