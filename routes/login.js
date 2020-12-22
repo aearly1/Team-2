@@ -25,7 +25,7 @@ const { body, validationResult, check } = require('express-validator');
         return res.status(403).send("The email you entered is not registered")
         const verified = await bcrypt.compare(req.body.password,staffMem.password)
        if(!verified)
-        return res.status(403).send("The password you entered is wrong")
+       return res.status(403).send("The password you entered is wrong")
 
         const payload = {user: {
             id: staffMem.id,

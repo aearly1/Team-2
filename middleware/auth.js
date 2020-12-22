@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const blacklist = []
 const config = require("config");
+const staffMembers = require('../models/staffMembers');
 const key = config.get("jwtSecret")
 
-module.exports.func = function authenticate(req,res,next){
+module.exports.func = async function authenticate(req,res,next){
     if(!req.header('auth-token'))
     return res.status(403).send("Token was not found")
     blacklist.forEach(element => {
@@ -18,6 +19,10 @@ module.exports.func = function authenticate(req,res,next){
         //   console.log("firstLogin: "+req.user.firstLogin)
         //   res.redirect("/passwordReset")
         // }
+        let url =req.originalUrl
+        if(req.user.firstLogin && url != "/api/staffs/passwordreset" && url != "/api/login")
+        res.send("Reset your password")
+        else
         next();
     }
     catch(err){

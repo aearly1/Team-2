@@ -3,6 +3,7 @@ const express= require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const staffMembers = require('../models/staffMembers.js');
+const request = require('../models/request')
 const connectDB = require("../config/db");
 const auth = require('../middleware/auth.js')
 const app= express.Router();
@@ -13,8 +14,6 @@ const missinghrs = require('../functions/funcs').missinghours
 const missingdays = require('../functions/funcs').missingdays
 //connectDB()
 //.then(async()=>{
-    
-    
     //app.use(auth.func)
     app.post('/logout',(req,res)=>{
         blacklist.push(req.header('auth-token'))
@@ -69,7 +68,8 @@ const missingdays = require('../functions/funcs').missingdays
         await staffMembers.findOneAndUpdate({email:req.user.email},{departmentName:u.departmentName})
         await staffMembers.findOneAndUpdate({email:req.user.email},{facultyName:u.facultyName})
         //await u.save()
-        res.status(200).send("Profile Updated")
+        blacklist.push(req.header("auth-token"))
+        res.status(200).send("Profile Updated. Relog to save changes.")
     })
     app.put('/passwordreset',
     [
@@ -90,8 +90,9 @@ const missingdays = require('../functions/funcs').missingdays
         return res.status(403).send("Your current password does not match")
         const salt = await bcrypt.genSalt(12)
         const hashedPassword =await bcrypt.hash(newpass,salt)
-        await staffMembers.findOneAndUpdate({email:req.user.email},{password: hashedPassword})
-        res.status(200).send("Password Changed")
+        await staffMembers.findOneAndUpdate({email:req.user.email},{password: hashedPassword,firstLogin:false})
+        blacklist.push(req.header("auth-token"))
+        res.status(200).send("Password Changed. Please Relog")
     })
     app.post('/signin',async(req,res)=>{        
         var today = new Date();
@@ -188,9 +189,28 @@ const missingdays = require('../functions/funcs').missingdays
 
     app.get('/missingdays',async(req,res)=>{
         let u = await staffMembers.findOne({email:req.user.email});
+        var out = []
+        const sent = u.sentRequests
+        if(sent.length == 0)
+        return res.send(missingdays(u))
+        for (let i = 0; i < sent.length; i++) {
+            let r = await request.findById(sent[i])
+            if(r.status == 'accepted')
+            out.push(r)
+        }
+        const miss = missingdays(u)
+        var outrl = []
+        for (let i = 0; i < miss.length; i++) {
+            for (let j = 0; j < out.length; j++) {
+                let x = out[j]
+                let y = miss[i]
+                if((y.Day < x.startOfLeave.getDate() && y.Month == x.startOfLeave.getMonth()+1)|| (y.Day > x.endOfLeave.getDate() && y.Month == x.endOfLeave.getMonth()+1))
+                outrl.push(y)
+            }
+        }
         
-        res.send(missingdays(u))
-
+        console.log(req.originalUrl)
+        res.send(outrl)
     })
     app.get('/missinghours',async(req,res)=>{
         let u = await staffMembers.findOne({email:req.user.email});
@@ -198,7 +218,7 @@ const missingdays = require('../functions/funcs').missingdays
     })
 
     
-    /*app.listen(3000,async function()
+    /*app.listen(3000, function()
     {
         console.log("Server started at port 3000");
     });
