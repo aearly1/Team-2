@@ -11,9 +11,7 @@ const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongodb.net:27017,peacluster-shard-00-01.zwo5a.mongodb.net:27017,peacluster-shard-00-02.zwo5a.mongodb.net:27017/dev?ssl=true&replicaSet=atlas-zvq7do-shard-0&authSource=admin&retryWrites=true&w=majority')
 .then(async()=>{
-    const app= express();
-    app.use(express.json());
-    app.route('/slotLinkingRequest')
+    router.route('/slotLinkingRequest')
     .get([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],async(req,res)=>{
@@ -56,7 +54,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
         res.send(array);
     })
-    app.route('/acceptRejectslotLinkingRequest')
+    router.route('/acceptRejectslotLinkingRequest')
     .post([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
     ], [
@@ -157,7 +155,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/addCourseSlot')
+    router.route('/addCourseSlot')
     .post([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],[
@@ -224,7 +222,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/updateCourseSlot')
+    router.route('/updateCourseSlot')
     .put([
         body('userID').isString().isLength(24).withMessage("userID must be a string of length 24")
     ],[
@@ -347,7 +345,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/deleteCourseSlot')
+    router.route('/deleteCourseSlot')
     .post([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],[
@@ -409,11 +407,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
 
         
     })
-    
-    app.listen(3000,function()
-    {
-        console.log("Server started at port 3000");
-    });
 })
 .catch((err)=>{
     console.log(err)
