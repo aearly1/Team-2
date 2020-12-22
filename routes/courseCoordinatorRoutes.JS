@@ -1,17 +1,16 @@
 const express = require('express');
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
-const department= require('../models/department.js');
-const faculty = require('../models/faculty.js')
+//const department= require('../models/department.js');
+//const faculty = require('../models/faculty.js')
 const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongodb.net:27017,peacluster-shard-00-01.zwo5a.mongodb.net:27017,peacluster-shard-00-02.zwo5a.mongodb.net:27017/dev?ssl=true&replicaSet=atlas-zvq7do-shard-0&authSource=admin&retryWrites=true&w=majority')
-.then(async()=>{
-    router.route('/slotLinkingRequest')
+
+router.route('/slotLinkingRequest')
     .get([
         body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
     ],async(req,res)=>{
@@ -21,11 +20,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
+        const userID=payload.objectId;
         const courseID=req.body.courseID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+        let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
         let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
         if(courseObject==null)
         {
@@ -67,15 +66,16 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;
         const requestID=req.body.requestID;// id of request that you want to accept
         const courseID=req.body.courseID;
 
         try
         {
             //get user
-            let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+            let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
             let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
             //get request
             const newRequest= await request.findOne({_id:ObjectId(requestID)});
@@ -403,13 +403,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         catch(err)
         {
             console.log(err);
-        }
-
-        
+        }    
     })
-})
-.catch((err)=>{
-    console.log(err)
-})
 
 module.exports=router;

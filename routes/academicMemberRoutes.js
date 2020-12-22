@@ -1,24 +1,25 @@
 const express = require('express');
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
 const department= require('../models/department.js');
-const faculty = require('../models/faculty.js')
+//const faculty = require('../models/faculty.js')
 const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongodb.net:27017,peacluster-shard-00-01.zwo5a.mongodb.net:27017,peacluster-shard-00-02.zwo5a.mongodb.net:27017/dev?ssl=true&replicaSet=atlas-zvq7do-shard-0&authSource=admin&retryWrites=true&w=majority')
-.then(async()=>{
-    router.route('/schedule')
+
+router.route('/schedule')
     .get(async(req,res)=>
         {
             var ObjectId = require('mongodb').ObjectId; 
-            const userID=req.body.userID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
+            const payload = jwt.verify(req.header('auth-token'),key);
+
+            const userID=payload.objectId;
             try{
                  //get user object
-            const user= await staffMembers.findOne({_id:ObjectId(userID)});
+            const user= await staffMembers.findOne({_id:userID});
             const slotsArray=user.scheduleSlots;
             const schedule=[];
             if(user.type=="HR")
@@ -64,16 +65,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        /*const senderTest= await staffMembers.findOneAndUpdate({_id :
-            ObjectId("5fdf4d1574d9742bd8705f42")},  { $push: { receivedRequests: ObjectId("5fde50634697eb0980b6b6b4") }}, {new: true});
-        const recieverTest= await staffMembers.findOneAndUpdate({_id :
-            ObjectId("5fdde841c77a572248510f5c")},  { $push: { receivedRequests: ObjectId("5fde50634697eb0980b6b6b4") }}, {new: true});*/
-        const senderID=req.body.senderID; //get id of requeSter from request body (TO BE CHANGED TO TOKEN)
+        const payload = jwt.verify(req.header('auth-token'),key);
+
+        const senderID=payload.objectId;
         const recieverID=req.body.recieverID;//get id of reciever from request body
         const slotID=req.body.slotID;
         try{
         //get sender object
-        const senderObject= await staffMembers.findOne({_id:ObjectId(senderID)});
+        const senderObject= await staffMembers.findOne({_id:senderID});
         //get reciever object
         const recieverObject= await staffMembers.findOne({_id:ObjectId(recieverID)});
         //get slot object
@@ -117,15 +116,15 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                     //create request
                     const newRequest= new request(
                     {
-                        senderID: new ObjectId(senderID), //id of the staff member sending the request
-                        recieverID: new ObjectId(recieverID), //id of the staff member recieving the request
+                        senderID: senderID, //id of the staff member sending the request
+                        recieverID: ObjectId(recieverID), //id of the staff member recieving the request
                         requestType: "replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
                         status: "pending", //the value of status can either be accepted or rejected or pending
                         replacementSlot: ObjectId(slotID)
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(senderID)},  { $push: { courses: newRequest._id }}, {new: true});
+                        senderID},  { $push: { courses: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
                         ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
                 
@@ -150,8 +149,10 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         var ObjectId = require('mongodb').ObjectId; 
 
         //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
-        let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+        const payload = jwt.verify(req.header('auth-token'),key);
+
+        const userID=payload.objectId;
+        let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -190,7 +191,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         const requestID=req.body.requestID;// id of request that you want to accept
 
         //get user
-        const user= await staffMembers.findOne({_id:ObjectId(userID)});
+        const user= await staffMembers.findOne({_id:userID});
         //get request
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
         //check that user is not HR
@@ -236,12 +237,13 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;        
         const requestID=req.body.requestID;// id of request that you want to reject
 
         //get user
-        const user= await staffMembers.findOne({_id:ObjectId(userID)});
+        const user= await staffMembers.findOne({_id:userID});
         //get request
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
         if(user.type=="HR")
@@ -286,13 +288,14 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;        
         const slotID=req.body.slotID;// id of slot that you want to teach
         try
         {
             //get user sending the slot linking using the userID
-        const user= await staffMembers.findOne({_id:ObjectId(userID)});
+        const user= await staffMembers.findOne({_id:userID});
         //get the object of the desired slot
         const desiredSlot= await slot.findOne({_id:ObjectId(slotID)});
         if(user.type=="HR")//check that user is academic
@@ -312,7 +315,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         }
         const newRequest = new request(
             {
-                senderID: ObjectId(userID), //id of the staff member sending the request
+                senderID: userID, //id of the staff member sending the request
                 recieverID: slotCourse.coordinator, //id of the staff member recieving the request
                 requestType: "slot linking", //the available request types are change day off OR slot linking OR leave OR replacement)
                 status: "pending", //the value of status can either be accepted or rejected or pending
@@ -320,7 +323,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             }
         );
         newRequest.save();
-        await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
+        await staffMembers.findOneAndUpdate({_id :userID}, { $push: { sentRequests: newRequest._id }}, {new: true});
         await staffMembers.findOneAndUpdate({_id :slotCourse.coordinator}, { $push: { receivedRequests: newRequest._id }}, {new: true});
         res.send(newRequest);
         }
@@ -345,15 +348,16 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the change day off request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;        
         const reasonForChange=req.body.reasonForChange;// this is optional
         const desiredDayOff= req.body.desiredDayOff;
 
         try
         {
             //get user sending the slot linking using the userID
-        const user= await staffMembers.findOne({_id:ObjectId(userID)});
+        const user= await staffMembers.findOne({_id:userID});
         //get department of user
         const departmentName=user.departmentName;
         if(user.type=="HR")//check that user is academic
@@ -378,7 +382,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         {
             newRequest = new request(
                 {
-                    senderID: ObjectId(userID), //id of the staff member sending the request
+                    senderID: userID, //id of the staff member sending the request
                     recieverID: departmentObj.HOD_id, //id of the staff member recieving the request
                     requestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
                     status: "pending", //the value of status can either be accepted or rejected or pending
@@ -391,7 +395,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         {
             newRequest = new request(
                 {
-                    senderID: ObjectId(userID), //id of the staff member sending the request
+                    senderID: userID, //id of the staff member sending the request
                     recieverID: departmentObj.HOD_id, //id of the staff member recieving the request
                     requestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
                     DesiredDayOff:desiredDayOff,
@@ -400,7 +404,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             );
         }
         newRequest.save();
-        await staffMembers.findOneAndUpdate({_id :ObjectId(userID)}, { $push: { sentRequests: newRequest._id }}, {new: true});
+        await staffMembers.findOneAndUpdate({_id:userID}, { $push: { sentRequests: newRequest._id }}, {new: true});
         await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: newRequest._id }}, {new: true});
         res.send(newRequest);
     }
@@ -431,8 +435,9 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const sndrID= req.body.sndrID;
+        const sndrID=payload.objectId;        
         const documents=req.body.documents;
         const reason= req.body.reason;
         const leaveType= req.body.leaveType;
@@ -443,7 +448,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
         try
         {
             //get user sending the slot linking using the userID
-            const user= await staffMembers.findOne({_id:ObjectId(sndrID)});
+            const user= await staffMembers.findOne({_id:sndrID});
             //get department of user
             const departmentName=user.departmentName;
             if(user.type=="HR")//check that user is academic
@@ -477,7 +482,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                 var leave = new request
                 (
                     {
-                        senderID: ObjectId(sndrID),
+                        senderID: sndrID,
                         recieverID: departmentObj.HOD_id,
                         requestType: leaveType,
                         status: "pending",
@@ -503,7 +508,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
                }
                const resulto=await await request.findOne({_id :
                 leave._id});
-                await staffMembers.findOneAndUpdate({_id :ObjectId(sndrID)}, { $push: { sentRequests: leave._id }}, {new: true});
+                await staffMembers.findOneAndUpdate({_id :sndrID}, { $push: { sentRequests: leave._id }}, {new: true});
                 await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: leave._id }}, {new: true});
                 res.send(resulto);
             }
@@ -517,11 +522,11 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
+        const userID=payload.objectId;
         try{
-            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+            let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -552,12 +557,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
+        const userID=payload.objectId;
         try
         {
-            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+            let userObject = await staffMembers.findOne({_id:userID})
             if(userObject.type=="HR")
             {
                 res.status(401).send("User is not an academic staff member")
@@ -588,12 +593,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
+        const userID=payload.objectId;
 
         try{
-            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+            let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -624,13 +629,12 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
-
+        const userID=payload.objectId;
         try
         {
-            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})
+            let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
         {
             res.status(401).send("User is not an academic staff member")
@@ -668,13 +672,13 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        //CHANGE THIS TO TOKEN
-        const userID=req.body.userID;
+        const userID=payload.objectId;
         const requestID=req.body.requestID;// id of the request that we want to cancel
         try
         {
-            let userObject = await staffMembers.findOne({_id:ObjectId(userID)})//object of the user wanting to cancel the request
+            let userObject = await staffMembers.findOne({_id:userID})//object of the user wanting to cancel the request
             const requestObject = await request.findOne({_id:ObjectId(requestID)});// reuest that he wants to cancle
         if(userObject.type=="HR")//if he is an HR staff member then this route is not for him
         {
@@ -717,9 +721,5 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-})
-.catch((err)=>{
-    console.log(err)
-})
 
 module.exports=router;
