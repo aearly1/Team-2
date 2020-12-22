@@ -11,9 +11,7 @@ const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongodb.net:27017,peacluster-shard-00-01.zwo5a.mongodb.net:27017,peacluster-shard-00-02.zwo5a.mongodb.net:27017/dev?ssl=true&replicaSet=atlas-zvq7do-shard-0&authSource=admin&retryWrites=true&w=majority')
 .then(async()=>{
-    const app= express();
-    app.use(express.json());
-    app.route('/schedule')
+    router.route('/schedule')
     .get(async(req,res)=>
         {
             var ObjectId = require('mongodb').ObjectId; 
@@ -54,7 +52,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             }
         }
     )
-   app.route('/replacementRequest')
+   router.route('/replacementRequest')
     .post([
         body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24"),
         body('recieverID').isString().isLength(24).withMessage("recieverID must be a string of length 24")
@@ -176,7 +174,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             }
         res.send(array);
     })
-    app.route('/acceptReplacementRequest')
+    router.route('/acceptReplacementRequest')
     .post([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
           ], async(req,res)=>
@@ -227,7 +225,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/rejectReplacementRequest')
+    router.route('/rejectReplacementRequest')
     .post([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
           ], async(req,res)=>
@@ -277,7 +275,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/slotLinkingRequest')
+    router.route('/slotLinkingRequest')
     .post([
         body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")
           ], async(req,res)=>
@@ -332,7 +330,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    app.route('/changeDayOffRequest')
+    router.route('/changeDayOffRequest')
     .post(  [
                 body('reasonForChange').isString().optional().withMessage("reasonForChange must be a string")
             ]/*,
@@ -412,7 +410,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     });
-    app.route('/leave')
+    router.route('/leave')
     .post([
         body('documents').isString().optional().withMessage("documents must be a string")
     ], [
@@ -515,7 +513,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    app.route('/requestStatus')
+    router.route('/requestStatus')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
@@ -550,7 +548,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    app.route('/requestStaus/accepted')
+    router.route('/requestStaus/accepted')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
@@ -586,7 +584,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/requestStaus/rejected')
+    router.route('/requestStaus/rejected')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
@@ -622,7 +620,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err)
         }
     })
-    app.route('/requestStaus/pending')
+    router.route('/requestStaus/pending')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
@@ -659,7 +657,7 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
-    app.route('/cancleRequest')
+    router.route('/cancleRequest')
     .get([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
     ], async(req,res)=>
@@ -719,11 +717,6 @@ mongoose.connect('mongodb://aearly:aemongo99@peacluster-shard-00-00.zwo5a.mongod
             console.log(err);
         }
     })
- 
-    app.listen(3000,function()
-    {
-        console.log("Server started at port 3000");
-    });
 })
 .catch((err)=>{
     console.log(err)
