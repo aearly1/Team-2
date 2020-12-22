@@ -19,6 +19,7 @@ app.use("/api/hod", require("./routes/HOD"));
 app.use("/api/hr", require("./routes/HRRoutes"));
 app.use("/api/academicMember",require("./routes/academicMemberRoutes"))
 app.use("/api/coordinator", require("./routes/courseCoordinatorRoutes"));
+app.use("/api/init", require("./DBInit"));
 
 
 const PORT = process.env.PORT || 3000;
