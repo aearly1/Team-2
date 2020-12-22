@@ -31,13 +31,15 @@ const { body, validationResult, check } = require('express-validator');
             id: staffMem.id,
             email: staffMem.email,
             firstLogin: staffMem.firstLogin,
-            type: staffMem.type
+            type: staffMem.type,
+            ObjectId: staffMem._id
           }
           //,  email:staffMem.email,type:staffMem.type
         }
 
         const token = jwt.sign(payload,key)
         res.header('auth-token',token)
+        //res.redirect(303,'/api/staffs/passwordreset')
         res.status(200).send("Login successful")
     })
 module.exports = app
