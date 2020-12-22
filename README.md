@@ -981,3 +981,245 @@ Response Example:
 	]
 
 -----------------------------------------------------------------------------------------------------------------------
+
+===========================================================================================================
+---------------------------------------------courseInstructorRoutes----------------------------------------
+===========================================================================================================
+Functionality: View the coverage of course(s) current user is assigned to.
+Route: '/api/view-courses/:id'        --example id: 43-8530
+Request type: GET
+Response: JSON file The courses assigned to a user academic.
+Response Example:
+ {
+    "Courses": 
+    [
+        "ABC123",
+        "XYZ567"
+    ]
+}
+	
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: View the slots asignment of course(s) current user  is assigned to.
+Route: '/api/view-slot-assign-course/:id'        --example id: 43-8530
+Request type: GET
+Response: JSON file The slots assigned to a user academic.
+Response Example:
+ {
+    {
+			"slotId": "5fdff79dc5acf437a4cb29d4",
+			"startTime": "2020-12-21T01:17:17.062Z",
+			"endTime": "2020-12-21T01:17:17.062Z",
+			"location": "C6.304",
+			"isAssigned": false
+		},
+		{
+			"slotId": "5fdff79dc5acf437a4cb29d5",
+			"startTime": "2020-12-21T01:17:17.523Z",
+			"endTime": "2020-12-21T01:17:17.523Z",
+			"location": "C6.305",
+			"isAssigned": true,
+			"staffTeachingSlotId": "instr1",
+			"staffTeachingSlotName": "Hassan Soubra"
+		}
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: View all the staff's profiles per course the academic teach 
+Route: '/api/view-staf-course/:id'        --example id: 43-8530
+Request type: GET
+Response:JSON file All staff with their profiles per the current current each course 
+Response Example:
+ { 
+  {
+    {
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+     
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    }
+  }
+
+  {
+    {
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+     
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    }
+  }
+
+
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: View all the staff's profiles per departement the academic teach 
+Route: '/api/view-staf-dep/'        --example id: 43-8530
+Request type: GET
+Response: JSON file All staff with their profiles per the current user's departement 
+Response Example:
+ { 
+  
+    {
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+     
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    },
+
+    { 
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530"
+    }
+  
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: Assign an academic member to an unassigned slots in course(s)
+Route: '/api/assign-course/:id'        --example id: 43-8530
+Request type: POST
+Request Body:
+{
+         "courseId": "5fdff79bc5acf437a4cb29cf",
+         "academicId":"2435",
+         "slotID":"5fdfc265685d492a48fbd303"
+}
+Response: JSON file course and slot updated with assignment of academic to an unassigned slot
+
+Response Example:  
+{ 
+"courseId": "5fdff79bc5acf437a4cb29cf"
+ "courseName" : "CSEN 701 ",
+  "instructors" : " 43-8530",
+  " teachingAssistants": {"1425" ,"2435"},
+   "coordinator" : "3455",
+   "teachingSlots":
+   {
+       {
+        "startTime": "2012-01-01T22:00:00.000Z",
+        "endTime": "2012-01-01T22:00:00.000Z",
+        "staffTeachingSlot": "Shaka Zulu",
+        "courseTaughtInSlot": CSEN701: Embedded Systems,
+        "slotLocation": "H14",
+        "replacementStaff": "NA"
+    },
+    {
+        "startTime": "2012-01-01T22:00:00.000Z",
+        "endTime": "2012-01-01T22:00:00.000Z",
+        "staffTeachingSlot": "Shaka Zulu",
+        "courseTaughtInSlot": CSEN701: Embedded Systems
+        "slotLocation": "H19",
+        "replacementStaff": "NA"
+    }
+   },
+        "unassignedSlots" : "1"
+
+}  
+  
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality: Update assignment of academic member in course(s) he/she is assigned to.
+Route: '/api/update-assign/:id'        --example id: 43-8530
+Request type: POST
+Request Body:
+{
+         "courseId": "5fdff79bc5acf437a4cb29cf",
+         "academicID" : "3455"
+}
+Response: Induction updated assignment of academic member successfuly 
+
+Response Example:  
+             "Updated successfully"
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+ Functionality:delete assignment of academic member in course(s) he/she is assigned to.
+Route: '/api/delete-assign/:id"'        --example id: 43-8530
+Request type: POST
+Request Body:
+{
+         "courseId": "5fdff79bc5acf437a4cb29cf",
+         "academicID" : "3455"
+}
+Response: Induction deleted assignment of academic member successfuly 
+
+Response Example:  
+             "Deleted successfully"
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Functionality:Assign an academic member in each of his/her course(s) to be a course coordinator
+Route: '/api/assign-academic/:id"'        --example id: 43-8530
+Request type: POST
+Request Body:
+{
+         "courseId": "5fdff79bc5acf437a4cb29cf",
+         "academicID" : "5647"
+}
+Response: JSON file for the uodated course 
+
+Response Example:  
+            { 
+"courseId": "5fdff79bc5acf437a4cb29cf"
+ "courseName" : "CSEN 701 ",
+  "instructors" : " 43-8530",
+  " teachingAssistants": {"1425" ,"2435"},
+   "coordinator" : "5647",
+   "teachingSlots":
+   {
+       {
+        "startTime": "2012-01-01T22:00:00.000Z",
+        "endTime": "2012-01-01T22:00:00.000Z",
+        "staffTeachingSlot": "Shaka Zulu",
+        "courseTaughtInSlot": CSEN701: Embedded Systems,
+        "slotLocation": "H14",
+        "replacementStaff": "NA"
+    },
+    {
+        "startTime": "2012-01-01T22:00:00.000Z",
+        "endTime": "2012-01-01T22:00:00.000Z",
+        "staffTeachingSlot": "Shaka Zulu",
+        "courseTaughtInSlot": CSEN701: Embedded Systems
+        "slotLocation": "H19",
+        "replacementStaff": "NA"
+    }
+   },
+        "unassignedSlots" : "1"
+
+}  
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
