@@ -1,5 +1,11 @@
 # Team-2
-
+1. Which file should be run to launch the server of your project and under which folder (if
+not in the root)?
+The file that should be run is the app.js. It is under the root.
+2. Which port is the server listening to?
+The server is listening to port 3000.
+3. Write npmrun dev in the terminal to run the server
+4. Paste your mongoDB cnnection string in the config/default.json to connect to your database
 =================================================================================
 -----------------------------------staffRoutes-----------------------------------
 =================================================================================
@@ -198,7 +204,7 @@ Example: -8 Hours 37 Mins
 =================================================================================
 
 Functionality: View "slot linking" request(s) from academic members linked to his/her course.
-Route: /slotLinkingRequest
+Route: /api/coordinator/slotLinkingRequest
 Request type: GET
 Request Body: 
 {
@@ -240,7 +246,7 @@ NOTE: "courseID" is the object ID assigned by mongoose when the course object wa
 ---------------------------------------------------------------------------------
 
 Functionality: Accept/reject \slot linking" requests from academic members linked to his/her cours
-Route: /acceptRejectslotLinkingRequest
+Route: /api/coordinator/acceptRejectslotLinkingRequest
 Request type: POST
 Request body: {
     "requestID":"5fdf4da964feaf10444d8c26",
@@ -256,7 +262,7 @@ NOTES:
 ---------------------------------------------------------------------------------
 
 Functionality: Add course slot(s) in his/her course
-Route: /addCourseSlot
+Route: /api/coordinator/addCourseSlot
 Request type: POST
 Request body:
 {
@@ -284,7 +290,7 @@ NOTES:
 ---------------------------------------------------------------------------------
 
 Functionality: Updates course slot(s) in his/her course (By updating I mean he can change the location of the slot or the staff member teaching the slot).
-Route: /updateCourseSlot
+Route: /api/coordinator/updateCourseSlot
 Request type: PUT
 Request Body: 
 {
@@ -315,7 +321,7 @@ you can update the slot location or staff teaching or both. If you don't want to
 ---------------------------------------------------------------------------------
 
 Functionality: Delete course slot(s) in his/her course.
-Route: /deleteCourseSlot
+Route: /api/coordinator/deleteCourseSlot
 Request type: PUT
 Request Body: {
     "courseID":"5fde50634697eb0980b6b6b4",
@@ -334,7 +340,7 @@ NOTEs:
 =================================================================================
 
 Functionality: Academic member views their own schedule, seeing their teaching activities and replacements (if present).
-Route: /schedule
+Route: /api/academicMember/schedule
 Request type: GET
 Response: Array containing JSON objects representing the slots.
 Example:
@@ -360,7 +366,7 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: Sending replacement requests
-Route: /replacementRequest
+Route: /api/academicMember/replacementRequest
 Request type: POST
 Request Body: 
 {
@@ -389,7 +395,7 @@ In order to replace a staff member for the ENTIRE day and not just a single slot
 ---------------------------------------------------------------------------------
 
 Functionality: View "replacement" request(s) sent to me from other academic staff members
-Route: /replacementRequest
+Route: /api/academicMember/replacementRequest
 Request type: GET
 Response: An array of JSON objects representing the replacement requests sent from other academic staff members
 Example: [
@@ -412,7 +418,7 @@ Example: [
 ---------------------------------------------------------------------------------
 
 Functionality: Accept a replacement request sent from another academic staff member
-Route: /acceptReplacementRequest
+Route: /api/academicMember/acceptReplacementRequest
 Request type: POST
 Request Body: 
 {
@@ -427,7 +433,7 @@ NOTE:
 ---------------------------------------------------------------------------------
 
 Functionality: Reject a replacement request sent from another academic staff member
-Route: /rejectReplacementRequest
+Route: /api/academicMember/rejectReplacementRequest
 Request type: POST
 Request Body: 
 {
@@ -442,7 +448,7 @@ NOTE:
 ---------------------------------------------------------------------------------
 
 Functionality: Send a "slot linking" request to course coordinator
-Route: /slotLinkingRequest
+Route: /api/academicMember/slotLinkingRequest
 Request type: POST
 Request body: 
 {
@@ -473,7 +479,7 @@ NOTES:
 
 Functionality: Change their day off by sending a "change day off" request to HOD,
 and optionally leave a reason.
-Route: /changeDayOffRequest
+Route: /api/academicMember/changeDayOffRequest
 Request type: POST
 Request body:
 {
@@ -496,7 +502,7 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: Submit any type of "leave" request (automatically sent to HOD)
-Route: '/leave'
+Route: /api/academicMember/leave
 Request type: POST
 Request body:
 {
@@ -526,7 +532,7 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: View the status of all submitted requests.
-Route: '/requestStatus'
+Route: /api/academicMember/requestStatus
 Request type: GET
 Response: Array of JSON Objects representing the submitted requests
 Example:
@@ -606,7 +612,7 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: View the status of accepted submitted requests.
-Route: '/requestStaus/accepted'
+Route: /api/academicMember/requestStaus/accepted
 Request type: GET
 Response: Array of JSON Objects representing the accepted submitted requests
 Example:
@@ -626,7 +632,7 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: View the status of rejected submitted requests.
-Route: '/requestStaus/rejected'
+Route: /api/academicMember/requestStaus/rejected
 Request type: GET
 Response: Array of JSON Objects representing the rejected submitted requests
 Example:
@@ -639,10 +645,9 @@ Example:
 ]
 
 ---------------------------------------------------------------------------------
----------------------------------------------------------------------------------
 
 Functionality: View the status of pending submitted requests.
-Route: '/requestStaus/pending'
+Route: /api/academicMember/requestStaus/pending
 Request type: GET
 Response: Array of JSON Objects representing the pending submitted requests
 Example: 
@@ -722,8 +727,12 @@ Example:
 ---------------------------------------------------------------------------------
 
 Functionality: Cancel a still pending request or a request whose day is yet to come
-Route: /cancleRequest
+Route: /api/academicMember/cancleRequest
 Request type: GET
+Request body:
+{
+        "requestID": "5fdf0f28ae6eb318c8c0621f"
+}
 Response: A statement that indicates that the deletion process was successful
 Example: "Successfully deleted"
 

@@ -18,7 +18,7 @@ router.route('/schedule')
 
             const userID=payload.objectId;
             try{
-                 //get user object
+            //get user object
             const user= await staffMembers.findOne({_id:userID});
             const slotsArray=user.scheduleSlots;
             const schedule=[];
@@ -55,9 +55,10 @@ router.route('/schedule')
     )
    router.route('/replacementRequest')
     .post([
-        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24"),
-        body('recieverID').isString().isLength(24).withMessage("recieverID must be a string of length 24")
-          ],async(req,res)=>
+        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")],
+        [body('recieverID').isString().isLength(24).withMessage("recieverID must be a string of length 24")
+          ], [body('dateOfRequest').isString().withMessage("dateOfRequest must be a string")
+        ],async(req,res)=>
     {
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -70,6 +71,7 @@ router.route('/schedule')
         const senderID=payload.objectId;
         const recieverID=req.body.recieverID;//get id of reciever from request body
         const slotID=req.body.slotID;
+        const dateOfRequest=req.body.dateOfRequest;
         try{
         //get sender object
         const senderObject= await staffMembers.findOne({_id:senderID});
@@ -120,7 +122,9 @@ router.route('/schedule')
                         recieverID: ObjectId(recieverID), //id of the staff member recieving the request
                         requestType: "replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
                         status: "pending", //the value of status can either be accepted or rejected or pending
-                        replacementSlot: ObjectId(slotID)
+                        replacementSlot: ObjectId(slotID),
+                        startOfLeave: dateOfRequest,
+                        endOfLeave: dateOfRequest
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
@@ -147,8 +151,6 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-
-        //CHANGE THIS TO TOKEN
         const payload = jwt.verify(req.header('auth-token'),key);
 
         const userID=payload.objectId;
@@ -280,7 +282,8 @@ router.route('/schedule')
     router.route('/slotLinkingRequest')
     .post([
         body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")
-          ], async(req,res)=>
+          ], [body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")], 
+          async(req,res)=>
     {
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -292,6 +295,7 @@ router.route('/schedule')
 
         const userID=payload.objectId;        
         const slotID=req.body.slotID;// id of slot that you want to teach
+        const dateOfRequest=req.body.dateOfRequest;
         try
         {
             //get user sending the slot linking using the userID
@@ -320,6 +324,8 @@ router.route('/schedule')
                 requestType: "slot linking", //the available request types are change day off OR slot linking OR leave OR replacement)
                 status: "pending", //the value of status can either be accepted or rejected or pending
                 replacementSlot: ObjectId(slotID), //id of slot for replacement request
+                startOfLeave: dateOfRequest,
+                endOfLeave: dateOfRequest
             }
         );
         newRequest.save();
@@ -676,6 +682,7 @@ router.route('/schedule')
 
         const userID=payload.objectId;
         const requestID=req.body.requestID;// id of the request that we want to cancel
+        const currentDate = new Date();
         try
         {
             let userObject = await staffMembers.findOne({_id:userID})//object of the user wanting to cancel the request
@@ -693,8 +700,8 @@ router.route('/schedule')
         {
             res.status(401).send("You are not authorized to cancel this request since you are not the sender");
         }
-        //check if the request is still pending
-        else if(requestObject.status!="pending")
+        //check if the request is still pending or before current date
+        else if(requestObject.status!="pending" && requestObject.startLeave>currentDate)
         {
             res.status(401).send("You are not authorized to cancel this request since it is no longer pending");
         }

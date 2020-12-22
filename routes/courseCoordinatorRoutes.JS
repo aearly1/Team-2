@@ -122,7 +122,6 @@ router.route('/slotLinkingRequest')
            else
            {
                const person = await staffMembers.findOne({_id:newRequest.senderID});
-               console.log(person)
                 //check if staff have teaching ativity during the slot
                 const schedule = person.receivedRequests;
                 const busy=false;
@@ -172,8 +171,9 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;        
         const courseID=req.body.courseID;
         const startTime1=req.body.startTime;
         const endTime1=req.body.endTime;
@@ -181,7 +181,7 @@ router.route('/slotLinkingRequest')
         try
         {
             //get user
-            let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+            let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
             let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
 
             //check that user is a coordinator
@@ -224,8 +224,6 @@ router.route('/slotLinkingRequest')
     })
     router.route('/updateCourseSlot')
     .put([
-        body('userID').isString().isLength(24).withMessage("userID must be a string of length 24")
-    ],[
         body('courseID').isString().isLength(24).withMessage("courseID must be a string")
     ],[
         body('slotID').isString().isLength(24).withMessage("slotID must be a string")
@@ -241,8 +239,9 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;
         const courseID=req.body.courseID;
         const slotID=req.body.slotID; 
         const STAFFTEACHINGSLOT=req.body.staffTeachingSlot;
@@ -250,7 +249,7 @@ router.route('/slotLinkingRequest')
         try
         {
             //get user
-            let user = await staffMembers.findOne({_id:ObjectId(userID)})//fetch supposed coordinator
+            let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
             //console.log(user)
             let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
             //console.log(courseObject)
@@ -358,14 +357,15 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
+        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=req.body.userID; //(TO BE CHANGED TO TOKEN)
+        const userID=payload.objectId;
         const courseID=req.body.courseID; 
         const slotID=req.body.slotID; 
         try
         {
             //get object of supposed coordinator
-            const user = await staffMembers.findOne({_id:ObjectId(userID)});
+            const user = await staffMembers.findOne({_id:userID});
             //get course that our user is supposedly the coordinator of
             const courseCoordinated = await course.findOne({_id:ObjectId(courseID)});
             //check that user is a coordinator and that course exists
