@@ -12,7 +12,6 @@ const { Server, ObjectId } = require('mongodb');
 
 
 const connectDB = require("../config/db");
-const course = require('../models/course')
 connectDB();
 
 //  beforeAll(async()=>{
@@ -21,39 +20,19 @@ connectDB();
 //     await DepratmentModel.deleteMany();
 //     await FacultyModel.deleteMany();
 //  })
-test('Make Staff HOD 1', async ()=>{
-    let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
-    let department = await DepartmentModel.findOne({"departmentName": "MET"})
-    await StaffModel.updateOne({"name":"Head of Department 1"},{
-        "type": "hod",
-       //"courses": [], //array with course ids of courses they teach && empty list in case of HR
-        "dayOff": "Saturday",
-        "annualLeaves": 20,
-        "accidentalLevesLeft": 4,
-        "Salary": 50000
-    });
-    expect(await StaffModel.find({ "name": "Head of Department 1"})).toHaveLength(1);
-})
-
 
 test('Course add test', async ()=>{
     await CourseModel.deleteMany({})
     let course = new CourseModel({
-        courseName: "CSEN 701 - Embedded Systems",
-      //  instructors: [1], //array stores ids of instructors teaching this course
-       // teachingAssistants: [6,7], //array stores ids of teaching assitants of this course
-      //  coordinator: 2, // id of the coordinator of this course
-       // teachingSlots: ["1st slot sunday", "2nd slot wednesday"], //array that stores all the slots of the course (whether or not they have been assigned to staff members)
-       // unassignedSlots: 0, //used to calculate the course coverage
-    });
+        courseName: "CSEN 701 - Embedded Systems", });
     await course.save()
     expect(await CourseModel.find({ "courseName": "CSEN 701 - Embedded Systems"})).toHaveLength(1);
 })
 
 test('Department add test', async ()=>{
     await DepartmentModel.deleteMany({})
-    let hod = await StaffModel.findOne({"type": "hod"})
-    await DepartmentModel.deleteMany({})
+    let hod = await StaffModel.findOne({"name": "Slim"})
+    console.log(JSON.stringify(hod))
     let course = await CourseModel.findOne({"courseName": "CSEN 701 - Embedded Systems"})
     let department = new DepartmentModel({
         departmentName: "MET",
@@ -101,8 +80,8 @@ test('Location add test #2', async ()=>{
 test('Slot add test', async ()=>{
     await SlotModel.deleteMany({})
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
-    //let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
-    //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
+    //let staffMem1 = await StaffModel.findOne({"name":"Hassan Soubra"})
+    //let staffMem2 = await StaffModel.findOne({"name":"Milad Ghantous"})
     let location = await LocationModel.findOne({"roomNr":"C6.304"})
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
@@ -117,8 +96,8 @@ test('Slot add test', async ()=>{
 })
 test('Slot add test #2', async ()=>{
     let course = await CourseModel.findOne({"courseName":"CSEN 701 - Embedded Systems" })
-    let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
-    //let staffMem2 = await StaffModel.findOne({"name":"Instructor 2"})
+    let staffMem1 = await StaffModel.findOne({"name":"Hassan Soubra"})
+    //let staffMem2 = await StaffModel.findOne({"name":"Milad Ghantous"})
     let location = await LocationModel.findOne({"roomNr":"C6.305"})
     let slot = new SlotModel({
         startTime: Date.now(), //start time of slot
@@ -132,10 +111,10 @@ test('Slot add test #2', async ()=>{
     expect(await SlotModel.find({ "_id": slot._id})).toHaveLength(1);
 })
 
-test.only('Course edit test', async () => {
+test('Course edit test', async () => {
     let location1 = await LocationModel.findOne({"roomNr":"C6.304" })
     let location2 = await LocationModel.findOne({"roomNr":"C6.305" })
-    console.log(JSON.stringify(location1._id))
+   
     let slot1 = await SlotModel.findOne({"slotLocation": ObjectId(location1._id)})
     let slot2 = await SlotModel.findOne({"slotLocation": ObjectId(location2._id)})
     await CourseModel.updateOne({"courseName":"CSEN 701 - Embedded Systems"},{
@@ -150,8 +129,8 @@ test.only('Course edit test', async () => {
 test('Request add test', async ()=>{
     await RequestModel.deleteMany({})
     let course = await CourseModel.findOne({"courseName": "CSEN 701 - Embedded Systems"})
-    let staffMem1 = await StaffModel.findOne({"name":"Instructor 1"})
-    let staffMem2 = await StaffModel.findOne({"name":"Head of Department 1"})
+    let staffMem1 = await StaffModel.findOne({"name":"Hassan Soubra"})
+    let staffMem2 = await StaffModel.findOne({"name":"Slim"})
     let replaceSlot = await SlotModel.findOne({"courseTaughtInSlot" : course._id})
     let request = new RequestModel({
         senderID: staffMem1._id, //id of the staff member sending the request
@@ -172,8 +151,9 @@ test('Update HOD', async ()=>{
     let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
     let department = await DepartmentModel.findOne({"departmentName": "MET"})
     let request = await RequestModel.findOne({"requestType": "annual leave"})
-    await StaffModel.updateOne({"name":"Head of Department 1"},{
-        "type": "hod",
+    await StaffModel.updateOne({"name":"Slim"},{
+        "type": "academic",
+        "subType": "instructor",
         "facultyName": faculty.facultyName,
         "departmentName": department.departmentName, //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
         "courses": [], //array with course ids of courses they teach && empty list in case of HR
@@ -184,15 +164,16 @@ test('Update HOD', async ()=>{
         "firstLogin" : false,
         "receivedRequests" : [request._id] 
     });
-    expect(await StaffModel.find({ "name": "Head of Department 1"})).toHaveLength(1);
+    expect(await StaffModel.find({ "name": "Slim"})).toHaveLength(1);
 })
 
 test('Make Staff instructor', async ()=>{
     let faculty = await FacultyModel.findOne({"facultyName": "Engineering"});
     let department = await DepartmentModel.findOne({"departmentName": "MET"});
     let request = await RequestModel.findOne({"requestType": "annual leave"});
-    await StaffModel.updateOne({"name":"Instructor 1"},{
-        "type": "instructor",
+    await StaffModel.updateOne({"name":"Hassan Soubra"},{
+        "type": "academic",
+        "subType": "instructor",
         "facultyName": faculty.facultyName,
         "departmentName": department.departmentName,//null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
         "courses": [], //array with course ids of courses they teach && empty list in case of HR
@@ -203,14 +184,15 @@ test('Make Staff instructor', async ()=>{
         "firstLogin": false,
         "sentRequests" : [request._id]
     });
-    expect(await StaffModel.find({ "name": "Instructor 1"})).toHaveLength(1);
+    expect(await StaffModel.find({ "name": "Hassan Soubra"})).toHaveLength(1);
 })
 
 test('Make Staff instructor #2', async ()=>{
     let faculty = await FacultyModel.findOne({"facultyName": "Engineering"})
     let department = await DepartmentModel.findOne({"departmentName": "MET"})
-     await StaffModel.updateOne({"name":"Instructor 2"},{
-        "type": "instructor",
+     await StaffModel.updateOne({"name":"Milad Ghantous"},{
+        "type": "academic",
+        "subType": "instructor",
         "facultyName": faculty.facultyName,
         "departmentName": department.departmentName, //null for HR or just set to HR //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
         "courses": [], //array with course ids of courses they teach && empty list in case of HR
@@ -220,5 +202,5 @@ test('Make Staff instructor #2', async ()=>{
         "Salary": 15000,
         "firstLogin": true
     });
-    expect(await StaffModel.find({ "name": "Instructor 2"})).toHaveLength(1);
+    expect(await StaffModel.find({ "name": "Milad Ghantous"})).toHaveLength(1);
 })

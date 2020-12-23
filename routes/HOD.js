@@ -222,7 +222,7 @@ router.post("/update-instr-course",[
 // @status  Done & Tested
 // @route   GET api/hod/staff
 // @input   -
-// @desc    View all staff members (View their Ids? or all info??)
+// @desc    View all staff members
 // @access  Private
 router.get("/staff", async (req, res) => {
     try {
@@ -233,15 +233,16 @@ router.get("/staff", async (req, res) => {
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.find({"departmentName" : depart.departmentName});
-        let staffOutput = [];
-        staff.forEach(staffMem => staffOutput.push({
-            userCode: staffMem.id,
-            email: staffMem.email,
-            name: staffMem.name
-        }))
-        res.status(200).json(staffOutput)
-        }
+            let staff = await staffModel.find({"departmentName" : depart.departmentName});
+            let staffOutput = [];
+            staff.forEach(staffMem => staffOutput.push({
+                userCode: staffMem.id,
+                subType: staffMem.subType,
+                email: staffMem.email,
+                name: staffMem.name
+            }))
+            res.status(200).json(staffOutput)
+            }
         else{
             res.status(401).send("Unauthorized. User is not head of his department")
         }
@@ -280,6 +281,7 @@ router.get("/staff-crs",[
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             userCode: staffMem.id,
+            subType: staffMem.subType,
             email: staffMem.email,
             name: staffMem.name
         }))
@@ -315,6 +317,7 @@ router.get("/staff-do",  async (req, res) => {
         staff.forEach(staffMem => staffOutput.push({
             id : staffMem.id,
             staffMemberName: staffMem.name,
+            subType: staffMem.subType,
             dayOff: staffMem.dayOff,
         }))
         res.status(200).json(staffOutput)
@@ -354,6 +357,7 @@ router.get("/staff-dos",[
         let staffMem = {
             id : staff.id,
             staffMemberName: staff.name,
+            subType: staffMem.subType,
             dayOff: staff.dayOff
         }
         res.status(200).json(staffMem)
@@ -616,6 +620,7 @@ router.get("/teaching-assignments",[
                             if(staffMem){
                                 printableTemp.isAssigned = true,
                                 printableTemp.staffTeachingSlotId = staffMem.id,
+                                printableTemp.staffTeachingSlotSubType = staffMem.subType,
                                 printableTemp.staffTeachingSlotName = staffMem.name
                             }
                             else{
