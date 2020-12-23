@@ -190,7 +190,7 @@ router.post('/editFaculty',[
     let fac = {}
     fac.facultyName = req.body.facultyName
     fac.departments = req.body.departments
-    fac.departments.forEach(departmentId=>{
+    fac.departments.forEach(async departmentId=>{
         await departmentModel.findOne({_id:departmentId},(err,department)=>{
             if(err)
             res.status(500).send(error)
@@ -934,7 +934,7 @@ router.post('/addAttendanceRecord',[
 });
 
 //view members attendance record
-router.post('viewAttendance'[
+router.post('viewAttendance',[
     check("id", "Staff member id must be a string").isString()  
 ], async (req, res) => {
  
@@ -976,7 +976,7 @@ res.send(users);
 })
 
 //update salary
-router.post('/updateSalary' [
+router.post('/updateSalary', [
     check("id", "Staff member id must be a string").isString()  ,
     check("salary", "Staff member salary must be a number").isNumeric()  
 ], async (req, res) => {
