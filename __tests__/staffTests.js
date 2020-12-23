@@ -8,7 +8,7 @@ const slot = require('../models/slot')
 const bcrypt = require('bcrypt')
 
 beforeAll(async()=>{
-mongoose.connect('mongodb+srv://admin:admin@cluster0.ccvnk.mongodb.net/diabs_tester_HOD?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true }).then(console.log('Successfully Connected to The Test Database'))
+mongoose.connect('mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true }).then(console.log('Successfully Connected to The Test Database'))
 })
 beforeEach(async()=>{
     await staffMembers.deleteMany();
@@ -45,7 +45,7 @@ describe('Tests for Staff Members',()=>{
             dayOff: "Saturday",
             facultyName: "Tegara", //null for HR
             departmentName: "Fawanees", //null for HR or just set to HR
-            attendance: [{day:1,month:9, year:2020, history: [ {signedIn: "7:00", signedOut: "9:00"},{ signedIn: "11:00", signedOut: "13:00"}]}],
+            attendance: [],
             courses: ["ABC123","XYZ567"], //array with course ids of courses they teach && empty list in case of HR
             annualLeaves: 5,
             Salary: 10

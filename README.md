@@ -12,7 +12,7 @@ The server is listening to port 3000.
 =================================================================================
 
 Functionality: Logs the staff member in
-Route: /api/staffs/login
+Route: /api/login
 Request type: POST
 Request Body: {"email":"sexysoso@hotmail.com",
 	"password":"passwordsha2y"}
@@ -33,7 +33,7 @@ Example: {
     "Name": "7amada sha3r",
     "Email": "sexysoso@hotmail.com",
     "ID": "43-8530",
-    "Office": "C694220",
+    "Office": "C4.404",
     "FacultyName": "Sebaka",
     "DepartmentName": "Fawanees",
     "Courses": [
@@ -53,7 +53,7 @@ Route: /api/staffs/profile/update
 Request type: PUT
 Request Body: {
 	"email":"sexysoso2@hotmail.com",
-	"office":"C4.404",
+	"office":"C6.606",
 	"faculty":"Zaboota",
 	"department":"Mo5abarat",
 	"salary":10000
@@ -82,6 +82,7 @@ Example: [
         "time": "2020-12-20T14:08:31.848Z"
     }
 ]
+NOTE: The sign in & sign out routes will not work unless the current time of signing in or out is within the working hours
 
 ---------------------------------------------------------------------------------
 
@@ -197,7 +198,7 @@ Functionality: Views the net missing hours of the current month
 Route: /api/staffs/missinghours
 Request type: GET
 Response: The number of missing hours
-Example: -8 Hours 37 Mins
+Example: -8 Hours -22 Mins
 
 ---------------------------------------------------------------------------------
 =================================================================================

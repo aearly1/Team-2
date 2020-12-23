@@ -148,8 +148,8 @@ const missingdays = require('../functions/funcs').missingdays
         minspent = (today.getTime()-lastop.time.getTime())/(1000*60)
         if(today.getHours()>19 || today.getHours()<7)
         {
-            let tmp = lastop;
-            tmp.setHours(19).setMinutes(0);
+            let tmp = lastop.time;
+            tmp.setHours(19,0);
         minspent = (tmp.getTime()-lastop.time.getTime())/(1000*60)
         }
         if(dayoff==today.getDay()||(arr.length!=0))
@@ -166,6 +166,8 @@ const missingdays = require('../functions/funcs').missingdays
         let u = await staffMembers.findOne({email:req.user.email});
             let curr = new Date()
             let month = parseInt(req.params.month,10)
+            if(month > 12 || month <= 0)
+            return res.status(401).send("Please enter a valid month")
             let max = new Date()
             max.setMonth(month,10)
             max.setHours(20)
