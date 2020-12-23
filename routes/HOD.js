@@ -12,9 +12,9 @@ const e = require('express');
 
 
 
-//Done ==> 7
-//Work In Progress ==> 1
-//Untouched ==> 4
+//Done ==> 12
+//Work In Progress ==> 0
+//Untouched ==> 0
 
 // @status  Done & Tested
 // @route   POST api/HOD/assign-instr-course
@@ -39,7 +39,7 @@ router.post("/assign-instr-course",
         //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -109,7 +109,7 @@ router.delete("/del-instr-course",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -173,7 +173,7 @@ router.post("/update-instr-course",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "type":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
 
             if(instr){//check instructor under department
                 if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
@@ -445,7 +445,7 @@ router.get("/leave-do-reqs", async (req, res) => {
 });
 //=========================================================================//
 
-// @status  Untouched
+// @status  Done & Tested
 // @route   POST api/hod/leave-req-a
 // @input   reqId
 // @desc    Accept a request. if a request is accepted, appropriate logic should be
@@ -486,7 +486,7 @@ router.post("/leave-do-req-a",[
 })
 //=========================================================================//
 
-// @status  Untouched
+// @status  Done & Tested
 // @route   POST api/hod/leave-req-r
 // @input   reqId, reqRejectReason
 // @desc    Reject a request, and optionally leave a comment as to why this
@@ -530,7 +530,7 @@ router.post("/leave-do-req-r",[
 });
 //=========================================================================//
 
-// @status  Untouched
+// @status  Done & Tested
 // @route   GET api/hod/course-cov
 // @input   course-Id
 // @desc    View the coverage of each course in his/her department
@@ -574,7 +574,7 @@ router.get("/course-cov", [
 });
 //=========================================================================//
 
-// @status  Untouched
+// @status  Done & Tested
 // @route   GET api/hod/teaching-assignments
 // @input   courseId  
 // @desc    View teaching assignments (which staff members teach which slots) 

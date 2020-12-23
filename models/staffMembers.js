@@ -7,6 +7,7 @@ const staffSchema = new schema ({
     name: String,
     gender:String,
     type: String, // can either be HR or academic
+    subType: String, // can either be instructor or ta
     office: String,
     dayOff: String,
     facultyName: String, //null for HR
