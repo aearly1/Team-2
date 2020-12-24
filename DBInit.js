@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('./models/course');
@@ -9,12 +11,186 @@ const location= require('./models/location.js')
 const request = require('./models/request.js')
 const slot= require('./models/slot.js')
 const staffMembers = require('./models/staffMembers.js');
+<<<<<<< HEAD
 const bcrypt = require('bcryptjs')
+=======
+>>>>>>> f083eef (Ali)
 
 router.route('/')
 //DB initialization
 .post(async(req,res)=>{
+    //Ali's initiallization data
+    const salt = await bcrypt.genSalt(10);
+    const pass = await bcrypt.hash('12345', salt);
+    const HOD=new staffMembers ({
+        email: 'slim@guc.com',
+        password: pass,
+        id: 'ac-6833', // Generated using uuidv4
+        name: 'Slim',
+        gender:'Male',
+        type: 'academic', // can either be HR or academic
+        office: 'C7-219',
+        dayOff: 'SAT',
+        facultyName: 'MET', //null for HR
+        departmentName: 'CSEN', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 400,
+        accidentalLeavesLeft: 2,
+        Salary: 1000000,
+        firstLogin: false
+    })
+    HOD.save();
 
+    const TA=new staffMembers ({
+        email: 'shaka@guc.com',
+        password: pass,
+        id: 'ac-6834', // Generated using uuidv4
+        name: 'Shaka',
+        gender:'Male',
+        type: 'academic', // can either be HR or academic
+        office: 'C3-203',
+        dayOff: 'TUES',
+        facultyName: 'MET', //null for HR
+        departmentName: 'CSEN', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 12,
+        accidentalLeavesLeft: 1,
+        Salary: 12345,
+        firstLogin: false
+    })
+    TA.save();
+
+    const Coordinator=new staffMembers ({
+        email: 'ali@guc.com',
+        password: pass,
+        id: 'ac-6835', // Generated using uuidv4
+        name: 'Ali',
+        gender:'Male',
+        type: 'academic', // can either be HR or academic
+        office: 'C3-205',
+        dayOff: 'WED',
+        facultyName: 'CSEN', //null for HR
+        departmentName: 'MET', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 50,
+        accidentalLeavesLeft: 50,
+        Salary: 1,
+        firstLogin: false
+    })
+    Coordinator.save();
+
+    const newCourse = new course(
+        {
+            courseName: 'CSEN701: Embedded Systems',
+            instructors: [], //array stores ids of instructors teaching this course
+            teachingAssistants: [], //array stores ids of teaching assitants of this course
+            coordinator: Coordinator._id, // id of the Coordinator of this course
+            teachingSlots: [], //array that stores all the slots of the course (whether or not they have been assigned to staff members)
+            unassignedSlots: 1, //used to calculate the course coverage
+        }
+    )
+    newCourse.save();
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: { instructors: HOD._id}}, {new: true});
+    await course.findOneAndUpdate({_id :
+            newCourse._id},  { $push: { instructors: TA._id}}, {new: true});
+    await course.findOneAndUpdate({_id :
+            newCourse._id},  { $push: { teachingAssistants: Coordinator._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+            HOD._id},  { $push: {  courses: newCourse._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+            TA._id},  { $push: {  courses: newCourse._id}}, {new: true});
+    const loc = new location(
+        {
+            roomNr: 'H14',
+            roomType: 'lecture hall', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    loc.save();
+   const newSlot= new slot(
+    {
+        startTime: new Date("2020-12-20T12:08:15"), //start time of slot
+        endTime: new Date("2020-12-20T12:09:45"), // end time of slot
+        courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
+        slotLocation: loc._id, //ex. H14, C7.301
+    }
+    )
+   newSlot.save();
+    const mySlot= new slot(
+        {
+            startTime: new Date("2020-12-20T12:10:00"), //start time of slot
+            endTime: new Date("2020-12-20T12:11:30"), // end time of slot
+            courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
+            staffTeachingSlot: TA._id,// null if this slot is still not assigned to anyone
+            slotLocation: loc._id, //ex. H14, C7.301
+        }
+    )
+    mySlot.save();
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingSlots: newSlot}}, {new: true});
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingSlots: mySlot}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+        TA._id},  { $push: {  scheduleSlots: mySlot._id}}, {new: true}); 
+    await staffMembers.findOneAndUpdate({_id :
+            Coordinator._id},  { $push: {  courses: newCourse._id}}, {new: true}); 
+       
+    const slotLinkingReq= new request(
+        {
+            senderID: TA._id, //id of the staff member sending the request
+            recieverID: Coordinator._id, //id of the staff member recieving the request
+            requestType: 'slot linking', //the available request types are change day off OR slot linking OR annual leave OR accidental leave OR sick leave OR maternity leave OR compensation leave replacement)
+            status: 'pending', //the value of status can either be accepted or rejected or pending
+            replacementSlot: newSlot._id
+        }
+    )
+    slotLinkingReq.save();
+    const ReplacementReq= new request(
+        {
+            senderID: TA._id, //id of the staff member sending the request
+            recieverID: Coordinator._id, //id of the staff member recieving the request
+            requestType: 'replacement', //the available request types are change day off OR slot linking OR annual leave OR accidental leave OR sick leave OR maternity leave OR compensation leave replacement)
+            status: 'pending', //the value of status can either be accepted or rejected or pending
+            replacementSlot: mySlot._id, //id of slot for replacement request
+            startOfLeave: new Date('2021-12-20T12:08:15.000+00:00'),
+            endOfLeave: new Date('2021-12-20T12:08:15.000+00:00')
+        }
+    )
+    ReplacementReq.save();
+    await staffMembers.findOneAndUpdate({_id :
+        TA._id},  { $push: {  sentRequests: slotLinkingReq._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+        TA._id},  { $push: {  sentRequests: ReplacementReq._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+            Coordinator._id},  { $push: {  receivedRequests: slotLinkingReq._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+            Coordinator._id},  { $push: {  receivedRequests: ReplacementReq._id}}, {new: true});
+    const dep = new department(
+        {
+            departmentName:"CSEN",
+            HOD_id: HOD._id,
+            courses: [] //array with course ids of courses belonging to this department
+        }
+    );
+    dep.save();
+    await department.findOneAndUpdate({_id :
+        dep._id},  { $push: { courses: newCourse._id }}, {new: true});
+    
+    res.send("Data inserted successfuly");
+    
 })
 router.get('/staffMems',async(req,res)=>{
     const salt = await bcrypt.genSalt(12)

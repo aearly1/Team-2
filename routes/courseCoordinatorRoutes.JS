@@ -1,4 +1,6 @@
 const express = require('express');
+const jwt = require("jsonwebtoken");
+const key='shaka'
 //const mongoose = require('mongoose');
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
@@ -12,7 +14,7 @@ const staffMembers = require('../models/staffMembers.js');
 
 router.route('/slotLinkingRequest')
     .get([
-        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+        body('CourseName').isString().withMessage("CourseName must be a string")
     ],async(req,res)=>{
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -20,12 +22,10 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
-
-        const userID=payload.objectId;
-        const courseID=req.body.courseID;
+        const userID=req.user.objectId;
+        const CourseName=req.body.CourseName;
         let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-        let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+        let courseObject = await course.findOne({courseName:CourseName})//course of coordinator
         if(courseObject==null)
         {
             res.status(404).send("Course doesn't exist")
@@ -41,15 +41,25 @@ router.route('/slotLinkingRequest')
              var requestObject= await request.findOne({_id:element});
             var U = await staffMembers.findOne({_id: requestObject.senderID})
                 var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                var loc = await location.findOne({_id: sloty.slotLocation})
+                var desiredS=
+                {
+                    "startTime": sloty.startTime,
+                    "endTime": sloty.endTime,
+                    "courseTaughtInSlot": courseObject.courseName,
+                    "slotLocation": loc.roomNr
+                }
                 var requestDisplayed=
                 {
                     "request sent by": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
-                    "Desired slot": sloty,
+                    "Desired slot": desiredS,
                 }
-             if(requestObject.requestType="slot linking")
-                 array.push(requestDisplayed);
+             if(requestObject.requestType=="slot linking")
+             {
+                array.push(requestDisplayed);
+             }
         }
         res.send(array);
     })
@@ -57,7 +67,7 @@ router.route('/slotLinkingRequest')
     .post([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
     ], [
-        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+        body('coursename').isString().withMessage("coursename must be a string")
     ], async(req,res)=>
     {
         const errors = validationResult(req);
@@ -66,17 +76,18 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         const requestID=req.body.requestID;// id of request that you want to accept
-        const courseID=req.body.courseID;
+        const coursename=req.body.courseName;
 
         try
         {
             //get user
             let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-            let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+            console.log(coursename)
+            let courseObject = await course.findOne({courseName:coursename})//course of coordinator
+            console.log(courseObject)
             //get request
             const newRequest= await request.findOne({_id:ObjectId(requestID)});
 
@@ -141,10 +152,10 @@ router.route('/slotLinkingRequest')
                 else{
                     //passed all checks, can accept
                     await staffMembers.findOneAndUpdate({_id :
-                        person._id}, {$push: { courses:ObjectId(courseID)}}, {new: true});
+                        person._id}, {$push: { courses:courseObject._id}}, {new: true});
                     await request.findOneAndUpdate({_id: ObjectId(requestID)}, {status:"accepted"}, {new: true});
                     await slot.findOneAndUpdate({_id: wantedSlot._id}, {staffTeachingSlot:person._id}, {new: true});
-                    await course.findOneAndUpdate({_id:ObjectId(courseID)}, {unassignedSlots:courseObject.unassignedSlots-1}, {new: true});
+                    await course.findOneAndUpdate({_id:courseObject._id}, {unassignedSlots:courseObject.unassignedSlots-1}, {new: true});
                     res.send("accepted");
                 }
            }
@@ -156,13 +167,13 @@ router.route('/slotLinkingRequest')
     })
     router.route('/addCourseSlot')
     .post([
-        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+        body('courseName').isString().withMessage("courseName must be a string")
     ],[
         body('startTime').isString().withMessage("startTimeHours must be a string")
     ],[
         body('endTime').isString().withMessage("endTimeHours must be a string")
     ], [
-        body('slotLocation').isString().isLength(24).withMessage("slotLocation must be a string of length 24")
+        body('slotLocation').isString().withMessage("slotLocation must be a string")
     ], async(req,res)=>
     {
         const errors = validationResult(req);
@@ -171,10 +182,9 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;        
-        const courseID=req.body.courseID;
+        const userID=req.user.objectId;        
+        const coursename=req.body.courseName;
         const startTime1=req.body.startTime;
         const endTime1=req.body.endTime;
         const SLOTLOCATION=req.body.slotLocation;
@@ -182,7 +192,7 @@ router.route('/slotLinkingRequest')
         {
             //get user
             let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-            let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+            let courseObject = await course.findOne({courseName:coursename})//course of coordinator
 
             //check that user is a coordinator
             if(courseObject==null)
@@ -195,7 +205,7 @@ router.route('/slotLinkingRequest')
             }
             //perhaps I should do checks on the time?
            //check that slot location exists
-           const loc = await location.findOne({_id:ObjectId(SLOTLOCATION)});
+           const loc = await location.findOne({roomNr:SLOTLOCATION});
            if(loc==null)
            {
                res.status(404).send("Location doesnt exist. It might exist in lala land. Who knows?");
@@ -206,14 +216,22 @@ router.route('/slotLinkingRequest')
                 {
                     startTime: new Date(startTime1), //start time of slot
                     endTime: new Date(endTime1), // end time of slot
-                    courseTaughtInSlot: ObjectId(courseID), //what course will be taught in the slot 
-                    slotLocation: ObjectId(SLOTLOCATION), //ex. H14, C7.301
+                    courseTaughtInSlot: courseObject._id, //what course will be taught in the slot 
+                    slotLocation: loc._id, //ex. H14, C7.301
                 }
             );
             newSlot.save();
             await course.findOneAndUpdate({_id :
-                ObjectId(courseID)}, {unassignedSlots:courseObject.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
-            res.send(newSlot);
+                courseObject._id}, {unassignedSlots:courseObject.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
+            
+             var result=
+            {
+                "startTime": newSlot.startTime,
+                "endTime": newSlot.endTime,
+                 "courseTaughtInSlot": courseObject.courseName,
+                 "slotLocation": loc.roomNr
+            }
+            res.send(result);
            }
             
             }
@@ -224,13 +242,13 @@ router.route('/slotLinkingRequest')
     })
     router.route('/updateCourseSlot')
     .put([
-        body('courseID').isString().isLength(24).withMessage("courseID must be a string")
+        body('courseName').isString().withMessage("coursename must be a string")
     ],[
         body('slotID').isString().isLength(24).withMessage("slotID must be a string")
     ],[
-        body('staffTeachingSlot').isString().isLength(24).optional().withMessage("staffTeachingSlot must be a string")
+        body('staffTeachingSlot').isString().optional().withMessage("staffTeachingSlot must be a string")
     ],[
-        body('slotLocation').isString().isLength(24).optional().withMessage("slotLocation must be a string")
+        body('slotLocation').isString().optional().withMessage("slotLocation must be a string")
     ], async(req,res)=>
     {
         const errors = validationResult(req);
@@ -239,10 +257,9 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
-        const courseID=req.body.courseID;
+        const userID=req.user.objectId;
+        const coursename=req.body.courseName;
         const slotID=req.body.slotID; 
         const STAFFTEACHINGSLOT=req.body.staffTeachingSlot;
         const SLOTLOCATION=req.body.slotLocation;
@@ -251,18 +268,16 @@ router.route('/slotLinkingRequest')
             //get user
             let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
             //console.log(user)
-            let courseObject = await course.findOne({_id:ObjectId(courseID)})//course of coordinator
+            let courseObject = await course.findOne({courseName:coursename});//course of coordinator
             //console.log(courseObject)
-            let sloteObject = await slot.findOne({_id:ObjectId(slotID)})//course of coordinator
+            let sloteObject = await slot.findOne({_id:ObjectId(slotID)});//course of coordinator
             //console.log(sloteObject)
             var loc = null;
             if(SLOTLOCATION!=null)
-            loc=await location.findOne({_id:ObjectId(SLOTLOCATION)});
-            console.log(loc)
+            loc=await location.findOne({roomNr:SLOTLOCATION});
             var staffToBeAssigned = null;
             if(STAFFTEACHINGSLOT!=null)
-            staffToBeAssigned=await staffMembers.findOne({_id:ObjectId(STAFFTEACHINGSLOT)});
-            console.log(staffToBeAssigned)
+            staffToBeAssigned=await staffMembers.findOne({name:STAFFTEACHINGSLOT});
             //check that user is a coordinator
             if(courseObject==null)
             {
@@ -314,20 +329,44 @@ router.route('/slotLinkingRequest')
             if(STAFFTEACHINGSLOT==null)
             {
                 result=await slot.findOneAndUpdate({_id :
-                    ObjectId(slotID)}, {slotLocation:ObjectId(SLOTLOCATION)}, {new: true})
-                    res.send(result);
+                    ObjectId(slotID)}, {slotLocation:loc._id}, {new: true})
+                    const slotInfo=
+                    {
+                        "startTime": result.startTime,
+                        "endTime": result.endTime,
+                        "courseTaughtInSlot": courseObject.courseName,
+                        "staffTeachingSlot": "N/A",
+                        "slotLocation": loc.roomNr
+                    }
+                    res.send(slotInfo);
             }
             else if(SLOTLOCATION==null)
             {
                  result=await slot.findOneAndUpdate({_id :
-                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT)}, {new: true})
-                    res.send(result);
+                    ObjectId(slotID)}, {staffTeachingSlot:staffToBeAssigned._id}, {new: true})
+                    const slotInfo=
+                    {
+                        "startTime": result.startTime,
+                        "endTime": result.endTime,
+                        "courseTaughtInSlot": courseObject.courseName,
+                        "staffTeachingSlot": staffToBeAssigned.name,
+                        "slotLocation": "N/A"
+                    }
+                    res.send(slotInfo);
             }
             else
             {
                 result=await slot.findOneAndUpdate({_id :
-                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(STAFFTEACHINGSLOT), slotLocation:ObjectId(SLOTLOCATION)}, {new: true});
-                    res.send(result);
+                    ObjectId(slotID)}, {staffTeachingSlot:ObjectId(staffToBeAssigned._id), slotLocation:loc._id}, {new: true});
+                    const slotInfo=
+                    {
+                        "startTime": result.startTime,
+                        "endTime": result.endTime,
+                        "courseTaughtInSlot": courseObject.courseName,
+                        "staffTeachingSlot": staffToBeAssigned.name,
+                        "slotLocation": loc.roomNr
+                    }
+                    res.send(slotInfo);
 
             }
             //update person teaching slot
@@ -346,9 +385,9 @@ router.route('/slotLinkingRequest')
     })
     router.route('/deleteCourseSlot')
     .post([
-        body('courseID').isString().isLength(24).withMessage("courseID must be a string of length 24")
+        body('courseName').isString().withMessage("courseName must be a string")
     ],[
-        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")
+        body('slotID').isString().withMessage("slotID must be a string")
     ], async(req,res)=>
     {
         const errors = validationResult(req);
@@ -357,17 +396,16 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
-
-        const userID=payload.objectId;
-        const courseID=req.body.courseID; 
+        const userID=req.user.objectId;
+        const coursename=req.body.courseName; 
+        console.log(coursename)
         const slotID=req.body.slotID; 
         try
         {
             //get object of supposed coordinator
             const user = await staffMembers.findOne({_id:userID});
             //get course that our user is supposedly the coordinator of
-            const courseCoordinated = await course.findOne({_id:ObjectId(courseID)});
+            const courseCoordinated = await course.findOne({courseName:coursename});
             //check that user is a coordinator and that course exists
             if(courseCoordinated==null)
             {
@@ -383,7 +421,7 @@ router.route('/slotLinkingRequest')
             {
                 res.status(404).send("Slot doesnt exist")
             }
-            else if(!slotToBeDeleted.courseTaughtInSlot.equals(ObjectId(courseID)))
+            else if(!slotToBeDeleted.courseTaughtInSlot.equals(courseCoordinated._id))
             {
                 res.status(404).send("Slot belongs to another course")
             }
@@ -392,6 +430,11 @@ router.route('/slotLinkingRequest')
                 await staffMembers.findOneAndUpdate(
                     {_id:slotToBeDeleted.staffTeachingSlot},
                     { $pull: { scheduleSlots: ObjectId(slotToBeDeleted._id) } },
+                    { multi: true }
+                )
+                await course.findOneAndUpdate(
+                    {_id:courseCoordinated._id},
+                    { $pull: { teachingSlots: ObjectId(slotToBeDeleted._id) } },
                     { multi: true }
                 )
                 //passed all checks delete slot

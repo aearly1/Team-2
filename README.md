@@ -210,57 +210,41 @@ Route: /api/coordinator/slotLinkingRequest
 Request type: GET
 Request Body: 
 {
-    "courseID":"5fde50634697eb0980b6b6b4"
+    "courseName":"CSEN701: Embedded Systems"
 }
 Response: Array of "slot linking" request objects sent from academic members linked to his/her course.
-Example: [
-    {
-        "request sent by": "Shaka Zulu",
-        "requestType": "slot linking",
-        "status": "accepted",
-        "Desired slot": {
-            "_id": "5fdfbfe2685d492a48fbd302",
-            "startTime": "2020-12-20T12:08:15.000Z",
-            "endTime": "2020-12-20T12:10:45.000Z",
-            "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-            "staffTeachingSlot": "5fdde841c77a572248510f5c",
-            "slotLocation": "5fde596463f84924107476f0"
-            "__v": 0
-        }
-    },
+Example: 
+[
     {
         "request sent by": "Shaka",
         "requestType": "slot linking",
         "status": "pending",
-        "Desired slot": 
-        {
-            "_id": "5fdfbfe2685d492a48fbd302",
-            "startTime": "2020-12-20T12:11:15.000Z",
-            "endTime": "2020-12-20T12:11:45.000Z",
-            "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-            "staffTeachingSlot": "5fdde841c77a572248510f5c",
-            "slotLocation": "5fde596463f84924107476f0"
-            "__v": 0
+        "Desired slot": {
+            "startTime": "2020-12-20T10:08:15.000Z",
+            "endTime": "2020-12-20T10:09:45.000Z",
+            "courseTaughtInSlot": "CSEN701: Embedded Systems",
+            "slotLocation": "H14"
         }
     }
 ]
-NOTE: "courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represent the object ID of the course that the coordinator is responsible for.
+
 ---------------------------------------------------------------------------------
 
 Functionality: Accept/reject \slot linking" requests from academic members linked to his/her cours
 Route: /api/coordinator/acceptRejectslotLinkingRequest
 Request type: POST
-Request body: {
+Request body: 
+{
     "requestID":"5fdf4da964feaf10444d8c26",
-    "courseID":"5fde50634697eb0980b6b6b4"
+    "courseName":"CSEN701: Embedded Systems"
 }
 Response: A statement indicating acceptance of request or rejection with reason for rejection. 
 Example: "accepted" OR "Rejected because you are already teaching a slt during the same time" OR "Rejected because some other staff member is already teaching this slot" OR "Rejected because this is not a slot in course" OR
 
-NOTES: 
-"courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represents the course that the user is supposedly the coordinator of.
+NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
+"requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the course coordinator wants to accept/reject.
 
-"requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the course coordinator wants to accept/reject
+THE REQUESTID WILL DIFFER EVERYTIME YOU SEE THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUEST ID.
 ---------------------------------------------------------------------------------
 
 Functionality: Add course slot(s) in his/her course
@@ -268,27 +252,22 @@ Route: /api/coordinator/addCourseSlot
 Request type: POST
 Request body:
 {
-    "courseID":"5fde50634697eb0980b6b6b4",
-    "startTime":"2020-12-20T14:08:15",
-    "endTime":"2020-12-20T14:10:45",
-    "slotLocation":"5fde596463f84924107476f0"
+    "courseName":"CSEN701: Embedded Systems",
+    "startTime":"2020-12-20T14:13:45",
+    "endTime":"2020-12-20T14:15:15",
+    "slotLocation":"H14"
 }
 
-Response: Returns the newly created slot (a mongoose record of type slot)
+
+Response: Returns the newly created slot 
 Example: 
 {
-    "_id": "5fdfbfe2685d492a48fbd302",
-    "startTime": "2020-12-20T12:08:15.000Z",
-    "endTime": "2020-12-20T12:10:45.000Z",
-    "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-    "slotLocation": "5fde596463f84924107476f0",
-    "__v": 0
+    "startTime": "2020-12-20T12:13:45.000Z",
+    "endTime": "2020-12-20T12:15:15.000Z",
+    "courseTaughtInSlot": "CSEN701: Embedded Systems",
+    "slotLocation": "H14"
 }
 
-NOTES: 
-"courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represents the course that will be taught in the newly created slot. It also represents the course that the course coordinator is responsible for.
-
-"slotLocation" is the object ID assigned by mongoose when the location object was created and placed in the location collection. It represents the object id of the location where the course will be taught in that particular slot
 ---------------------------------------------------------------------------------
 
 Functionality: Updates course slot(s) in his/her course (By updating I mean he can change the location of the slot or the staff member teaching the slot).
@@ -296,10 +275,10 @@ Route: /api/coordinator/updateCourseSlot
 Request type: PUT
 Request Body: 
 {
-    "courseID":"5fde50634697eb0980b6b6b4",
+    "courseName":"CSEN701: Embedded Systems",
     "slotID":"5fdfc265685d492a48fbd303",
-    "staffTeachingSlot":"5fdde841c77a572248510f5c",
-    "slotLocation":"5fde596463f84924107476f0"
+    "staffTeachingSlot":"Ali",
+    "slotLocation":"H19"
 }
 Response: the mongoose record of the updated slot
 Example:
@@ -313,13 +292,10 @@ Example:
     "staffTeachingSlot": "5fdde841c77a572248510f5c"
 }
 
-NOTES: 
-you can update the slot location or staff teaching or both. If you don't want to update both values, then only pass the value you want to update. The code handels the null value in that case.
-
-"courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represents the course that the user is supposedly the coordinator of.
-
+NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
 "slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the course coordinator wants to update.
 
+THE SLOTID WILL DIFFER EVERYTIME YOU SEE THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BELONGING TO THE EMBEDDED SYSTEMS COURSE.
 ---------------------------------------------------------------------------------
 
 Functionality: Delete course slot(s) in his/her course.
