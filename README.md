@@ -8,23 +8,17 @@
 3.  Write npm run dev in the terminal to run the server
 4.  Paste your mongoDB cnnection string in the config/default.json to connect to your database
     <<<<<<< HEAD
-5.  There are FIVE routes that need to be run to seed the database
+5.  There are FIVE routes that need to be run to seed the database (not all of them at once).
     a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     c)/localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     =======
-6.  There are FIVE routes that need to be run to seed the database (not all of them at once).
-    a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    c) http://localhost:3000/api/init/hod-init used to test Head of department functionality, more on that later.
-    > > > > > > > b8f364a... Diab's last ReadMe edits
-        d)
-        e)
-7.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
-8.  IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
-9.  IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
-10. You will find the UML in the root (UML.jpg)
-11. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
+
+6.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
+7.  IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
+8.  IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
+9.  You will find the UML in the root (UML.jpg)
+10. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
     # -----------------------------------staffRoutes-----------------------------------
 
 Functionality: Logs the staff member in
