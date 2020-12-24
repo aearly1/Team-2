@@ -14,12 +14,12 @@ router.route('/schedule')
     .get(async(req,res)=>
         {
             var ObjectId = require('mongodb').ObjectId; 
-            const payload = jwt.verify(req.header('auth-token'),key);
 
-            const userID=payload.objectId;
+            const userID=req.user.objectId;
             try{
             //get user object
             const user= await staffMembers.findOne({_id:userID});
+            console.log(user)
             const slotsArray=user.scheduleSlots;
             const schedule=[];
             if(user.type=="HR")

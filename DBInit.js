@@ -11,10 +11,6 @@ const location= require('./models/location.js')
 const request = require('./models/request.js')
 const slot= require('./models/slot.js')
 const staffMembers = require('./models/staffMembers.js');
-<<<<<<< HEAD
-const bcrypt = require('bcryptjs')
-=======
->>>>>>> f083eef (Ali)
 
 router.route('/')
 //DB initialization
