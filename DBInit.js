@@ -12,7 +12,7 @@ const slot = require('./models/slot.js')
 const staffMembers = require('./models/staffMembers.js');
 const { Server, ObjectId } = require('mongodb');
 
-router.route('/Ali')
+router.route('/academic-coordinator')
 //DB initialization
 .post(async(req,res)=>{
     //Ali's initiallization data

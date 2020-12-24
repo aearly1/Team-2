@@ -7,9 +7,9 @@ The server is listening to port 3000.
 3. Write npmrun dev in the terminal to run the server
 4. Paste your mongoDB cnnection string in the config/default.json to connect to your database
 5. There are FIVE routes that need to be run to seed the database 
-    a) /localhost:3000/api/init/Ali. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    b)/localhost:3000/api/initstaffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    c)
+    a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    c)/localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     d)
     e)
 6. IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
