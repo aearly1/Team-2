@@ -2,26 +2,26 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const auth = require("../middleware/auth");
-const departmentModel = require('../models/Department');
-const courseModel = require('../models/course');
-const staffModel = require('../models/staffMembers');
-const slotModel= require('../models/slot.js');
+const course = require('../models/course');
+const department= require('../models/department.js');
+const faculty = require('../models/faculty.js')
+const location= require('../models/location.js')
+const request = require('../models/request.js')
+const slot= require('../models/slot.js')
+const staffMembers = require('../models/staffMembers.js');
 const { check, validationResult } = require('express-validator');
 const { Server, ObjectId } = require('mongodb');
 
-(async()=>{
-const app=express();
-app.use(express.json());
-
 //View the coverage of course(s) he/she is assigned to.
-router.get("/view-course-coverage/:course", auth ,[check ("id").isNumeric()] 
- ,async (req, res) => {
+router.route("/view-course-coverage/:course")
+.get(
+async (req, res) => {
     const errors = validationResult(req);
    
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= course.findOne({"courseName":course});
+        const myCourse= await course.findOne({"courseName":req.params.course});
         if(myCourse==null)
         {
             res.status(404).send("Course not found!")
@@ -29,16 +29,16 @@ router.get("/view-course-coverage/:course", auth ,[check ("id").isNumeric()]
         else
         {
             const instructorId=req.user.id;
-            const instructor= staffMember.findOne({id:instructorId});
-            const intructorsList = course.instructors;
-            const found=false;
+            const instructor= await staffMembers.findOne({id:instructorId});
+            const intructorsList = myCourse.instructors;
+            var found=false;
             if(intructorsList!=null)
             {
                 for (const element of intructorsList)
                 {
-                    if(element==instructor._id)
+                    if(element.equals(instructor._id))
                     {
-                        found=true;break;
+                        found=true;
                     }
                 }
             }
@@ -48,14 +48,14 @@ router.get("/view-course-coverage/:course", auth ,[check ("id").isNumeric()]
             }
             else
             {
-                const total= instructor.length;
-                const assignedSlots=total-myCourse.unassignslots;
+
+                const assignedSlots=myCourse.teachingSlots.length-myCourse.unassignedSlots;
                 var result=0;
-                if(total!=0)
+                if(myCourse.teachingSlots.length!=0)
                 {
-                    result=assignedSlots/total;
+                    result=assignedSlots/myCourse.teachingSlots.length;
                 }
-                res.send("Course coverage of this course is " + result)
+                res.send("Course coverage of this course is " + result+"%")
             }
         }
     } catch (err) {
@@ -291,12 +291,5 @@ router.route("/assign-academic/:id",auth).post(
             res.status(500).send("Server Error");
     }
     });
-
-    app.listen(3000,function()
-    {
-        console.log("Server started at port 3000");
-    });
-
-})
 //.catch((err)=>{console.log(err)})
 module.exports=router;

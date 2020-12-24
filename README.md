@@ -7,18 +7,20 @@
     The server is listening to port 3000.
 3.  Write npm run dev in the terminal to run the server
 4.  Paste your mongoDB cnnection string in the config/default.json to connect to your database
-    <<<<<<< HEAD
+
 5.  There are FIVE routes that need to be run to seed the database (not all of them at once).
     a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     c)/localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    d)/localhost:3000/api/init/hod-init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     =======
 
 6.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
 7.  IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
 8.  IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
-9.  You will find the UML in the root (UML.jpg)
-10. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
+9.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
+10.  You will find the UML in the root (UML.jpg)
+11. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
     # -----------------------------------staffRoutes-----------------------------------
 
 Functionality: Logs the staff member in
@@ -915,18 +917,16 @@ Response Example:
 ===========================================================================================================
 ---------------------------------------------courseInstructorRoutes----------------------------------------
 ===========================================================================================================
-Functionality: View the coverage of course(s) current user is assigned to.
-Route: '/api/view-courses/:id' --example id: 43-8530
+IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
+
+Functionality: View the coverage of course(s) current instructor is assigned to.
+Route: /api/instructor/view-course-coverage/:course 
+Parameters: name is the name of the course that the instructor teaches and that we want to get the course coverage of
+Example of how to call the route: /api/instructor/view-course-coverage/CSEN605: DSD
 Request type: GET
-Response: JSON file The courses assigned to a user academic.
+Response: The course coverage of a specific course that the instructor teaches
 Response Example:
-{
-"Courses":
-[
-"ABC123",
-"XYZ567"
-]
-}
+Course coverage of this course is 0%
 
 ---
 

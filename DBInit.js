@@ -12,6 +12,85 @@ const slot = require('./models/slot.js')
 const staffMembers = require('./models/staffMembers.js');
 const { Server, ObjectId } = require('mongodb');
 
+router.route('/courseInstructor')
+//DB initialization
+.post(async(req,res)=>{
+    //Ali's initiallization data
+    const salt = await bcrypt.genSalt(12);
+    const pass = await bcrypt.hash('12345', salt);
+    const instructor=new staffMembers ({
+        email: 'soubra@guc.com',
+        password: pass,
+        id: 'ac-10272', // Generated using uuidv4
+        name: 'Hassan Soubra',
+        gender:'Male',
+        type: 'academic', // can either be HR or academic
+        subType:'lecturer',
+        office: 'C7-219',
+        dayOff: 'Sataurday',
+        facultyName: 'MET', //null for HR
+        departmentName: 'CSEN', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 400,
+        accidentalLeavesLeft: 2,
+        Salary: 1000000,
+        firstLogin: false
+    })
+    await instructor.save();
+    
+    const newCourse = new course(
+        {
+            courseName: 'CSEN605: DSD',
+            instructors: [], //array stores ids of instructors teaching this course
+            teachingAssistants: [], //array stores ids of teaching assitants of this course
+            coordinator: null, // id of the Coordinator of this course
+            teachingSlots: [], //array that stores all the slots of the course (whether or not they have been assigned to staff members)
+            unassignedSlots: 2, //used to calculate the course coverage
+        }
+    )
+    await newCourse.save();
+    await staffMembers.findOneAndUpdate({_id :
+        instructor._id},  { $push: {  courses: newCourse._id}}, {new: true});
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  instructors: instructor._id}}, {new: true});
+    const loc = new location(
+        {
+            roomNr: 'H20',
+            roomType: 'lecture hall', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    await loc.save();
+    const slot1=new slot(
+        {
+            startTime: new Date("2020-12-20T12:10:00"), //start time of slot
+            endTime: new Date("2020-12-20T12:11:30"), // end time of slot
+            courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
+            slotLocation: loc._id, //ex. H14, C7.301
+        }
+    );
+    slot1.save();
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingSlots: slot1._id}}, {new: true});
+    const slot2=new slot(
+        {
+            startTime: new Date("2020-12-20T12:08:00"), //start time of slot
+            endTime: new Date("2020-12-20T12:09:30"), // end time of slot
+            courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
+            slotLocation: loc._id, //ex. H14, C7.301
+        }
+    );
+    slot2.save();
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingSlots: slot2._id}}, {new: true});
+    res.send("Data inserted successfuly");
+    
+})
+
 router.route('/academic-coordinator')
 //DB initialization
 .post(async(req,res)=>{
