@@ -776,7 +776,7 @@ router.post('/addStaffMember',[
     const annualLeaves = req.body.annualLeaves
     const accidentalLeavesLeft = req.body.accidentalLeavesLeft
     const Salary = req.body.Salary
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const password = await bcrypt.hash("123456", salt);
     req.body.password = password
 
