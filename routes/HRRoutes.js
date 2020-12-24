@@ -787,11 +787,11 @@ router.post('/addStaffMember',[
         }
     })
     if(departmentName)
-    await departmentModel.findOne({departmentName:departmentName},async (error,results)=>{
-        if(error){
-            res.status(400).send("Cannot find department") 
-        }
-    })
+
+    const depart =await departmentModel.findOne({departmentName:departmentName});
+    if (depart == null ){
+        res.status(400).send("Cannot find department") 
+    }
     locationModel.findOne({roomNr:office},async (error,results)=>{
     if(error){
         res.status(500).send("Cannot find office") 
@@ -827,7 +827,6 @@ router.post('/addStaffMember',[
             annualLeaves:annualLeaves,
             accidentalLeavesLeft:accidentalLeavesLeft,
             Salary:Salary,
-            subType:subType,
             facultyName:facultyName, password:password,firstLogin:true});
    await staff.save((err) => {
       if (err) 
@@ -842,8 +841,11 @@ router.post('/addStaffMember',[
         const idNum = parseInt(acMax.id.split('-')[1])+1
         id ='ac-'+idNum;
         }
-
-
+        let hodFlag = false
+        if(subType == "hod"){
+            subType = 'instructor'
+            hodFlag = true
+        }
         const staff = new staffModel({email:email,id:id,
             name:name,type:type, office:office,dayOff:dayOff,
             departmentName:departmentName,
@@ -855,9 +857,16 @@ router.post('/addStaffMember',[
        await staff.save((err) => {
           if (err) 
                 res.status(500).send(err);
-          res.send("Successfully added staff Member")
-
             });
+            if(hodFlag)
+            const sta =await  staffModel.findOne({id:id})
+            await departmentModel.findOneAndUpdate({departmentName:depart.departmentName},{HOD_id:sta._id},(er,uD)=>{
+                if(er)
+                res.status(500).send(e)
+                })
+                
+            res.send("Successfully added staff Member")
+
         }
     }
     else{   
@@ -937,11 +946,14 @@ router.post('/editStaffMember',[
         else{
             if(type =='HR'||(staffMember.type =='HR'&&type!='academic'))
             {
+                if(req.body.subType)
+                    delete req.body.subType
+
                 if(dayOff!="Saturday"){            
                     res.status(422).send("HR dayoff must be Saturday")
                 }
                 else{
-         await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err2,docs2) => {
+            await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err2,docs2) => {
               if (err2) 
                     res.status(500).send(err2);
               else
@@ -949,6 +961,32 @@ router.post('/editStaffMember',[
                 });
             }}
             else { //not HR
+                if(req.body.subType == "hod"){
+                    req.body.subType = 'instructor'           
+                     const sta =await  staffModel.findOne({id:id})
+                    if(req.body.departmentName){
+                       await departmentModel.findOneAndUpdate({HOD_id:sta._id},{HOD_id:null},(er,uD)=>{
+                     if(er)
+                     res.status(500).send(e)
+                     })
+                        await departmentModel.findOneAndUpdate({departmentName:req.body.departmentName},{HOD_id:sta._id},(er,uD)=>{
+                     if(er)
+                     res.status(500).send(e)
+                     })
+                }
+                else
+                departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:sta._id},(er,uD)=>{
+                    if(er)
+                    res.status(500).send(e)
+                    })
+                }  
+                else if(req.body.subType == "instructor"||req.body.subType == "ta")
+                departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:null},(er,uD)=>{
+                    if(er)
+                    res.status(500).send(e)
+                    })
+        
+                                
                 await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err1,docs1) => {
                     if (err) 
                           res.status(500).send(err1);
@@ -970,6 +1008,9 @@ router.post('/editStaffMember',[
 }
     if(type =='HR'||(staffMember.type =='HR'&&type!='academic'))
     {
+        if(req.body.subType)
+            delete req.body.subType
+        
         if(dayOff!="Saturday"){            
             res.status(422).send("HR dayoff must be Saturday")
         }
@@ -982,6 +1023,31 @@ router.post('/editStaffMember',[
         });
     }}
     else { //not HR
+        if(req.body.subType == "hod"){
+            req.body.subType = 'instructor'           
+             const sta =await  staffModel.findOne({id:id})
+            if(req.body.departmentName){
+               await departmentModel.findOneAndUpdate({HOD_id:sta._id},{HOD_id:null},(er,uD)=>{
+             if(er)
+             res.status(500).send(e)
+             })
+                await departmentModel.findOneAndUpdate({departmentName:req.body.departmentName},{HOD_id:sta._id},(er,uD)=>{
+             if(er)
+             res.status(500).send(e)
+             })
+        }
+        else
+        departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:sta._id},(er,uD)=>{
+            if(er)
+            res.status(500).send(e)
+            })
+        }  
+        else if(req.body.subType == "instructor"||req.body.subType == "ta")
+        departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:null},(er,uD)=>{
+            if(er)
+            res.status(500).send(e)
+            })
+
         await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err1,docs1) => {
             if (err) 
                   res.sendStatus(500).send(err1);
