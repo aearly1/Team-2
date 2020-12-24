@@ -56,8 +56,8 @@ router.route('/schedule')
    router.route('/replacementRequest')
     .post([
         body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")],
-        [body('recieverID').isString().isLength(24).withMessage("recieverID must be a string of length 24")
-          ], [body('dateOfRequest').isString().withMessage("dateOfRequest must be a string")
+        [body('sendingRequestTo').isString().withMessage("recieverID must be a string")
+          ], [body('dayForWhichINeedAReplacement').isString().withMessage("dateOfRequest must be a string")
         ],async(req,res)=>
     {
         const errors = validationResult(req);
@@ -66,17 +66,16 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const senderID=payload.objectId;
-        const recieverID=req.body.recieverID;//get id of reciever from request body
+        const senderID=req.user.objectId;
+        const sendingRequestTo=req.body.sendingRequestTo;//get id of reciever from request body
         const slotID=req.body.slotID;
-        const dateOfRequest=req.body.dateOfRequest;
+        const dayForWhichINeedAReplacement=req.body.dayForWhichINeedAReplacement;
         try{
         //get sender object
         const senderObject= await staffMembers.findOne({_id:senderID});
         //get reciever object
-        const recieverObject= await staffMembers.findOne({_id:ObjectId(recieverID)});
+        const recieverObject= await staffMembers.findOne({name:sendingRequestTo});
         //get slot object
         const slotObject= await slot.findOne({_id:ObjectId(slotID)});
         if(recieverObject!=null)//check if users exist
@@ -87,7 +86,7 @@ router.route('/schedule')
             res.status(401).send("User is not an academic staff member")
             }
             //check if they are in the same department
-            else if(senderObject.facultyName!=recieverObject.facultyName)
+            else if(senderObject.departmentName!=recieverObject.departmentName)
             {
                 res.status(404).send("This staff member is not in the same department as you. Therefore, you can't send this replacement request")
             }
@@ -104,7 +103,6 @@ router.route('/schedule')
                 var sameCourse=false;
                 for (const element of recieverObject.courses) {
                     var courseObject= await course.findOne({_id:element});
-                    console.log(courseObject._id+" "+slotObject.courseTaughtInSlot)
                         sameCourse=courseObject._id.equals(slotObject.courseTaughtInSlot)?true:sameCourse;
                    }
                
@@ -119,22 +117,40 @@ router.route('/schedule')
                     const newRequest= new request(
                     {
                         senderID: senderID, //id of the staff member sending the request
-                        recieverID: ObjectId(recieverID), //id of the staff member recieving the request
+                        recieverID: recieverObject._id, //id of the staff member recieving the request
                         requestType: "replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
                         status: "pending", //the value of status can either be accepted or rejected or pending
                         replacementSlot: ObjectId(slotID),
-                        startOfLeave: dateOfRequest,
-                        endOfLeave: dateOfRequest
+                        startOfLeave: dayForWhichINeedAReplacement,
+                        endOfLeave: dayForWhichINeedAReplacement
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
                         senderID},  { $push: { courses: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
-                        ObjectId(recieverID)},  { $push: { receivedRequests: newRequest._id }}, {new: true});
+                        recieverObject._id},  { $push: { receivedRequests: newRequest._id }}, {new: true});
                 
                    //save request in DB
                    const result = await newRequest.save();
-                   res.send(result);
+                   const loc=await location.findOne({_id:slotObject.slotLocation});
+                   const slot = 
+                   {
+                    "startTime": slotObject.startTime,
+                    "endTime": slotObject.endTime,
+                    "course taught in slot": courseObject.courseName,
+                    "staff member teaching slot": senderObject.name,
+                    "slotLocation": loc.roomNr
+                    }
+                   const output=
+                   {
+                    "Request sent by": senderObject.name,
+                    "Request sent to": recieverObject.name,
+                    "Type of request": "Replacement request",
+                    "Status": "Pending",
+                    "Slot to be replaced": slot,
+                    "Date of replacement": "2021-12-20T10:10:00.000Z"
+                   }
+                   res.send(output);
                 }
            }
         }
@@ -151,9 +167,8 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
         {
@@ -165,12 +180,24 @@ router.route('/schedule')
             var requestObject= await request.findOne({_id:element});
                 var U = await staffMembers.findOne({_id: requestObject.senderID})
                 var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                console.log(requestObject.replacementSlot)
+                const courseObject=await course.findOne({_id:sloty.courseTaughtInSlot});
+                const loc=await location.findOne({_id:sloty.slotLocation});
+                const staff=await staffMembers.findOne({_id:sloty.staffTeachingSlot});
+                   const S = 
+                   {
+                    "startTime": sloty.startTime,
+                    "endTime": sloty.endTime,
+                    "course taught in slot": courseObject.courseName,
+                    "staff member teaching slot": staff.name,
+                    "slotLocation": loc.roomNr
+                    }
                 var requestDisplayed=
                 {
                     "request sent by": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
-                    "replacementSlot": sloty,
+                    "replacementSlot": S,
                 }
                 if(requestObject.requestType=="replacement")array.push(requestDisplayed);
             
@@ -189,11 +216,12 @@ router.route('/schedule')
         }
         var ObjectId = require('mongodb').ObjectId; 
 
-        const userID=req.body.userID; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
+        const userID=req.user.objectId; //get id of user sending the slot linking request from request body (TO BE CHANGED TO TOKEN)
         const requestID=req.body.requestID;// id of request that you want to accept
-
         //get user
         const user= await staffMembers.findOne({_id:userID});
+        console.log(user)
+
         //get request
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
         //check that user is not HR
@@ -217,6 +245,11 @@ router.route('/schedule')
         {
             res.status(401).send("You can only accept pending requests")
         }
+        const d = new Date();
+        if(d>newRequest.startOfLeave)
+        {
+            res.status(401).send("The date inside the request has already passed. Cannot accept an outdated request.")
+        }
         //passed all these checks then accept request
         try
         {
@@ -239,9 +272,8 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;        
+        const userID=req.user.objectId;        
         const requestID=req.body.requestID;// id of request that you want to reject
 
         //get user
@@ -291,9 +323,8 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;        
+        const userID=req.user.objectId;        
         const slotID=req.body.slotID;// id of slot that you want to teach
         const dateOfRequest=req.body.dateOfRequest;
         try
@@ -331,7 +362,25 @@ router.route('/schedule')
         newRequest.save();
         await staffMembers.findOneAndUpdate({_id :userID}, { $push: { sentRequests: newRequest._id }}, {new: true});
         await staffMembers.findOneAndUpdate({_id :slotCourse.coordinator}, { $push: { receivedRequests: newRequest._id }}, {new: true});
-        res.send(newRequest);
+        const reciever= await staffMembers.find({_id:newRequest.recieverID})  ;
+        const sloty= await slot.findOne({_id:newRequest.replacementSlot});
+        const loc=await location.findOne({_id:sloty.slotLocation});
+        const S = 
+         {
+          "startTime": sloty.startTime,
+          "endTime": sloty.endTime,
+          "course taught in slot": slotCourse.courseName,
+          "slotLocation": loc.roomNr
+          }
+        const output=
+        {
+            "Request sent by": user.name,
+            "Request sent to": reciever.name,
+            "requestType": "slot linking",
+            "status": "pending",
+            "replacementSlot": S,
+        }
+        res.send(output);
         }
         }
         catch(err)
@@ -342,10 +391,10 @@ router.route('/schedule')
     router.route('/changeDayOffRequest')
     .post(  [
                 body('reasonForChange').isString().optional().withMessage("reasonForChange must be a string")
-            ]/*,
+            ],
             [
-                body('desiredDayOff').isString().isLength(24).withMessage("desiredDayOff must be a string")
-            ]*/,
+                body('desiredDayOff').isString().withMessage("desiredDayOff must be a string")
+            ],
                   async(req,res)=>
     {
         const errors = validationResult(req);
@@ -354,9 +403,7 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
-
-        const userID=payload.objectId;        
+        const userID= req.user.objectId;
         const reasonForChange=req.body.reasonForChange;// this is optional
         const desiredDayOff= req.body.desiredDayOff;
 
@@ -412,7 +459,17 @@ router.route('/schedule')
         newRequest.save();
         await staffMembers.findOneAndUpdate({_id:userID}, { $push: { sentRequests: newRequest._id }}, {new: true});
         await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: newRequest._id }}, {new: true});
-        res.send(newRequest);
+       const HOD = await staffMembers.findOne({_id :departmentObj.HOD_id});
+        const result=
+        {
+            "Sent by": user.name,
+            "Recieved by": HOD.name + " (HOD)",
+            "requestType": "change day off",
+            "status": "pending",
+            "DesiredDayOff": "SAT",
+            "requestReason": newRequest.requestReason
+        }
+        res.send(result);
     }
         }
         catch(err)
@@ -430,9 +487,9 @@ router.route('/schedule')
     ],[
         body('replacementStaff').isString().optional().withMessage("replacementStaff must be a string")
     ],[
-        body('startLeave').isString().withMessage("startLeave must be a string")
+        body('startOfLeave').isString().withMessage("startLeave must be a string")
     ],[
-        body('endLeave').isString().withMessage("endLeave must be a string")
+        body('endOfLeave').isString().withMessage("endLeave must be a string")
     ],async(req,res)=>
     {
         const errors = validationResult(req);
@@ -441,9 +498,8 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const sndrID=payload.objectId;        
+        const sndrID=req.user.objectId;        
         const documents=req.body.documents;
         const reason= req.body.reason;
         const leaveType= req.body.leaveType;
@@ -516,7 +572,19 @@ router.route('/schedule')
                 leave._id});
                 await staffMembers.findOneAndUpdate({_id :sndrID}, { $push: { sentRequests: leave._id }}, {new: true});
                 await staffMembers.findOneAndUpdate({_id :departmentObj.HOD_id}, { $push: { receivedRequests: leave._id }}, {new: true});
-                res.send(resulto);
+                const HOD = await staffMembers.findOne({_id :departmentObj.HOD_id});
+                const output =
+                {
+                    "Leave request sent by": user.name,
+                    "Leave request sent to": HOD.name + " (HOD)",
+                    status: "pending",
+                    replacementStaffName: replacementStaff,
+                    relaventLeaveDocuments: documents,
+                    requestReason: reason,
+                    startOfLeave: startLeave,
+                    endOfLeave: endLeave
+                }
+                res.send(output);
             }
         }
         catch(err)
@@ -528,9 +596,8 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         try{
             let userObject = await staffMembers.findOne({_id:userID})
         if(userObject.type=="HR")
@@ -540,6 +607,7 @@ router.route('/schedule')
         const requetsSent = userObject.sentRequests;
 
         let array=[];
+        console.log(requetsSent)
         if(requetsSent!=null)
          for (const element of requetsSent) {
             var requestObject= await request.findOne({_id:element});
@@ -563,9 +631,8 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         try
         {
             let userObject = await staffMembers.findOne({_id:userID})
@@ -599,9 +666,8 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
 
         try{
             let userObject = await staffMembers.findOne({_id:userID})
@@ -635,9 +701,8 @@ router.route('/schedule')
     .get(async(req,res)=>
     {
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         try
         {
             let userObject = await staffMembers.findOne({_id:userID})
@@ -668,7 +733,7 @@ router.route('/schedule')
         }
     })
     router.route('/cancleRequest')
-    .get([
+    .post([
         body('requestID').isString().isLength(24).withMessage("requestID must be a string of length 24")
     ], async(req,res)=>
     {
@@ -678,9 +743,8 @@ router.route('/schedule')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-        const payload = jwt.verify(req.header('auth-token'),key);
 
-        const userID=payload.objectId;
+        const userID=req.user.objectId;
         const requestID=req.body.requestID;// id of the request that we want to cancel
         const currentDate = new Date();
         try

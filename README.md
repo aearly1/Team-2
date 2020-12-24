@@ -7,6 +7,8 @@ The server is listening to port 3000.
 3. Write npmrun dev in the terminal to run the server
 4. Paste your mongoDB cnnection string in the config/default.json to connect to your database
 5. Run the route /api/init to seed the database
+6. IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
+7. IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
 =================================================================================
 -----------------------------------staffRoutes-----------------------------------
 =================================================================================
@@ -204,6 +206,7 @@ Example: -8 Hours -22 Mins
 =================================================================================
 ---------------------------courseCoordinatorRoutes-------------------------------
 =================================================================================
+IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
 
 Functionality: View "slot linking" request(s) from academic members linked to his/her course.
 Route: /api/coordinator/slotLinkingRequest
@@ -244,7 +247,7 @@ Example: "accepted" OR "Rejected because you are already teaching a slt during t
 NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
 "requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the course coordinator wants to accept/reject.
 
-THE REQUESTID WILL DIFFER EVERYTIME YOU SEE THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUEST ID.
+THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUEST ID.
 ---------------------------------------------------------------------------------
 
 Functionality: Add course slot(s) in his/her course
@@ -295,7 +298,7 @@ Example:
 NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
 "slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the course coordinator wants to update.
 
-THE SLOTID WILL DIFFER EVERYTIME YOU SEE THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BELONGING TO THE EMBEDDED SYSTEMS COURSE.
+THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BELONGING TO THE EMBEDDED SYSTEMS COURSE.
 ---------------------------------------------------------------------------------
 
 Functionality: Delete course slot(s) in his/her course.
@@ -308,14 +311,15 @@ Request Body: {
 Response: statement idicating that slot has been successfully deleted
 Example: "Successfully deleted slot"
 
-NOTEs:
-"courseID" is the object ID assigned by mongoose when the course object was created and placed in the course collection. It represents the course that the user is supposedly the coordinator of.
+NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
+"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the course coordinator wants to delete.
 
-"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the course coordinator wants to update.
+THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BELONGING TO THE EMBEDDED SYSTEMS COURSE.
 
 =================================================================================
 -----------------------------academicMemberRoutes--------------------------------
 =================================================================================
+IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
 
 Functionality: Academic member views their own schedule, seeing their teaching activities and replacements (if present).
 Route: /api/academicMember/schedule
@@ -324,19 +328,10 @@ Response: Array containing JSON objects representing the slots.
 Example:
 [
     {
-        "startTime": "2012-01-01T22:00:00.000Z",
-        "endTime": "2012-01-01T22:00:00.000Z",
-        "staffTeachingSlot": "Shaka Zulu",
-        "courseTaughtInSlot": CSEN701: Embedded Systems,
+        "startTime": "2020-12-20T10:10:00.000Z",
+        "endTime": "2020-12-20T10:11:30.000Z",
+        "staffTeachingSlot": "Shaka",
         "slotLocation": "H14",
-        "replacementStaff": "NA"
-    },
-    {
-        "startTime": "2012-01-01T22:00:00.000Z",
-        "endTime": "2012-01-01T22:00:00.000Z",
-        "staffTeachingSlot": "Shaka Zulu",
-        "courseTaughtInSlot": CSEN701: Embedded Systems
-        "slotLocation": "H19",
         "replacementStaff": "NA"
     }
 ]
@@ -348,27 +343,31 @@ Route: /api/academicMember/replacementRequest
 Request type: POST
 Request Body: 
 {
-    "recieverID": "5fdde841c77a572248510f5c",
-    "slotID": "5fdfc265685d492a48fbd303"
+    "sendingRequestTo": "Ali",
+    "slotID": "5fe492c9783a150ac4c7d873",
+    "dayForWhichINeedAReplacement": "2021-12-20T10:10:00.000Z"
 }
 Response: Returns a mongoose record representing the newly created request.
 Example:
 {
-    "_id": "5fdfcf033bfc780d309539d1",
-    "senderID": "5fdf4d1574d9742bd8705f42",
-    "recieverID": "5fdde841c77a572248510f5c",
-    "requestType": "replacement",
-    "status": "pending",
-    "replacementSlot": "5fdfc265685d492a48fbd303",
-    "__v": 0
+    "Request sent by": "Shaka",
+    "Request sent to": "Ali",
+    "Type of request": "Replacement request",
+    "Status": "Pending",
+    "Slot to be replaced": {
+        "startTime": "2020-12-20T10:10:00.000Z",
+        "endTime": "2020-12-20T10:11:30.000Z",
+        "course taught in slot": "CSEN701: Embedded Systems",
+        "staff member teaching slot": "Shaka",
+        "slotLocation": "H14"
+    },
+    "Date of replacement": "2021-12-20T10:10:00.000Z"
 }
 
-NOTES:
-In order to replace a staff member for the ENTIRE day and not just a single slot, you will call this route for EVERY single slot of the day. 
+NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!): 
+"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the academic member wants to find a replacement for
 
-"recieverID" is the object ID assigned by mongoose when the staff member object was created and placed in the staff member collection. It represents the staff member that the raplacement request is being sent to.
-
-"slotID" and "replacementSlot" are the object ID assigned by mongoose when the slot object was created and placed in the slot collection. They represent the object id of the slot that te academic member is trying to find a replacement for.
+THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BEING TAUGHT BY TA SHAKA.
 
 ---------------------------------------------------------------------------------
 
@@ -376,19 +375,18 @@ Functionality: View "replacement" request(s) sent to me from other academic staf
 Route: /api/academicMember/replacementRequest
 Request type: GET
 Response: An array of JSON objects representing the replacement requests sent from other academic staff members
-Example: [
+Example:
+[
     {
-        "request sent by": "Shaka zulu",
+        "request sent by": "Ali",
         "requestType": "replacement",
         "status": "pending",
         "replacementSlot": {
-            "_id": "5fdfc265685d492a48fbd303",
-            "startTime": "2020-12-20T12:08:15.000Z",
-            "endTime": "2020-12-20T12:10:45.000Z",
-            "courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-            "slotLocation": "5fde596463f84924107476f0",
-            "__v": 0,
-            "staffTeachingSlot": "5fdf4d1574d9742bd8705f42"
+            "startTime": "2020-12-20T10:10:00.000Z",
+            "endTime": "2020-12-20T10:11:30.000Z",
+            "course taught in slot": "CSEN701: Embedded Systems",
+            "staff member teaching slot": "Ali",
+            "slotLocation": "H14"
         }
     }
 ]
@@ -400,28 +398,26 @@ Route: /api/academicMember/acceptReplacementRequest
 Request type: POST
 Request Body: 
 {
-	"requestID": "5fdde841c77a572248510f5"
+	"requestID": "5fe4a640f667a61d54ccc13f"
 }
 Response: Statement indicating the acceptance of the replacement request
 Example: "Accepted"
 
 NOTE:
-"requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the academic staff member wants to accept
-
+THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUESTID OF ONE OF REQUESTS SENT TO TA SHAKA BY TA ALI.
 ---------------------------------------------------------------------------------
 
 Functionality: Reject a replacement request sent from another academic staff member
 Route: /api/academicMember/rejectReplacementRequest
 Request type: POST
-Request Body: 
 {
-	"requestID": "5fdde841c77a572248510f5"
+	"requestID": "5fe4a640f667a61d54ccc13f"
 }
 Response: Statement indicating the rejection of the replacement request
 Example: "Rejected"
 
 NOTE:
-"requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the academic staff member wants to reject
+THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUESTID OF ONE OF REQUESTS SENT TO TA SHAKA BY TA ALI.
 
 ---------------------------------------------------------------------------------
 
@@ -430,28 +426,26 @@ Route: /api/academicMember/slotLinkingRequest
 Request type: POST
 Request body: 
 {
-    "slotID":"5fdee7aac500ee0f14d630a7"
+    "slotID":"5fe4a63ff667a61d54ccc13a"
 }
 Response: Returns the newly created replacement object
 Example:
 {
-    "_id": "5fdfad3a55a35f11bca370ca",
-    "senderID": "5fdde841c77a572248510f5c",
-    "recieverID": "5fdf4d1574d9742bd8705f42",
+    "Request sent by": "Shaka",
     "requestType": "slot linking",
     "status": "pending",
-    "replacementSlot": "5fdee7aac500ee0f14d630a7",
-    "__v": 0
+    "replacementSlot": {
+        "startTime": "2020-12-20T10:08:15.000Z",
+        "endTime": "2020-12-20T10:09:45.000Z",
+        "course taught in slot": "CSEN701: Embedded Systems",
+        "slotLocation": "H14"
+    }
 }
 
 NOTES:
 "slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that te academic member desires to teach/link to.
     
-"senderID" is the object ID assigned by mongoose when the staff member object was created and placed in the staff member collection. It represents the object id of the academic member sending the slot linking request.
-
-"recieverID" is the object ID assigned by mongoose when the staff member object was created and placed in the staff member collection. It represents the object id of the course coordinator who recieves all the slot linking requests of his course.
-
-"replacementSlot" is the object ID assigned by mongoose when the slot  was created and placed in the slot collection. It represents the object id of the slot that the academic member desires to teach/link to (IT IS THE SAME AS THE SLOTID THAT WAS PLACED IN THE REQUEST.BODY)
+THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF A SLOT DOESNT HAVE A TA TEACHING IN IT.
 
 ---------------------------------------------------------------------------------
 
@@ -461,20 +455,18 @@ Route: /api/academicMember/changeDayOffRequest
 Request type: POST
 Request body:
 {
-    "reasonForChange":"I am bored",
+    "reasonForChange":"I love eating chocolate cake on Sataurday and I can't eat chocolate cake at uni",
     "desiredDayOff":"SAT"
 }
 Response: Returns the newly created "change day off" request object
 Example:
 {
-    "_id": "5fdfd1e9d7f78907087d213b",
-    "senderID": "5fdde841c77a572248510f5c",
-    "recieverID": "5fdde841c77a572248510f5c",
+    "Sent by": "Shaka",
+    "Recieved by": "Slim (HOD)",
     "requestType": "change day off",
     "status": "pending",
     "DesiredDayOff": "SAT",
-    "requestReason": "I am bored",
-    "__v": 0
+    "requestReason": "I love eating chocolate cake on Sataurday and I can't eat chocolate cake at uni"
 }
 
 ---------------------------------------------------------------------------------
@@ -484,28 +476,24 @@ Route: /api/academicMember/leave
 Request type: POST
 Request body:
 {
-    "sndrID":"5fdde841c77a572248510f5c",
-    "documents":"These are my documents that have to be submitted with the leave. Here are the blood test results and the xrays to prove that I was indeed sick.",
-    "reason":"And this is my reason",
+    "documents":"https://drive.google.com/file/d/1soJJpBRjlzuVOs8GsGv5lbeLUP3k6MwK/view?usp=sharing",
+    "reason":"Was very very sick and I thought that I was going to die",
     "leaveType":"sick leave",
-    "replacementStaff":"Loaa ElZahar",
+    "replacementStaff":"Loaa Zahar",
     "startOfLeave":"01.02.2012",
     "endOfLeave":"01.05.2012"
 }
 Response: Returns the newly created "leave" request object
 Example:
 {
-    "_id": "5fdfd9d313745c1b44740013",
-    "senderID": "5fdde841c77a572248510f5c",
-    "recieverID": "5fdde841c77a572248510f5c",
-    "requestType": "maternity leave",
+    "Leave request sent by": "Shaka",
+    "Leave request sent to": "Slim (HOD)",
     "status": "pending",
-    "startOfLeave": "2012-01-01T22:00:00.000Z",
-    "endOfLeave": "2012-01-04T22:00:00.000Z",
-    "__v": 0,
-    "replacementStaffName": "sddd",
-    "requestReason": "And this is my reason",
-    "relaventLeaveDocuments": "frhhhhhhhhiedqaawsdefr"
+    "replacementStaffName": "Loaa Zahar",
+    "relaventLeaveDocuments": "https://drive.google.com/file/d/1soJJpBRjlzuVOs8GsGv5lbeLUP3k6MwK/view?usp=sharing",
+    "requestReason": "Was very very sick and I thought that I was going to die",
+    "startOfLeave": "01.02.2012",
+    "endOfLeave": "01.05.2012"
 }
 ---------------------------------------------------------------------------------
 
@@ -516,74 +504,24 @@ Response: Array of JSON Objects representing the submitted requests
 Example:
 [
     {
-        "request sent to": "Shaka",
+        "request sent to": "Ali",
         "requestType": "slot linking",
+        "status": "pending"
+    },
+    {
+        "request sent to": "Ali",
+        "requestType": "replacement",
+        "status": "pending"
+    },
+    {
+        "request sent to": "Slim",
+        "requestType": "change day off",
+        "status": "rejected"
+    },
+    {
+        "request sent to": "Slim",
+        "requestType": "change day off",
         "status": "accepted"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "slot linking",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "rejected"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "accepted"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "rejected"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "compensation leave",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "maternity leave",
-        "status": "pending"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
-        "status": "rejected"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
-        "status": "pending"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
-        "status": "pending"
     }
 ]
 
@@ -596,13 +534,8 @@ Response: Array of JSON Objects representing the accepted submitted requests
 Example:
 [
     {
-        "request sent to": "Shaka Zulu",
-        "requestType": "slot linking",
-        "status": "accepted"
-    },
-    {
-        "request sent to": "Shaka Zulu",
-        "requestType": "slot linking",
+        "request sent to": "Slim",
+        "requestType": "change day off",
         "status": "accepted"
     }
 ]
@@ -616,8 +549,8 @@ Response: Array of JSON Objects representing the rejected submitted requests
 Example:
 [
     {
-        "request sent to": "Shaka",
-        "requestType": "slot linking",
+        "request sent to": "Slim",
+        "requestType": "change day off",
         "status": "rejected"
     }
 ]
@@ -631,73 +564,13 @@ Response: Array of JSON Objects representing the pending submitted requests
 Example: 
 [
     {
-        "request sent to": "Shaka",
+        "request sent to": "Ali",
         "requestType": "slot linking",
         "status": "pending"
     },
     {
-        "request sent to": "Shaka",
-        "requestType": "slot linking",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "change day off",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "compensation leave",
-        "status": "pending"
-    },
-    {
-        "request sent to": "Shaka",
-        "requestType": "maternity leave",
-        "status": "pending"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
-        "status": "rejected"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
-        "status": "pending"
-    },
-    {
-        "request sent to": "zulu",
-        "requestType": "slot linking",
+        "request sent to": "Ali",
+        "requestType": "replacement",
         "status": "pending"
     }
 ]
