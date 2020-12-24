@@ -254,7 +254,7 @@ router.route('/Ali')
     res.send("Data inserted successfuly");
     
 })
-router.get('/staffMems',async(req,res)=>{
+router.post('/staffMems',async(req,res)=>{
     const salt = await bcrypt.genSalt(12)
     const hashedPassword =await bcrypt.hash("passwordsha2y",salt) 
         const mem = new staffMembers({
