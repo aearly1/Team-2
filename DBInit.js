@@ -300,7 +300,7 @@ router.get('/hod-init', async (req,res)=>{
             "type": "academic",
             "subType": "instructor",
             "courses": [], 
-            "dayOff": "Saturday",
+            "dayOff": "SAT",
             "annualLeaves": 20,
             "accidentalLevesLeft": 4,
             "Salary": 50000,
@@ -318,7 +318,7 @@ router.get('/hod-init', async (req,res)=>{
             "type": "academic",
             "subType": "instructor",
             "courses": [], 
-            "dayOff": "Saturday",
+            "dayOff": "SAT",
             "annualLeaves": 16,
             "accidentalLevesLeft": 1,
             "Salary": 18000,
@@ -335,7 +335,7 @@ router.get('/hod-init', async (req,res)=>{
             "type": "academic",
             "subType": "instructor",
             "courses": [],
-            "dayOff": "Wednesday",
+            "dayOff": "TUE",
             "annualLeaves": 15,
             "accidentalLevesLeft": 2,
             "Salary": 15000,
@@ -343,9 +343,29 @@ router.get('/hod-init', async (req,res)=>{
         })
         await milad.save();
         
+        hashedPassword =await bcrypt.hash("AhmedAhmed",salt)
+        let ahmed = new staffMembers({
+            id: "ac-4",
+            name: "Ahmed Hesham",
+            email: "AHesham@gmail.com",
+            password: hashedPassword,
+            "type": "academic",
+            "subType": "ta",
+            "courses": [],
+            "dayOff": "MON",
+            "annualLeaves": 13,
+            "accidentalLevesLeft": 1,
+            "Salary": 8000,
+            "firstLogin": false
+        })
+        await ahmed.save();
+        
+
         //MAKE A COURSE 
+        ahmed1 = await staffMembers.findOne({"name": "Ahmed Hesham"})
         let course1 = new course({
-            courseName: "CSEN 701 - Embedded Systems", });
+            courseName: "CSEN 701 - Embedded Systems",
+            teachingAssistants : [ObjectId(ahmed1._id)]  });
         await course1.save();
         
         //MAKE A DEPARTMENT
@@ -455,9 +475,14 @@ router.get('/hod-init', async (req,res)=>{
 
         //UPDATE MILAD
         await staffMembers.updateOne({"name":"Milad Ghantous"},{
-            "dayOff": "Thursday" , 
             "facultyName": faculty11.facultyName,
             "departmentName": department11.departmentName
+        });
+        
+        await staffMembers.updateOne({"name":"Ahmed Hesham"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName,
+            courses: [course5.courseName]
         });
 
         res.status(200).send("DB seeded successfully!")

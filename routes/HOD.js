@@ -39,7 +39,7 @@ router.post("/assign-instr-course",
         //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "id": req.body.instructorId});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName, "subType":"instructor" , "id": req.body.instructorId});
 
             if(instr){//check instructor under department
                 course1 = await courseModel.findOne({courseName: req.body.courseName});
@@ -79,7 +79,7 @@ router.post("/assign-instr-course",
                 }
             }
             else{
-                res.status(400).send("Error : Staff member is not under this department or does not exist.")
+                res.status(400).send("Error : Staff member is not under this department, is not an instructor, or does not exist.")
             }
         }
         else{
@@ -153,7 +153,7 @@ router.delete("/del-instr-course",[
                 }       
             }
             else{
-                res.status(400).send("Error : Staff member is not under this department or does not exist.")
+                res.status(400).send("Error : Staff member is not under this department, is not an instructor, or does not exist.")
             }
         }
         else{
@@ -216,7 +216,7 @@ router.post("/update-instr-course",[
                             "courses" : coursesArray
                         })
                         
-                        res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly).");   
+                        res.status(200).send("HOD user: "+currentUser.name+" made change ==> instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly).");   
                     } 
                     else{
                         res.status(400).send("Error : Course is not under this department.")
@@ -227,7 +227,7 @@ router.post("/update-instr-course",[
                 }
             }
             else{
-                res.status(400).send("Error : Staff member is not under this department or does not exist.")
+                res.status(400).send("Error : Staff member is not under this department, is not an instructor, or does not exist.")
             }
           }
         else{

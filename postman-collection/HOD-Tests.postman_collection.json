@@ -1,0 +1,489 @@
+{
+	"info": {
+		"_postman_id": "829e2567-838b-4d74-853e-0a8d3dcb5f54",
+		"name": "ACL-Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Seed DB",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/init/hod-init",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"init",
+						"hod-init"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "auth-key",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiZjNkNDE1Y2UtZTU5ZS00ZDE2LTg3NGItMDk3YmZjODQzM2FlIiwiZW1haWwiOiJTbGltQGdtYWlsLmNvbSIsImZpcnN0TG9naW4iOnRydWV9LCJpYXQiOjE2MDg0MTc3MTIsImV4cCI6MTYwODc3NzcxMn0.VbhdfN-IMdKi37WBuEAgB7EOxRuUNrJ52S7HiO2PLWU",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"email\": \"Slim@gmail.com\",\n\"password\": \"SlimSlim\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/login/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Instr to Course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\",\r\n\"instructorId\": \"ac-2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/assign-instr-course",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"assign-instr-course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Instr to course",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\",\r\n\"instructorId\": \"ac-2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/del-instr-course",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"del-instr-course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Instr to Course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\",\r\n\"instructorId\": \"ac-1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/update-instr-course",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"update-instr-course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/hod/staff",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"staff"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff of Course",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/staff-crs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"staff-crs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff Day Off",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/hod/staff-do",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"staff-do"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff Day Off Singular",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"staffId\": \"ac-2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/staff-dos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"staff-dos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff DO/Leave Requests",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/hod/leave-do-reqs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"leave-do-reqs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff DO/Leave Request Accept",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reqId\" : \"5fe50013460d320d2c04e06d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/leave-do-req-a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"leave-do-req-a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Staff DO/Leave Request Reject",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reqId\" : \"5fe50013460d320d2c04e06d\",\r\n    \"reqRejectReason\" : \"my house is on fire\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/leave-do-req-r",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"leave-do-req-r"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Course Coverage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/course-cov",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"course-cov"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Teaching Assignments",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYWMtMSIsImVtYWlsIjoiU2xpbUBnbWFpbC5jb20iLCJmaXJzdExvZ2luIjpmYWxzZSwidHlwZSI6ImFjYWRlbWljIiwib2JqZWN0SWQiOiI1ZmU0ZTQwYjQxODM2ZTJiOTRiMjdiMGQifSwiaWF0IjoxNjA4ODM2MTI5fQ.uA3suEVG_ZO6rUUEXPHUvzwXRwoTyRFeC3nkK1GufPg"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"courseName\": \"CSEN 701 - Embedded Systems\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/hod/teaching-assignments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"hod",
+						"teaching-assignments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
