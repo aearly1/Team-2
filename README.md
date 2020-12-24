@@ -15,6 +15,7 @@ The server is listening to port 3000.
 6. IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
 7. IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
 8. You will find the UML in the root (UML.jpg)
+9. You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
 =================================================================================
 -----------------------------------staffRoutes-----------------------------------
 =================================================================================
