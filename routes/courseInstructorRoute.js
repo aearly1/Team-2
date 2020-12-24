@@ -14,18 +14,50 @@ const app=express();
 app.use(express.json());
 
 //View the coverage of course(s) he/she is assigned to.
-router.get("/view-courses/:id", auth ,[check ("id").isNumeric()] 
+router.get("/view-course-coverage/:course", auth ,[check ("id").isNumeric()] 
  ,async (req, res) => {
     const errors = validationResult(req);
    
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        if( staffModel.findById(req.params.id).courses==""){
-            return res.send("No courses are assigned");
-        }else{
-        const user= await  staffModel.findById(req.params.id) ;
-        res.json(user.courses); }
+        const myCourse= course.findOne({"courseName":course});
+        if(myCourse==null)
+        {
+            res.status(404).send("Course not found!")
+        }
+        else
+        {
+            const instructorId=req.user.id;
+            const instructor= staffMember.findOne({id:instructorId});
+            const intructorsList = course.instructors;
+            const found=false;
+            if(intructorsList!=null)
+            {
+                for (const element of intructorsList)
+                {
+                    if(element==instructor._id)
+                    {
+                        found=true;break;
+                    }
+                }
+            }
+            if(!found)
+            {
+                res.status(401).send("User is not an instructor or is not an instructor of that course")
+            }
+            else
+            {
+                const total= instructor.length;
+                const assignedSlots=total-myCourse.unassignslots;
+                var result=0;
+                if(total!=0)
+                {
+                    result=assignedSlots/total;
+                }
+                res.send("Course coverage of this course is " + result)
+            }
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
