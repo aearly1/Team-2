@@ -2,15 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('./models/course');
-const department= require('./models/department.js');
+const department = require('./models/department.js');
 const faculty = require('./models/faculty.js')
-const location= require('./models/location.js')
+const location = require('./models/location.js')
 const request = require('./models/request.js')
-const slot= require('./models/slot.js')
+const slot = require('./models/slot.js')
 const staffMembers = require('./models/staffMembers.js');
+const { Server, ObjectId } = require('mongodb');
 
 router.route('/Ali')
 //DB initialization
@@ -274,5 +274,197 @@ router.post('/staffMems',async(req,res)=>{
         })
         await mem.save()
     res.status(200).send("Seeded for testing staff routes")
+})
+
+
+router.get('/hod-init', async (req,res)=>{
+    try { 
+        await course.deleteMany({});
+        await location.deleteMany({});
+        await slot.deleteMany({});
+        await department.deleteMany({});
+        await staffMembers.deleteMany({});
+        await request.deleteMany({})
+        await faculty.deleteMany({});
+    
+        const salt = await bcrypt.genSalt(12)
+
+        // Make a user Slim that is a HOD
+        // we will assign him to department,faculty after we make them
+        let hashedPassword =await bcrypt.hash("SlimSlim",salt)
+        let slim = new staffMembers({ 
+            id: "ac-1",
+            name: "Slim",
+            email: "Slim@gmail.com",
+            password: hashedPassword,
+            "type": "academic",
+            "subType": "instructor",
+            "courses": [], 
+            "dayOff": "Saturday",
+            "annualLeaves": 20,
+            "accidentalLevesLeft": 4,
+            "Salary": 50000,
+            "firstLogin" : false
+        })
+        await slim.save();
+
+        //Make a user Hassan Soubra
+        hashedPassword =await bcrypt.hash("SoubraSoubra",salt)
+        let soubra = new staffMembers({
+            id: "ac-2",
+            name: "Hassan Soubra",
+            email: "HSoubra@gmail.com",
+            password: hashedPassword,
+            "type": "academic",
+            "subType": "instructor",
+            "courses": [], 
+            "dayOff": "Saturday",
+            "annualLeaves": 16,
+            "accidentalLevesLeft": 1,
+            "Salary": 18000,
+            "firstLogin": false
+        })
+        await soubra.save();
+
+        hashedPassword =await bcrypt.hash("MiladMilad",salt)
+        let milad = new staffMembers({
+            id: "ac-3",
+            name: "Milad Ghantous",
+            email: "MGhantous@gmail.com",
+            password: hashedPassword,
+            "type": "academic",
+            "subType": "instructor",
+            "courses": [],
+            "dayOff": "Wednesday",
+            "annualLeaves": 15,
+            "accidentalLevesLeft": 2,
+            "Salary": 15000,
+            "firstLogin": false
+        })
+        await milad.save();
+        
+        //MAKE A COURSE 
+        let course1 = new course({
+            courseName: "CSEN 701 - Embedded Systems", });
+        await course1.save();
+        
+        //MAKE A DEPARTMENT
+        let hod = await staffMembers.findOne({"name": "Slim"})
+        let course2 = await course.findOne({"courseName": "CSEN 701 - Embedded Systems"})
+        let department1 = new department({
+            departmentName: "MET",
+            HOD_id: ObjectId(hod._id), //Slim
+            courses: [course2._id] //CSEN 701
+        });
+        await department1.save();
+
+        //MAKE A FACULTY
+        let department2 = await department.findOne({"departmentName": "MET"})
+        let faculty1 = new faculty({
+            facultyName: "Engineering",
+            departments: [ department2._id] //MET department
+        });
+        await faculty1.save()
+
+        //ADD LOCATION 1
+        let location1 = new location({
+            roomNr: "C6.304",
+            roomType: "lab", //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 23
+            });
+        await location1.save()
+    
+        
+        //ADD LOCATION 2
+        let location2 = new location({
+            roomNr: "C6.305",
+            roomType: "tutorial", //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 24
+        });
+        await location2.save();
+        
+        //ADD SLOT 1
+        //let staffMem1 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        //let staffMem2 = await staffMembers.findOne({"name":"Milad Ghantous"})
+        let location3 = await location.findOne({"roomNr":"C6.304"})
+        let slot1 = new slot({
+            startTime: Date.now(), //start time of slot
+            endTime: Date.now(), // end time of slot
+            courseTaughtInSlot: course2._id, //what course will be taught in the slot 
+            //staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
+            slotLocation: ObjectId(location3._id), //ex. H14, C7.301
+            //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
+        });
+        await slot1.save()
+        
+        //ADD SLOT 2
+        let staffMem1 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        //let staffMem2 = await staffMembers.findOne({"name":"Milad Ghantous"})
+        let location4 = await location.findOne({"roomNr":"C6.305"})
+        let slot2 = new slot({
+            startTime: Date.now(), //start time of slot
+            endTime: Date.now(), // end time of slot
+            courseTaughtInSlot: course2._id, //what course will be taught in the slot 
+            staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
+            slotLocation: ObjectId(location4._id), //ex. H14, C7.301
+            //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
+        });
+        await slot2.save();
+
+        //EDIT SOME STUFF IN COURSE CSEN 701
+        let slot3 = await slot.findOne({"slotLocation": ObjectId(location3._id)})
+        let slot4 = await slot.findOne({"slotLocation": ObjectId(location4._id)})
+        await course.updateOne({"courseName":"CSEN 701 - Embedded Systems"},{
+            "teachingSlots" : [slot3._id, slot4._id],
+            "unassignedSlots": 1
+        });
+
+        //ADD REQUEST
+        let course5 = await course.findOne({"courseName": "CSEN 701 - Embedded Systems"})
+        let staffMem2 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        let staffMem3 = await staffMembers.findOne({"name":"Slim"})
+        let replaceSlot = await slot.findOne({"courseTaughtInSlot" : course5._id})
+        let request1 = new request({
+            senderID: staffMem2._id, //id of the staff member sending the request
+            recieverID: staffMem3._id, //id of the staff member recieving the request
+            requestType: "annual leave", //the available request types are change day off OR slot linking OR leave OR replacement)
+            status: "pending", //the value of status can either be accepted or rejected or pending
+            replacementSlot: replaceSlot._id, //id of slot for replacement request
+            requestReason: "My horse is stuck in a fridge",// this field is used by the person sending the request in case this a leave request or a request to change day off
+            startOfLeave: Date.now(),
+            endOfLeave: Date.now()
+        });
+        await request1.save()
+
+        //UPDATE HOD
+        let faculty11 = await faculty.findOne({"facultyName": "Engineering"})
+        let department11 = await department.findOne({"departmentName": "MET"})
+        let request11 = await request.findOne({"requestType": "annual leave"})
+        await staffMembers.updateOne({"name":"Slim"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName, 
+            "receivedRequests" : [request11._id] 
+        });
+
+        //UPDATE Soubra
+        await staffMembers.updateOne({"name":"Hassan Soubra"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName,
+            "sentRequests" : [request11._id]
+        });
+
+        //UPDATE MILAD
+        await staffMembers.updateOne({"name":"Milad Ghantous"},{
+            "dayOff": "Thursday" , 
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName
+        });
+
+        res.status(200).send("DB seeded successfully!")
+    }
+    catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
 })
 module.exports=router;

@@ -23,8 +23,8 @@ const e = require('express');
 // @access  Private
 router.post("/assign-instr-course",
 [
-  check("courseId", "Course Id incorrect <backend problem>").isLength(24),
-  check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+  check("courseName", "Course Name needed."),
+  check("instructorId", "Instructor Id needed.")
 ]
 , async (req, res) => {
     const errors = validationResult(req);
@@ -39,49 +39,56 @@ router.post("/assign-instr-course",
         //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "id": req.body.instructorId});
 
             if(instr){//check instructor under department
-                if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
-                    course1 = await courseModel.findOne({_id: ObjectId(req.body.courseId)});
-                    if (!(course1.instructors.includes(ObjectId(req.body.instructorId)))){
-                        instrArray = course1.instructors;
-                        instrArray.push(ObjectId(req.body.instructorId))
-                        await courseModel.findOneAndUpdate({_id: ObjectId(req.body.courseId)},{
-                            "instructors": instrArray
-                        })
-                    }
-                    else{
-                        res.status(400).send("Instructor is already assigned to course")
+                course1 = await courseModel.findOne({courseName: req.body.courseName});
+                if(course1){
+                    if (depart.courses.includes(ObjectId(course1._id))){ //check course under department
+                        if (!(course1.instructors.includes(ObjectId(instr._id)))){
+                            instrArray = course1.instructors;
+                            instrArray.push(ObjectId(instr._id))
+                            await courseModel.findOneAndUpdate({"courseName": req.body.courseName},{
+                                "instructors": instrArray
+                            })
+                        }
+                        else{
+                            res.status(400).send("Instructor is already assigned to course.")
+                        }
+                        
+                        if (!(instr.courses.includes(course1.courseName))){
+                            let coursesArray = instr.courses
+                            coursesArray.push(course1.courseName)
+                            await staffModel.findOneAndUpdate({"id": req.body.instructorId},
+                            { 
+                                "courses" : coursesArray
+                            })
+                        }
+                        else{
+                            res.status(400).send("Error : Course is already assigned to instructor, but instructor not assigned to course.")
+                        }
+                        res.status(200).send("HOD user: "+currentUser.name+" made change ==> instructor " + instr.name + " is now assigned to course "+ course1.courseName + ".");   
                     }
                     
-                    if (!(instr.courses.includes(course1.courseName))){
-                        let coursesArray = instr.courses
-                        coursesArray.push(course1.courseName)
-                        await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{ 
-                            "courses" : coursesArray
-                        })
-                    }
                     else{
-                        res.status(400).send("Course is already assigned to instructor, but instructor not assigned to course")
+                        res.status(400).send("Error : Course is not under this department.")
                     }
-                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName);   
-                } 
+                }
                 else{
-                    res.status(400).send("Course is not under this department or does not exist")
-                 }
+                    res.stutus(400).send("Error : Course not found.")
+                }
             }
             else{
-                res.status(400).send("Staff member is not under this department or does not exist")
+                res.status(400).send("Error : Staff member is not under this department or does not exist.")
             }
         }
         else{
-            res.status(401).send("Unauthorized. User is not head of his department")
+            res.status(401).send("Error : Unauthorized. User is not head of his department.")
         }
         //res.json(department);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server Error");
+        res.status(500).send("Error : Server Error.");
     }
 });
 //=========================================================================//
@@ -92,8 +99,8 @@ router.post("/assign-instr-course",
 // @desc    delete a course instructor for each course in his department.
 // @access  Private
 router.delete("/del-instr-course",[
-    check("courseId", "Course Id incorrect <backend problem>").isLength(24),
-    check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+    check("courseName", "Course Name needed."),
+    check("instructorId", "Instructor Id needed.")
   ]
   , async (req, res) => {
       const errors = validationResult(req);
@@ -109,43 +116,53 @@ router.delete("/del-instr-course",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "id": req.body.instructorId});
 
             if(instr){//check instructor under department
-                if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
-                    course1 = await courseModel.findOne({_id: ObjectId(req.body.courseId)});
-                    if ((course1.instructors.includes(ObjectId(req.body.instructorId)))){
-                        instrArray = course1.instructors;
-                        let idx = instrArray.indexOf(ObjectId(req.body.instructorId))
-                        instrArray.splice(idx,1)
-                        await courseModel.findOneAndUpdate({_id: ObjectId(req.body.courseId)},{
-                            "instructors": instrArray
-                        })
+                course1 = await courseModel.findOne({courseName: req.body.courseName});
+                if(course1){
+                    if (depart.courses.includes(ObjectId(course1._id))){ //check course under department
+                        
+                        if ((course1.instructors.includes(ObjectId(instr._id)))){
+                            instrArray = course1.instructors;
+                            let idx = instrArray.indexOf(ObjectId(instr._id))
+                            instrArray.splice(idx,1)
+                            await courseModel.findOneAndUpdate({_id: ObjectId(course1._id)},{
+                                "instructors": instrArray
+                            })
+                        }
+                        else{res.status(400).send("Error : Instructor is not assigned to course.")}
+                        
+                        if ((instr.courses.includes(course1.courseName))){
+                            let coursesArray = instr.courses
+                            let idx = coursesArray.indexOf(course1.courseName)
+                            coursesArray.splice(idx,1)
+                            await staffModel.findOneAndUpdate({_id: ObjectId(instr._id)},{"courses" : coursesArray})
+                        }
+                        else{
+                            res.status(400).send("Error : Course is not assigned to instructor, but instructor is assigned to course.")
+                        }
+                        res.status(200).send("HOD user: "+currentUser.name+" made change ==> instructor " + instr.name + " is now removed from course "+ course1.courseName + ".");   
+                    } 
+                    else{
+                        res.status(400).send("Error : Course is not under this department.")
                     }
-                    else{res.status(400).send("Instructor is not assigned to course")}
-                    
-                    if ((instr.courses.includes(course1.courseName))){
-                        let coursesArray = instr.courses
-                        let idx = coursesArray.indexOf(course1.courseName)
-                        coursesArray.splice(idx,1)
-                        await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{"courses" : coursesArray})
-                    }
-                    else{res.status(400).send("Course is not assigned to instructor, but instructor is assigned to course")}
-                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now removed from course "+ course1.courseName);   
-                } 
-                else{res.status(400).send("Course is not under this department or does not exist")}
+                }
+                else{
+                    res.stutus(400).send("Error : Course not found.")
+                }       
             }
             else{
-                res.status(400).send("Staff member is not under this department or does not exist")
+                res.status(400).send("Error : Staff member is not under this department or does not exist.")
             }
         }
         else{
-            res.status(401).send("Unauthorized. User is not head of his department")
+            res.status(401).send("Error : Unauthorized. User is not head of his department.")
         }
         //res.json(department);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server Error");
+        res.status(500).send("Error : Server Error.");
     }
 });
 //=========================================================================//
@@ -156,8 +173,8 @@ router.delete("/del-instr-course",[
 // @desc    Update a course instructor(overwrites all other instructors, only this one remains)
 // @access  Private
 router.post("/update-instr-course",[
-    check("courseId", "Course Id incorrect <backend problem>").isLength(24),
-    check("instructorId", "Instructor Id incorrect <backend problem>").isLength(24)
+    check("courseName", "Course Name needed"),
+    check("instructorId", "Instructor Id needed")
   ]
   , async (req, res) => {
       const errors = validationResult(req);
@@ -173,48 +190,53 @@ router.post("/update-instr-course",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             //Find instructor
-            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "_id": ObjectId(req.body.instructorId)});
+            let instr = await staffModel.findOne({"departmentName" : depart.departmentName , "subType":"instructor", "id": req.body.instructorId});
 
             if(instr){//check instructor under department
-                if (depart.courses.includes(ObjectId(req.body.courseId))){ //check course under department
-                    course1 = await courseModel.findOne({_id: ObjectId(req.body.courseId)});
-                    for(i=0;i<course1.instructors.length;i++){
-                        //res.json(course1.instructors[i])
-                        let instructorMan= await staffModel.findOne({_id: ObjectId(course1.instructors[i])})
-                        instructorManCourses = instructorMan.courses;
-                        const index = instructorManCourses.indexOf(ObjectId(course1._id))
-                        instructorManCourses.splice(index,1)
-                        await staffModel.findOneAndUpdate({_id: ObjectId(course1.instructors[i])},{ 
-                            "courses" : instructorManCourses
+                course1 = await courseModel.findOne({courseName: req.body.courseName});
+                if(course1){
+                    if (depart.courses.includes(ObjectId(course1._id))){ //check course under department
+                        for(i=0;i<course1.instructors.length;i++){
+                            //res.json(course1.instructors[i])
+                            let instructorMan= await staffModel.findOne({_id: ObjectId(course1.instructors[i])})
+                            instructorManCourses = instructorMan.courses;
+                            const index = instructorManCourses.indexOf(ObjectId(course1._id))
+                            instructorManCourses.splice(index,1)
+                            await staffModel.findOneAndUpdate({_id: ObjectId(course1.instructors[i])},{ 
+                                "courses" : instructorManCourses
+                            })
+                        }
+                        instrArray = [ObjectId(instr._id)];
+                        await courseModel.findOneAndUpdate({_id: ObjectId(course1._id)},{
+                            "instructors": instrArray
                         })
+                        
+                        let coursesArray = [course1.courseName];
+                        await staffModel.findOneAndUpdate({_id: ObjectId(instr._id)},{ 
+                            "courses" : coursesArray
+                        })
+                        
+                        res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly).");   
+                    } 
+                    else{
+                        res.status(400).send("Error : Course is not under this department.")
                     }
-                    instrArray = [ObjectId(req.body.instructorId)];
-                    await courseModel.findOneAndUpdate({_id: ObjectId(req.body.courseId)},{
-                        "instructors": instrArray
-                    })
-                    
-                    let coursesArray = [course1.courseName];
-                    await staffModel.findOneAndUpdate({_id: ObjectId(req.body.instructorId)},{ 
-                        "courses" : coursesArray
-                    })
-                    
-                    res.status(200).send("HOD user: "+currentUser.name+" made change: instructor " + instr.name + " is now assigned to course "+ course1.courseName + " (Overwritingly)");   
-                } 
+                }
                 else{
-                    res.status(400).send("Course is not under this department or does not exist")
-                 }
+                    res.stutus(400).send("Error : Course not found.")
+                }
             }
             else{
-                res.status(400).send("Staff member is not under this department or does not exist")
+                res.status(400).send("Error : Staff member is not under this department or does not exist.")
             }
           }
         else{
-            res.status(401).send("Unauthorized. User is not head of his department")
+            res.status(401).send("Error : Unauthorized. User is not head of his department.")
         }
         //res.json(department);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server Error");
+        res.status(500).send("Error : Server Error.");
     }
 });
 //=========================================================================//
@@ -241,6 +263,8 @@ router.get("/staff", async (req, res) => {
                 email: staffMem.email,
                 name: staffMem.name
             }))
+            
+            staffOutput.forEach(idx => {if(idx.userCode==userCode){ idx.subType="head of department"} })
             res.status(200).json(staffOutput)
             }
         else{
@@ -255,11 +279,11 @@ router.get("/staff", async (req, res) => {
 
 // @status  Done & Tested
 // @route   GET api/hod/staff-crs
-// @input   courseId  
-// @desc    View one staff members
+// @input   courseName
+// @desc    View a course's teaching staff
 // @access  Private
 router.get("/staff-crs",[
-    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+    check("courseName", "Course Name incorrect <backend problem>").not().isEmpty()
   ]
   ,
    async (req, res) => {
@@ -276,7 +300,7 @@ router.get("/staff-crs",[
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
         let staff = await staffModel.find({"departmentName" : depart.departmentName});
-        let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)})
+        let course = await courseModel.findOne({"courseName" : req.body.courseName})
         staff = staff.filter((x) => x.courses.includes(course.courseName))
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
@@ -285,6 +309,8 @@ router.get("/staff-crs",[
             email: staffMem.email,
             name: staffMem.name
         }))
+        
+        staffOutput.forEach(idx => {if(idx.userCode==userCode){ idx.subType="head of department"} })
         res.status(200).json(staffOutput)
         }
         else{
@@ -320,6 +346,7 @@ router.get("/staff-do",  async (req, res) => {
             subType: staffMem.subType,
             dayOff: staffMem.dayOff,
         }))
+        staffOutput.forEach(idx => {if(idx.id==userCode){ idx.subType="head of department"} })
         res.status(200).json(staffOutput)
         }
         else{
@@ -338,7 +365,7 @@ router.get("/staff-do",  async (req, res) => {
 // @desc    View the day off of a single staff in his/her department.
 // @access  Private
 router.get("/staff-dos",[
-    check("staffId", "Staff Id incorrect <backend problem>").isLength(24)
+    check("staffId", "Staff Id needed")
   ]
   ,
    async (req, res) => {
@@ -353,14 +380,21 @@ router.get("/staff-dos",[
         let depart = await departmentModel.findOne({"departmentName": currentUser.departmentName});
         //check if user is head of the department
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-        let staff = await staffModel.findOne({"_id": ObjectId(req.body.staffId),"departmentName" : depart.departmentName});
-        let staffMem = {
-            id : staff.id,
-            staffMemberName: staff.name,
-            subType: staffMem.subType,
-            dayOff: staff.dayOff
-        }
-        res.status(200).json(staffMem)
+            
+            let staff = await staffModel.findOne({"id": req.body.staffId,"departmentName" : depart.departmentName});
+            if(staff){
+                let staffMem = {
+                    id : staff.id,
+                    staffMemberName: staff.name,
+                    subType: staff.subType,
+                    dayOff: staff.dayOff
+                }
+                if (staffMem.id==userCode){ staffMem.subType = "head of department"}
+                res.status(200).json(staffMem)
+            }
+            else{
+                res.status(400).send("Staff member with that id not found under your department.")
+            }
         }
         else{
             res.status(401).send("Unauthorized. User is not head of his department")
@@ -540,7 +574,7 @@ router.post("/leave-do-req-r",[
 // @desc    View the coverage of each course in his/her department
 // @access  Private
 router.get("/course-cov", [
-    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+    check("courseName", "Course name needed.")
   ]
   ,  async (req, res) => {
     try {
@@ -551,7 +585,7 @@ router.get("/course-cov", [
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-            let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)});
+            let course = await courseModel.findOne({"courseName" : req.body.courseName});
             if(course){
                 if(course.unassignedSlots!=null){ 
                     if(course.teachingSlots.length!=0){
@@ -585,7 +619,7 @@ router.get("/course-cov", [
 //          of course offered by his department.
 // @access  Private
 router.get("/teaching-assignments",[
-    check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+    check("courseName", "Course name needed")
   ]
   ,  async (req, res) => {
     try {
@@ -596,7 +630,7 @@ router.get("/teaching-assignments",[
         //check if user is head of the department
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
-            let course = await courseModel.findOne({"_id" : ObjectId(req.body.courseId)});
+            let course = await courseModel.findOne({"courseName" : req.body.courseName});
             let printable = [];
             if(course){
                 for (let i=0; i<course.teachingSlots.length;i++){

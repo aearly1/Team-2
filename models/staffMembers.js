@@ -3,7 +3,7 @@ const schema = mongoose.Schema
 const staffSchema = new schema ({
     email: {type:String,unique:true},
     password: String,
-    id: {type:String,unique:true}, // Generated using uuidv4
+    id: {type:String,unique:true}, 
     name: String,
     gender:String,
     type: String, // can either be HR or academic

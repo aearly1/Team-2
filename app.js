@@ -11,7 +11,7 @@ connectDB();
 app.use(express.json({extended: false}));
 
 //Define Routes
-app.use("/api/user", require("./routes/user")); // to test registeration till Saeed adds HR
+//app.use("/api/user", require("./routes/user")); // to test registeration till Saeed adds HR
 app.use("/api/init", require("./DBInit"));
 app.use("/api/login", require("./routes/login"))
 app.use(auth.func)
