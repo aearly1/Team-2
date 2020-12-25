@@ -12,11 +12,11 @@
 4.  Paste your mongoDB cnnection string in the config/default.json to connect to your database
 
 5.  There are FIVE routes that need to be run to seed the database (not all of them at once).
-    a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    c)/localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    d)/localhost:3000/api/init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    e)/localhost:3000/api/init/hr-init. This route is responsible to insert ALL the data need so you can be able to test the HR routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    a) localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    b)localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    c)localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    d)localhost:3000/api/init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    e)localhost:3000/api/init/hr-init. This route is responsible to insert ALL the data need so you can be able to test the HR routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     =======
 
 6. THE MOST IMPORTANT NOTE: WHEN YOU RUN THE SEEDING ROUTE, IT AUTOMATICALLY CLEARS THE DATABASE. THEREFORE, PLEASE DO NOT RUN ALL FIVE SEEDING ROUTES AT THE BEGINING. WHENEVER YOU NEED TO TEST A PART, JUST RUN ITS SEEDING ROUTE BEFORE TESTING IT.
@@ -239,7 +239,7 @@ the follow body:
 then the token will be returned in the header. For any upcoming request, include 
 the returend token in the header of the request to authenticate.
 
-----------------------------------------------------------------------------------
+---
 
 Functionality: View "slot linking" request(s) from academic members linked to his/her course.
 Route: /api/coordinator/slotLinkingRequest
@@ -272,7 +272,7 @@ Request type: POST
 Request body:
 {
 "requestID":"5fdf4da964feaf10444d8c26",
-"courseName":"CSEN701: Embedded Systems"
+"coursename":"CSEN701: Embedded Systems"
 }
 Response: A statement indicating acceptance of request or rejection with reason for rejection.
 Example: "accepted" OR "Rejected because you are already teaching a slt during the same time" OR "Rejected because some other staff member is already teaching this slot" OR "Rejected because this is not a slot in course" OR
@@ -281,6 +281,8 @@ NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!):
 "requestID" is the object ID assigned by mongoose when the request object was created and placed in the request collection. It represents the object id of the request that the course coordinator wants to accept/reject.
 
 ## THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUEST ID.
+
+---
 
 Functionality: Add course slot(s) in his/her course
 Route: /api/coordinator/addCourseSlot
@@ -312,18 +314,16 @@ Request Body:
 "courseName":"CSEN701: Embedded Systems",
 "slotID":"5fdfc265685d492a48fbd303",
 "staffTeachingSlot":"Ali",
-"slotLocation":"H19"
+"slotLocation":"H14"
 }
 Response: the mongoose record of the updated slot
 Example:
 {
-"\_id": "5fdfc265685d492a48fbd303",
-"startTime": "2020-12-20T12:08:15.000Z",
-"endTime": "2020-12-20T12:10:45.000Z",
-"courseTaughtInSlot": "5fde50634697eb0980b6b6b4",
-"slotLocation": "5fde596463f84924107476f0",
-"\_\_v": 0,
-"staffTeachingSlot": "5fdde841c77a572248510f5c"
+    "startTime": "2020-12-20T10:10:00.000Z",
+    "endTime": "2020-12-20T10:11:30.000Z",
+    "courseTaughtInSlot": "CSEN701: Embedded Systems",
+    "staffTeachingSlot": "Ali",
+    "slotLocation": "H14"
 }
 
 NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!):
@@ -333,9 +333,9 @@ NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!):
 
 Functionality: Delete course slot(s) in his/her course.
 Route: /api/coordinator/deleteCourseSlot
-Request type: PUT
+Request type: POST
 Request Body: {
-"courseID":"5fde50634697eb0980b6b6b4",
+"courseName":"CSEN701: Embedded Systems",
 "slotID":"5fde6e9457ea432df038adc7"
 }
 Response: statement idicating that slot has been successfully deleted
@@ -358,6 +358,7 @@ the follow body:
 then the token will be returned in the header. For any upcoming request, include 
 the returend token in the header of the request to authenticate.
 
+# PLEASE RERUN localhost:3000/api/init/academic-coordinator AGAIN
 ----------------------------------------------------------------------------------
 
 Functionality: Academic member views their own schedule, seeing their teaching activities and replacements (if present).
@@ -403,10 +404,10 @@ Example:
 "Date of replacement": "2021-12-20T10:10:00.000Z"
 }
 
-NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!):
-"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the academic member wants to find a replacement for
+# NOTES (PLEASE READ VERRRRRRRRRRYYYYYY IMPORTANT!!!!!!!!!!!!!!!!):
+# "slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that the academic member wants to find a replacement for
 
-THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BEING TAUGHT BY TA SHAKA.
+# THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF SLOTS BEING TAUGHT BY TA SHAKA.
 
 ---
 
@@ -456,8 +457,10 @@ Request type: POST
 Response: Statement indicating the rejection of the replacement request
 Example: "Rejected"
 
-NOTE:
-THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUESTID OF ONE OF REQUESTS SENT TO TA SHAKA BY TA ALI.
+# NOTE:
+# THE REQUESTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT REQUESTID OF ONE OF REQUESTS SENT TO TA SHAKA BY TA ALI.
+
+# use the same request that you used in the previous route. Just changed the accepted status to pending in the database and call this route.
 
 ---
 
@@ -482,10 +485,10 @@ Example:
 }
 }
 
-NOTES:
-"slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that te academic member desires to teach/link to.
+# NOTES:
+# "slotID" is the object ID assigned by mongoose when the slot object was created and placed in the slot collection. It represents the object id of the slot that te academic member desires to teach/link to.
 
-THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF A SLOT DOESNT HAVE A TA TEACHING IN IT.
+# THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE "5fdf4da964feaf10444d8c26". CHECK THE DATABASE FOR THE CORRECT SLOTID OF ONE OF A SLOT DOESNT HAVE A TA TEACHING IN IT.
 
 ---
 
@@ -574,11 +577,16 @@ Request type: GET
 Response: Array of JSON Objects representing the accepted submitted requests
 Example:
 [
-{
-"request sent to": "Slim",
-"requestType": "change day off",
-"status": "accepted"
-}
+    {
+        "request sent to": "Ali",
+        "requestType": "replacement",
+        "status": "accepted"
+    },
+    {
+        "request sent to": "Slim",
+        "requestType": "change day off",
+        "status": "accepted"
+    }
 ]
 
 ---
@@ -620,7 +628,7 @@ Example:
 
 Functionality: Cancel a still pending request or a request whose day is yet to come
 Route: /api/academicMember/cancleRequest
-Request type: GET
+Request type: POST
 Request body:
 {
 "requestID": "5fdf0f28ae6eb318c8c0621f"
@@ -628,6 +636,7 @@ Request body:
 Response: A statement that indicates that the deletion process was successful
 Example: "Successfully deleted"
 
+# NOTE: AGAIN PLEASE GET CORRECT ID FROM DB
 =================================================================================
 ----------------------------HeadOfDepartmentRoutes-------------------------------
 =================================================================================
@@ -951,11 +960,11 @@ Response Example:
 To begin testing you will need a token. To get the token, send a post request using use the "/api/login" route with 
 the follow body:
 {
-    "email":"soubra@gmail.com",
+    "email":"soubra@guc.com",
     "password":"12345"
 }
 then the token will be returned in the header. For any upcoming request, include 
-the returend token in the header of the request to authenticate.
+the returned token in the header of the request to authenticate.
 
 ----------------------------------------------------------------------------------
 
@@ -966,7 +975,7 @@ Example of how to call the route: /api/instructor/view-course-coverage/CSEN605: 
 Request type: GET
 Response: The course coverage of a specific course that the instructor teaches
 Response Example:
-Course coverage of this course is 0%
+Course coverage of this course is 0.5%
 
 Note: this route is used to get the course coverage for a particular course. To get the course coverage of ALL courses that the instructor teaches, just call this route for every single course
 ---
@@ -1139,7 +1148,7 @@ NOTE: slotID IS AN OBJECT ID REPRESENTING THE SLOT THAT YOU WANT TO UPDATE ITS A
 Functionality: Remove an assigned academic member in course(s) he/she is assigned to.
 Route: /api/instructor/remove-academicMember/:course/:id
 Parameters: id is the id of the academic member that the course instructor wants to remove
-Example of how to call the route: /api/instructor/remove-academicMember/CSEN605: DSD/43-10272
+Example of how to call the route: /api/instructor/remove-academicMember/CSEN605: DSD/43-10273
 Request type: POST
 Response: Indication that the academic instructor has been succesfully deleted from course
 
@@ -1152,7 +1161,7 @@ Response Example: "Academic member succsfully removed"
 Functionality:Assign an academic member in each of his/her course(s) to be a course coordinator
 Route: /api/instructor/assign-academic/:course
 Parameters: course is the name of the course for which the course instructor wants to assign a course coordinator
-Example of how to call the route: /api/instructor/view-staff-course/CSEN605: DSD
+Example of how to call the route: /api/instructor/assign-academic/CSEN605: DSD
 Request type: POST
 Request Body:
 {
@@ -1164,7 +1173,7 @@ Response Example:
 {
     "courseName": "CSEN605: DSD",
     "coordinator": "Walid",
-    "unassignedSlots": 1
+    "unassignedSlots": 3
 }
 
 =================================================================================

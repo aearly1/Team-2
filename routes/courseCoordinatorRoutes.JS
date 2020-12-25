@@ -14,7 +14,7 @@ const staffMembers = require('../models/staffMembers.js');
 
 router.route('/slotLinkingRequest')
     .get([
-        body('CourseName').isString().withMessage("CourseName must be a string")
+        body('courseName').isString().withMessage("CourseName must be a string")
     ],async(req,res)=>{
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -23,7 +23,7 @@ router.route('/slotLinkingRequest')
         }
         var ObjectId = require('mongodb').ObjectId; 
         const userID=req.user.objectId;
-        const CourseName=req.body.CourseName;
+        const CourseName=req.body.courseName;
         let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
         let courseObject = await course.findOne({courseName:CourseName})//course of coordinator
         if(courseObject==null)
@@ -79,7 +79,7 @@ router.route('/slotLinkingRequest')
 
         const userID=req.user.objectId;
         const requestID=req.body.requestID;// id of request that you want to accept
-        const coursename=req.body.courseName;
+        const coursename=req.body.coursename;
 
         try
         {

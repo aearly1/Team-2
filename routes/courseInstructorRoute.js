@@ -244,6 +244,8 @@ router.route("/view-staff-dep"
 
 //Assign an academic member to an unassigned slots in course(s) he/she is assigned to.
 router.route("/assign-course/:course").post( 
+    [check ("academicId").isString()],
+    [check ("slotID").isString().isLength(24)],
     async (req, res) =>{
         try
         {
@@ -331,11 +333,8 @@ router.route("/assign-course/:course").post(
 //Update assignment of academic member in course(s) he/she is assigned to.
 router.route("/update-assign/:course",)
 .post(
-    /*[
-    check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-     check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
-    ]
-    ,*/async(req,res) =>{
+    [check ("academicId").isString()],
+    [check ("slotID").isString().isLength(24)], async(req,res) =>{
 
         try
         {
@@ -434,11 +433,8 @@ router.route("/update-assign/:course",)
  //  delete assignment of academic member in course(s) he/she is assigned to.
     router.route("/delete-assign/:course")
     .post(
-        /*[
-        check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-         check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
-        ]
-        ,*/async(req,res) =>{
+        [check ("slotID").isString().isLength(24)],
+        async(req,res) =>{
             try
         {
             const myCourse= await course.findOne({"courseName":req.params.course});
