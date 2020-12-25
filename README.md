@@ -19,17 +19,19 @@
     e)/localhost:3000/api/init/hr-init. This route is responsible to insert ALL the data need so you can be able to test the HR routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     =======
 
-6.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
+6. THE MOST IMPORTANT NOTE: WHEN YOU RUN THE SEEDING ROUTE, IT AUTOMATICALLY CLEARS THE DATABASE. THEREFORE, PLEASE DO NOT RUN ALL FIVE SEEDING ROUTES AT THE BEGINING. WHENEVER YOU NEED TO TEST A PART, JUST RUN ITS SEEDING ROUTE BEFORE TESTING IT.
 
-7.  IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
+7. IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
 
-8.  IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
+8. IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
 
-9.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
+9. IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
 
-10.  You will find the UML in the root (UML.jpg)
+10. IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
 
-11. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
+11. You will find the UML in the root (UML.jpg)
+
+12. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
 
 =================================================================================
 --------------------------------staffMembers-------------------------------------
@@ -228,7 +230,16 @@ Example: -8 Hours -22 Mins
 =================================================================================
 ---------------------------courseCoordinatorRoutes-------------------------------
 =================================================================================
-IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
+To begin testing you will need a token. To get the token, send a post request using use the "/api/login" route with 
+the follow body:
+{
+    "email":"ali@guc.com",
+    "password":"12345"
+}
+then the token will be returned in the header. For any upcoming request, include 
+the returend token in the header of the request to authenticate.
+
+----------------------------------------------------------------------------------
 
 Functionality: View "slot linking" request(s) from academic members linked to his/her course.
 Route: /api/coordinator/slotLinkingRequest
@@ -338,7 +349,16 @@ THE SLOTID WILL DIFFER EVERYTIME YOU SEED THE DATABASE. THERE IT WONT ALWAYS BE 
 =================================================================================
 -----------------------------academicMemberRoutes--------------------------------
 =================================================================================
-IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
+To begin testing you will need a token. To get the token, send a post request using use the "/api/login" route with 
+the follow body:
+{
+    "email":"shaka@guc.com",
+    "password":"12345"
+}
+then the token will be returned in the header. For any upcoming request, include 
+the returend token in the header of the request to authenticate.
+
+----------------------------------------------------------------------------------
 
 Functionality: Academic member views their own schedule, seeing their teaching activities and replacements (if present).
 Route: /api/academicMember/schedule
@@ -928,7 +948,16 @@ Response Example:
 ===========================================================================================================
 ---------------------------------------------courseInstructorRoutes----------------------------------------
 ===========================================================================================================
-IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
+To begin testing you will need a token. To get the token, send a post request using use the "/api/login" route with 
+the follow body:
+{
+    "email":"soubra@gmail.com",
+    "password":"12345"
+}
+then the token will be returned in the header. For any upcoming request, include 
+the returend token in the header of the request to authenticate.
+
+----------------------------------------------------------------------------------
 
 Functionality: View the coverage of course(s) current instructor is assigned to.
 Route: /api/instructor/view-course-coverage/:course 

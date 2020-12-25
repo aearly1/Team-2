@@ -15,6 +15,13 @@ const { Server, ObjectId } = require('mongodb');
 router.route('/courseInstructor')
 //DB initialization
 .post(async(req,res)=>{
+        await course.deleteMany({});
+        await location.deleteMany({});
+        await slot.deleteMany({});
+        await department.deleteMany({});
+        await staffMembers.deleteMany({});
+        await request.deleteMany({})
+        await faculty.deleteMany({});
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash('12345', salt);
     const instructor=new staffMembers ({
@@ -153,6 +160,13 @@ router.route('/courseInstructor')
 router.route('/academic-coordinator')
 //DB initialization
 .post(async(req,res)=>{
+        await course.deleteMany({});
+        await location.deleteMany({});
+        await slot.deleteMany({});
+        await department.deleteMany({});
+        await staffMembers.deleteMany({});
+        await request.deleteMany({})
+        await faculty.deleteMany({});
     //Ali's initiallization data
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash('12345', salt);
@@ -393,7 +407,13 @@ router.route('/academic-coordinator')
     
 })
 router.post('/staffMems',async(req,res)=>{
-    await staffMembers.deleteMany()
+        await course.deleteMany({});
+        await location.deleteMany({});
+        await slot.deleteMany({});
+        await department.deleteMany({});
+        await staffMembers.deleteMany({});
+        await request.deleteMany({})
+        await faculty.deleteMany({});
     const salt = await bcrypt.genSalt(12)
     const hashedPassword =await bcrypt.hash("passwordsha2y",salt) 
         const mem = new staffMembers({
@@ -632,14 +652,6 @@ router.get('/hod-init', async (req,res)=>{
         res.status(500).send("Server Error");
     }
 })
-
-
-
-
-
-
-
-
 
 router.get('/hr-init', async (req,res)=>{
     try { 
