@@ -3,9 +3,12 @@
 1.  Which file should be run to launch the server of your project and under which folder (if
     not in the root)?
     The file that should be run is the app.js. It is under the root.
+
 2.  Which port is the server listening to?
     The server is listening to port 3000.
+
 3.  Write npm run dev in the terminal to run the server
+
 4.  Paste your mongoDB cnnection string in the config/default.json to connect to your database
 
 5.  There are FIVE routes that need to be run to seed the database (not all of them at once).
@@ -17,15 +20,24 @@
     =======
 
 6.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
+
 7.  IMPORTANT NOTE: TO BE ABLE TO USE THE ACADEMIC MEMBERS ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:shaka@guc.com AND PASSWORD: 12345
+
 8.  IMPORTANT NOTE: TO BE ABLE TO USE THE HEAD OF DEPARTMENT ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:Slim@gmail.com AND PASSWORD: SlimSlim
+
 9.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
+
 10.  You will find the UML in the root (UML.jpg)
+
 11. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
 
+<<<<<<< HEAD
 =================================================================================
 --------------------------------staffMembers-------------------------------------
 =================================================================================
+=======
+    # -----------------------------------staffRoutes-----------------------------------
+>>>>>>> ec89df7 (Mayar's testing is done)
 
 Functionality: Logs the staff member in
 Route: /api/login
@@ -924,245 +936,211 @@ IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /
 
 Functionality: View the coverage of course(s) current instructor is assigned to.
 Route: /api/instructor/view-course-coverage/:course 
-Parameters: name is the name of the course that the instructor teaches and that we want to get the course coverage of
+Parameters: course is the name of the course that the instructor teaches and that we want to get the course coverage of
 Example of how to call the route: /api/instructor/view-course-coverage/CSEN605: DSD
 Request type: GET
 Response: The course coverage of a specific course that the instructor teaches
 Response Example:
 Course coverage of this course is 0%
 
+Note: this route is used to get the course coverage for a particular course. To get the course coverage of ALL courses that the instructor teaches, just call this route for every single course
 ---
 
 ---
 
-Functionality: View the slots asignment of course(s) current user is assigned to.
-Route: '/api/view-slot-assign-course/:id' --example id: 43-8530
+Functionality: View the slots asignment of course(s) course instructror is assigned to.
+Route: /api/instructor/view-slot-assign-course/:course
+Parameters: course is the name of the course that the instructor teaches and that he wants to see the slot assignment of
+Example of how to call the route: /api/instructor/view-slot-assign-course/CSEN605: DSD
 Request type: GET
-Response: JSON file The slots assigned to a user academic.
+Response: JSON file containing the slots assignments of a course that an instuctor is assigned to
 Response Example:
-{
-{
-"slotId": "5fdff79dc5acf437a4cb29d4",
-"startTime": "2020-12-21T01:17:17.062Z",
-"endTime": "2020-12-21T01:17:17.062Z",
-"location": "C6.304",
-"isAssigned": false
-},
-{
-"slotId": "5fdff79dc5acf437a4cb29d5",
-"startTime": "2020-12-21T01:17:17.523Z",
-"endTime": "2020-12-21T01:17:17.523Z",
-"location": "C6.305",
-"isAssigned": true,
-"staffTeachingSlotId": "instr1",
-"staffTeachingSlotName": "Hassan Soubra"
-}
-}
+[
+    {
+        "startTime": "2020-12-20T10:10:00.000Z",
+        "endTime": "2020-12-20T10:11:30.000Z",
+        "staff assigned to course": "Slot not assigned yet"
+    },
+    {
+        "startTime": "2020-12-20T10:08:00.000Z",
+        "endTime": "2020-12-20T10:09:30.000Z",
+        "staff assigned to course": "Hassan Soubra"
+    }
+]
 
+Note: this route is used to get the course assignments for a particular course. To get the course assignments of ALL courses that the instructor teaches, just call this route for every single course
 ---
 
 ---
 
-Functionality: View all the staff's profiles per course the academic teach
-Route: '/api/view-staf-course/:id' --example id: 43-8530
+Functionality: View all the staff member per course along with their profiles
+Route: /api/instructor/view-staff-course/:course 
+Parameters: course is the name of the course of which we want to view its staff profiles
+Example of how to call the route: /api/instructor/view-staff-course/CSEN605: DSD
 Request type: GET
-Response:JSON file All staff with their profiles per the current current each course
+Response:JSON file All staff teaching this course with their profiles 
 Response Example:
-{
-{
-{
-"Name": "7amada sha3r",
-"Email": "sexysoso@hotmail.com",
-"ID": "43-8530"
-},
-
+[
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10272",
+        "subType": "Instructor",
+        "email": "soubra@guc.com",
+        "name": "Hassan Soubra",
+        "office": "C7-219"
     },
-
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
-    }
-
-}
-
-{
-{
-"Name": "7amada sha3r",
-"Email": "sexysoso@hotmail.com",
-"ID": "43-8530"
-},
-
-    {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10273",
+        "subType": "Teaching Assistant",
+        "email": "loaa@guc.com",
+        "name": "Loaa",
+        "office": "C3-203"
     },
-
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10272",
+        "subType": "Teaching Assistant",
+        "email": "walid@guc.com",
+        "name": "Walid",
+        "office": "C3-203"
     }
+]
 
-}
-
+Note: this route allows the course instructor to see the profiles of ALL staff members that are in a SPECIFiC course that HE teaches. If you want to see the profiles of staff members in ALL of the courses he teaches, then you have to call this route for every single course he teaches.
 ## }
 
 ---
 
-Functionality: View all the staff's profiles per departement the academic teach
-Route: '/api/view-staf-dep/' --example id: 43-8530
+Functionality: View all the staff in the course instructor's department along with their profiles
+Route: /api/instructor/view-staff-dep
 Request type: GET
-Response: JSON file All staff with their profiles per the current user's departement
+Response: JSON file containing all the staff in the course instructor's department along with their proles
 Response Example:
-{
-
+[
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10272",
+        "subType": "lecturer",
+        "email": "soubra@guc.com",
+        "name": "Hassan Soubra",
+        "office": "C7-219"
     },
-
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10272",
+        "email": "walid@guc.com",
+        "name": "Walid",
+        "office": "C3-203"
     },
-
     {
-    "Name": "7amada sha3r",
-    "Email": "sexysoso@hotmail.com",
-    "ID": "43-8530"
+        "userCode": "ac-10273",
+        "email": "loaa@guc.com",
+        "name": "Loaa",
+        "office": "C3-203"
     }
+]
 
 ## }
 
 ---
 
 Functionality: Assign an academic member to an unassigned slots in course(s)
-Route: '/api/assign-course/:id' --example id: 43-8530
+Route: /api/instructor/assign-course/course
+Parameters: course is the name of the course that the course instructor is responsible for
+Example of how to call the route: /api/instructor/assign-course/CSEN605: DSD
 Request type: POST
 Request Body:
 {
-"courseId": "5fdff79bc5acf437a4cb29cf",
-"academicId":"2435",
-"slotID":"5fdfc265685d492a48fbd303"
+"academicId":"ac-10272",
+"slotID":"5fe5e58470505416e45f4b0f"
 }
-Response: JSON file course and slot updated with assignment of academic to an unassigned slot
+Response: JSON object representing the updated slot  after assigning academic member to it
 
 Response Example:  
 {
-"courseId": "5fdff79bc5acf437a4cb29cf"
-"courseName" : "CSEN 701 ",
-"instructors" : " 43-8530",
-" teachingAssistants": {"1425" ,"2435"},
-"coordinator" : "3455",
-"teachingSlots":
-{
-{
-"startTime": "2012-01-01T22:00:00.000Z",
-"endTime": "2012-01-01T22:00:00.000Z",
-"staffTeachingSlot": "Shaka Zulu",
-"courseTaughtInSlot": CSEN701: Embedded Systems,
-"slotLocation": "H14",
-"replacementStaff": "NA"
-},
-{
-"startTime": "2012-01-01T22:00:00.000Z",
-"endTime": "2012-01-01T22:00:00.000Z",
-"staffTeachingSlot": "Shaka Zulu",
-"courseTaughtInSlot": CSEN701: Embedded Systems
-"slotLocation": "H19",
-"replacementStaff": "NA"
-}
-},
-"unassignedSlots" : "1"
-
+    "startTime": "2020-12-20T10:10:00.000Z",
+    "endTime": "2020-12-20T10:11:30.000Z",
+    "staffTeachingSlot": "Walid"
 }
 
+NOTE: slotID IS AN OBJECT ID REPRESENTING THE SLOT THAT YOU WANT TO ASSIGN THE ACADEMIC MEmBER TO. IT WILL BE DIFFERENT EVERYTIME YOU SEED THE DATABASE. SO PLEASE CHECK YOUR DB FOR A DSD UNASSIGNED SLOT AND GET ITS OBJECTID
 ---
 
 ---
 
 Functionality: Update assignment of academic member in course(s) he/she is assigned to.
-Route: '/api/update-assign/:id' --example id: 43-8530
+Route: /api/instructor/update-assign/:course
+Parameters: course is the name of the course that the course instructor is responsible for
+Example of how to call the route: /api/instructor/update-assign/CSEN605: DSD
 Request type: POST
 Request Body:
 {
-"courseId": "5fdff79bc5acf437a4cb29cf",
-"academicID" : "3455"
+    "academicId" : "ac-10273",
+    "slotID": "5fe5fdb5e8a9dd17449c8228"
 }
-Response: Induction updated assignment of academic member successfuly
+Response: The updated slot after updating the assignment of the slot
 
 Response Example:  
- "Updated successfully"
+{
+    "startTime": "2020-12-20T10:10:00.000Z",
+    "endTime": "2020-12-20T10:11:30.000Z",
+    "staffTeachingSlot": "Loaa"
+}
 
+NOTE: slotID IS AN OBJECT ID REPRESENTING THE SLOT THAT YOU WANT TO UPDATE ITS ASSIGNMENT. IT WILL BE DIFFERENT EVERYTIME YOU SEED THE DATABASE. SO PLEASE CHECK YOUR DB FOR A DSD UNASSIGNED SLOT AND GET ITS OBJECTID
 ---
 
 ---
 
 Functionality:delete assignment of academic member in course(s) he/she is assigned to.
-Route: '/api/delete-assign/:id"' --example id: 43-8530
+Route: /instructor/delete-assign/:course
+Parameters: course is the name of the course that the course instructor is responsible for
+Example of how to call the route: /api/instructor/delete-assign/CSEN605: DSD
 Request type: POST
 Request Body:
 {
-"courseId": "5fdff79bc5acf437a4cb29cf",
-"academicID" : "3455"
+    "slotID": "5fe5fdb5e8a9dd17449c8228"
 }
-Response: Induction deleted assignment of academic member successfuly
+Response: The updated slot after deleting the assignment of the slot
 
 Response Example:  
- "Deleted successfully"
+{
+    "startTime": "2020-12-20T10:10:00.000Z",
+    "endTime": "2020-12-20T10:11:30.000Z",
+    "staffTeachingSlot": "N/A"
+}
+
+NOTE: slotID IS AN OBJECT ID REPRESENTING THE SLOT THAT YOU WANT TO UPDATE ITS ASSIGNMENT. IT WILL BE DIFFERENT EVERYTIME YOU SEED THE DATABASE. SO PLEASE CHECK YOUR DB FOR A DSD UNASSIGNED SLOT AND GET ITS OBJECTID
+---
+
+---
+
+Functionality: Remove an assigned academic member in course(s) he/she is assigned to.
+Route: /api/instructor/remove-academicMember/:course/:id
+Parameters: id is the id of the academic member that the course instructor wants to remove
+Example of how to call the route: /api/instructor/remove-academicMember/CSEN605: DSD/43-10272
+Request type: POST
+Response: Indication that the academic instructor has been succesfully deleted from course
+
+Response Example: "Academic member succsfully removed"
 
 ---
 
 ---
 
 Functionality:Assign an academic member in each of his/her course(s) to be a course coordinator
-Route: '/api/assign-academic/:id"' --example id: 43-8530
+Route: /api/instructor/assign-academic/:course
+Parameters: course is the name of the course for which the course instructor wants to assign a course coordinator
+Example of how to call the route: /api/instructor/view-staff-course/CSEN605: DSD
 Request type: POST
 Request Body:
 {
-"courseId": "5fdff79bc5acf437a4cb29cf",
-"academicID" : "5647"
+    "academicID" : "ac-10272"
 }
-Response: JSON file for the uodated course
+Response: JSON file for the updated course
 
 Response Example:  
- {
-"courseId": "5fdff79bc5acf437a4cb29cf"
-"courseName" : "CSEN 701 ",
-"instructors" : " 43-8530",
-" teachingAssistants": {"1425" ,"2435"},
-"coordinator" : "5647",
-"teachingSlots":
 {
-{
-"startTime": "2012-01-01T22:00:00.000Z",
-"endTime": "2012-01-01T22:00:00.000Z",
-"staffTeachingSlot": "Shaka Zulu",
-"courseTaughtInSlot": CSEN701: Embedded Systems,
-"slotLocation": "H14",
-"replacementStaff": "NA"
-},
-{
-"startTime": "2012-01-01T22:00:00.000Z",
-"endTime": "2012-01-01T22:00:00.000Z",
-"staffTeachingSlot": "Shaka Zulu",
-"courseTaughtInSlot": CSEN701: Embedded Systems
-"slotLocation": "H19",
-"replacementStaff": "NA"
+    "courseName": "CSEN605: DSD",
+    "coordinator": "Walid",
+    "unassignedSlots": 1
 }
-},
-"unassignedSlots" : "1"
-
-
-
 
 =================================================================================
 -----------------------------------HRRoutes-----------------------------------

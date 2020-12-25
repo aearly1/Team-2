@@ -15,21 +15,20 @@ const { Server, ObjectId } = require('mongodb');
 router.route('/courseInstructor')
 //DB initialization
 .post(async(req,res)=>{
-    //Ali's initiallization data
     const salt = await bcrypt.genSalt(12);
     const pass = await bcrypt.hash('12345', salt);
     const instructor=new staffMembers ({
         email: 'soubra@guc.com',
         password: pass,
-        id: 'ac-10272', // Generated using uuidv4
+        id: 'ac-10271', // Generated using uuidv4
         name: 'Hassan Soubra',
         gender:'Male',
         type: 'academic', // can either be HR or academic
-        subType:'lecturer',
+        subType:'instructor',
         office: 'C7-219',
         dayOff: 'Sataurday',
         facultyName: 'MET', //null for HR
-        departmentName: 'CSEN', //null for HR or just set to HR
+        departmentName: 'DMET', //null for HR or just set to HR
         attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
         courses: [], //array with course ids of courses they teach && empty list in case of HR
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
@@ -42,6 +41,54 @@ router.route('/courseInstructor')
     })
     await instructor.save();
     
+    const TA=new staffMembers ({
+        email: 'loaa@guc.com',
+        password: pass,
+        id: 'ac-10273', // Generated using uuidv4
+        name: 'Loaa',
+        gender:'Female',
+        type: 'academic', // can either be HR or academic
+        subType:'TA',
+        office: 'C3-203',
+        dayOff: 'Tuesday',
+        facultyName: 'MET', //null for HR
+        departmentName: 'DMET', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 12,
+        accidentalLeavesLeft: 1,
+        Salary: 12345,
+        firstLogin: false
+    })
+    TA.save();
+
+    const TA2=new staffMembers ({
+        email: 'walid@guc.com',
+        password: pass,
+        id: 'ac-10272', // Generated using uuidv4
+        name: 'Walid',
+        gender:'Male',
+        type: 'academic', // can either be HR or academic
+        subType:'TA',
+        office: 'C3-203',
+        dayOff: 'Tuesday',
+        facultyName: 'MET', //null for HR
+        departmentName: 'DMET', //null for HR or just set to HR
+        attendance: [], //should contain JS objects that look like this : {day:01,month:09, year:2020, [ {signed in: 7:00, signed out: 9:00},{ signed in: 11:00, signed out: 13:00}]}
+        courses: [], //array with course ids of courses they teach && empty list in case of HR
+        scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
+        sentRequests: [], //stores request models sent by this particular staff member
+        receivedRequests: [], //stores request models submitted to this particular staff
+        annualLeaves: 12,
+        accidentalLeavesLeft: 1,
+        Salary: 12345,
+        firstLogin: false
+    })
+    TA2.save();
+
     const newCourse = new course(
         {
             courseName: 'CSEN605: DSD',
@@ -49,14 +96,23 @@ router.route('/courseInstructor')
             teachingAssistants: [], //array stores ids of teaching assitants of this course
             coordinator: null, // id of the Coordinator of this course
             teachingSlots: [], //array that stores all the slots of the course (whether or not they have been assigned to staff members)
-            unassignedSlots: 2, //used to calculate the course coverage
+            unassignedSlots: 1, //used to calculate the course coverage
         }
     )
     await newCourse.save();
     await staffMembers.findOneAndUpdate({_id :
         instructor._id},  { $push: {  courses: newCourse._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+        TA._id},  { $push: {  courses: newCourse._id}}, {new: true});
+    await staffMembers.findOneAndUpdate({_id :
+        TA2._id},  { $push: {  courses: newCourse._id}}, {new: true});
     await course.findOneAndUpdate({_id :
         newCourse._id},  { $push: {  instructors: instructor._id}}, {new: true});
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingAssistants: TA._id}}, {new: true});
+    await course.findOneAndUpdate({_id :
+        newCourse._id},  { $push: {  teachingAssistants: TA2._id}}, {new: true});
+
     const loc = new location(
         {
             roomNr: 'H20',
@@ -74,13 +130,16 @@ router.route('/courseInstructor')
         }
     );
     slot1.save();
+    await staffMembers.findOneAndUpdate({_id :
+        instructor._id},  { $push: {  scheduleSlots: slot1.id}}, {new: true});
     await course.findOneAndUpdate({_id :
         newCourse._id},  { $push: {  teachingSlots: slot1._id}}, {new: true});
     const slot2=new slot(
         {
             startTime: new Date("2020-12-20T12:08:00"), //start time of slot
             endTime: new Date("2020-12-20T12:09:30"), // end time of slot
-            courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
+            courseTaughtInSlot: newCourse._id, //what course will be taught in the slot ,
+            staffTeachingSlot:instructor._id,
             slotLocation: loc._id, //ex. H14, C7.301
         }
     );

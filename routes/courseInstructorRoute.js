@@ -14,7 +14,7 @@ const { Server, ObjectId } = require('mongodb');
 
 //View the coverage of course(s) he/she is assigned to.
 router.route("/view-course-coverage/:course")
-.get(
+.get([check ("course").isString()],
 async (req, res) => {
     const errors = validationResult(req);
    
@@ -65,21 +65,59 @@ async (req, res) => {
 });
 
 //View the slots’ assignment of course(s) he/she is assigned to.
-router.route("/view-slot-assign-course/:id",auth,[check ("id").isNumeric()])
+router.route("/view-slot-assign-course/:course")
 .get( async (req, res) => {
     var ObjectId = require('mongodb').ObjectId; 
-   // const userID=req.body.userID;
-    let userObject = await staffMembers.findOne({_id:ObjectId(req.params.id)})//fetch supposed instructor
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        if(staffModel.findById(req.params.id).courses==null){ //HR
-            return res.send("No slots are assigned");
-       }else{
-        const user= await  staffModel.findById(req.params.id) ;
-        res.json(user.slots);
+        const myCourse= await course.findOne({"courseName":req.params.course});
+        if(myCourse==null)
+        {
+            res.status(404).send("Course not found!")
+        }
+        else
+        {
+            const instructorId=req.user.id;
+            const instructor= await staffMembers.findOne({id:instructorId});
+            const intructorsList = myCourse.instructors;
+            var found=false;
+            if(intructorsList!=null)
+            {
+                for (const element of intructorsList)
+                {
+                    if(element.equals(instructor._id))
+                    {
+                        found=true;
+                    }
+                }
+            }
+            if(!found)
+            {
+                res.status(401).send("User is not an instructor or is not an instructor of that course")
+            }
+            else
+            {
+                const slots=myCourse.teachingSlots;                
+                const schedule=[];
+                for (const element of slots)
+                {
+                    const sloty= await slot.findOne({_id:element});
+                    console.log(sloty)
+                    const staff =await staffMembers.findOne({_id:sloty.staffTeachingSlot});
+                    const slotOutput=
+                    {
+                        "startTime": sloty.startTime, //start time of slot
+                        "endTime": sloty.endTime, //what course will be taught in the slot 
+                        "staff assigned to course": staff==null?"Slot not assigned yet":staff.name// null if this slot is still not assigned to anyon
+                    }
+                    schedule.push(slotOutput);
+                }
+                res.send(schedule);
+            }
+       
         }
     } catch (err) {
         console.error(err.message);
@@ -89,25 +127,75 @@ router.route("/view-slot-assign-course/:id",auth,[check ("id").isNumeric()])
 
 //View all the staff per course along with their profiles.
 
-router.route("/view-staf-course/:id",auth, 
-[ 
-check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-])
+router.route("/view-staff-course/:course", 
+)
 .get( async (req, res) => {
-    const user = await staffModel.findById(req.param.id)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
-    try {
-        let staffOutput = [];
-        let usercourses = await staffModel.find({"courses": user.courses})
-        usercourses.forEach(stafcourse=>staffOutput.push({
-            userCode: staffMem.id,
-            email: staffMem.email,
-            name: staffMem.name
-        }))
-       res.json(staffOutput);
-    } catch (err) {
+        try {
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                    const instructors=myCourse.instructors;                
+                    const profiles=[];
+                    for (const element of instructors)
+                    {
+                        const staff= await staffMembers.findOne({_id:element});
+                        const singleProfile=
+                        {
+                            "userCode": staff.id,
+                            "subType": "Instructor",
+                            "email": staff.email,
+                            "name": staff.name,
+                            "office": staff.office
+                        }
+                        profiles.push(singleProfile);
+                    }
+                    const TAS=myCourse.teachingAssistants;                
+                    for (const element of TAS)
+                    {
+                        const staff= await staffMembers.findOne({_id:element});
+                        const singleProfile=
+                        {
+                            "userCode": staff.id,
+                            "subType": "Teaching Assistant",
+                            "email": staff.email,
+                            "name": staff.name,
+                            "office": staff.office
+                        }
+                        profiles.push(singleProfile);
+                    }
+                    res.send(profiles);
+                }
+           
+            }
+        }
+    catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
@@ -115,178 +203,384 @@ check("userID", "Invalid data type. userID must be of type string of length 24")
 
 //View all the staff in his/her department along with their profiles.
 
-router.route("/view-staf-dep/:id",auth, 
-[
-    check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-])
+router.route("/view-staff-dep"
+)
 .get( async (req, res) => {
-    const user = await staffModel.findById(req.param.id)
     const errors = validationResult(req);
-    const currentdepartement =user.departmentName ;
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
-    try {
-        let staff = await staffModel.find({"departementName":currentdepartement});
-        let staffOutput = [];
-        staff.forEach(staffMem => staffOutput.push({
-            userCode: staffMem.id,
-            email: staffMem.email,
-            name: staffMem.name
-        }))
-        res.status(200).json(staffOutput);  
-    } catch (err) {
+        try {
+            const instructorId=req.user.id;
+            const instructor= await staffMembers.findOne({id:instructorId});
+            if(instructor.subType==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const ppl=await staffMembers.find({departmentName:instructor.departmentName});   
+                const profiles=[];
+                for (const element of ppl)
+                {
+                    const staff= await staffMembers.findOne({_id:element});
+                    const singleProfile=
+                    {
+                        "userCode": staff.id,
+                        "subType": staff.subType,
+                        "email": staff.email,
+                        "name": staff.name,
+                        "office": staff.office
+                    }
+                    profiles.push(singleProfile);
+                }
+                res.send(profiles);
+            }
+        }
+    catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
 });
 
 //Assign an academic member to an unassigned slots in course(s) he/she is assigned to.
-router.route("/assign-course/:id",auth).post( 
+router.route("/assign-course/:course").post( 
     async (req, res) =>{
-        const user = await staffModel.findById(req.param.id)
-        const courseID=req.body.courseID;
-        const academicID=req.body.academicID
-        const slotID=req.body.slotID
-
-
-        try{
-        // const courses =await staffModel.findOne({courses:academicID.courses})
-         const currentcourse=courseModel.findOne({_id:ObjectId(courseID)})
-         const newunassignedslots =courseModel.findOne({_id:ObjectId(courseID)}) -1 ;
-
-         if(!courseID==courseModel.findOne({_id:ObjectId(courseID)})){
-             res.send("course not found");
-         }else{
-       //coordinator academic
-       if(courseID ==courseModel.findOne({_id:ObjectId(courseID)} && academicID==courseModel.findOne({coordinator:ObjectId(academicID)}) )){
-         const result = 
-         await
-          slotModel.findByIdAndUpdate(_id=objectID(slotID),{courseTaughtInSlot: objectID(courseID)},{staffTeachingslot:objectID(academicID)});
-         const coursetemp= courseModel.findById({_id:objectID(courseID)})
-         
-         coursetemp. teachingSlots.push(slotModel.findById({id:objectID(slotID)}));
-         coursetemp.coordinator =objectID(academicID)
-         coursetemp.unassignslots=newunassignedslots
-         await coursetemp.save();
-          res.json(coursetemp)
+        try
+        {
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                   const theSlot = await slot.findOne({_id:req.body.slotID});
+                   const theAcademicUser= await staffMembers.findOne({id:req.body.academicId});
+                   if(theSlot==null || theSlot.staffTeachingSlot!=null || !theSlot.courseTaughtInSlot.equals(myCourse._id))
+                   {
+                       res.status(401).send("You cannot assign this slot to anyone")
+                   }
+                   else if(theAcademicUser==null)
+                   {
+                        res.status(401).send("The academic member that you want to assign this slot to doesn't exist")
+                   }
+                   else
+                   {
+                       var found1=false;
+                        const coursesOfTheAcademic=theAcademicUser.courses;
+                        if(coursesOfTheAcademic!=null)
+                        {
+                            for (const element of coursesOfTheAcademic)
+                            {
+                                console.log(element + " " +myCourse._id)
+                                if(myCourse._id.equals(element))
+                                 {
+                                    found1=true;break;
+                                 }
+                            }
+                        }
+                        if(!found1)
+                        {
+                            res.status(404).send("Academic user that you want to assign this slot to is not in this course")
+                        }
+                        else
+                        {
+                            await course.findOneAndUpdate({_id:myCourse._id},{unassignedSlots:myCourse.unassignedSlots+1}, {new: true})
+                            const sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:theAcademicUser._id}, {new: true})
+                            await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$push: {scheduleSlots:theSlot._id}})  
+                            const result=
+                            {
+                                startTime: sloty.startTime,
+                                endTime: sloty.endTime,
+                                courseTaughtInSlot: myCourse.name,
+                                staffTeachingSlot: theAcademicUser.name,
+                            }
+                            res.send(result)
+                        }
+                   }
+                }
+           
+            }
         }
-    //instructor academic
-          if(courseID ==courseModel.findOne({_id:ObjectId(courseID)} && academicID==courseModel.findOne({instructors:ObjectId(academicID)}) )){
-            const result = 
-            await
-             slotModel.findByIdAndUpdate(_id=objectID(slotID),{courseTaughtInSlot: objectID(courseID)},{staffTeachingslot:objectID(academicID)});
-            const coursetemp= courseModel.findById({_id:objectID(courseID)})
-            
-            coursetemp. teachingSlots.push(slotModel.findById({id:objectID(slotID)}));
-            coursetemp.instructors.push(objectID(academicID))
-            coursetemp.unassignslots=newunassignedslots
-            await coursetemp.save();
-             res.json(coursetemp)}
-      //teaching assistant academic
-      if(courseID ==courseModel.findOne({_id:ObjectId(courseID)} && academicID==courseModel.findOne({teachingAssistants:ObjectId(academicID)}) )){
-        const result = 
-        await
-         slotModel.findByIdAndUpdate(_id=objectID(slotID),{courseTaughtInSlot: objectID(courseID)},{staffTeachingslot:objectID(academicID)});
-        const coursetemp= courseModel.findById({_id:objectID(courseID)})
-        
-        coursetemp. teachingSlots.push(slotModel.findById({id:objectID(slotID)}));
-        coursetemp.teachingAssistants.push(objectID(academicID))
-        coursetemp.unassignslots=newunassignedslots
-        await coursetemp.save();
-         res.json(coursetemp)
-         }}
-        }catch{
-            console.error(err.message);
-                res.status(500).send("Server Error");
+        catch(err)
+        {
+            console.log(err)
         }
-        });
+    });
 
 //Update assignment of academic member in course(s) he/she is assigned to.
-router.route("/update-assign/:id",auth,)
+router.route("/update-assign/:course",)
 .post(
-    [
+    /*[
     check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
      check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
     ]
-    ,async(req,res) =>{
-        const user = await staffModel.findById(req.param.id)
-        const courseID=req.body.courseID;
-        const academicID=req.body.academicID
+    ,*/async(req,res) =>{
 
-    try{
-        if(req.param.id==await courseModel.findOne({"instructors":academicID})){
-        await courseModel.findOneAndUpdate(_id=ObjectId(courseID),{instructors:objectID(academicID)});
-    }
-    if(req.param.id==await courseModel.findOne({"coordinator":academicID})){
-         await courseModel.findOneAndUpdate(_id=ObjectId(courseID),{coordinator:academicID});
-    }
-    if(req.param.id==await courseModel.findOne({"teachingAssistants":academicID})){
-        await courseModel.findOneAndUpdate(_id=ObjectId(courseID),{teachingAssistants:objectID(academicID)});
-    }
-  
-        res.send("Updated successfully");
-    }catch{
-        console.error(err.message);
-            res.status(500).send("Server Error");
-    }
+        try
+        {
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                   const theSlot = await slot.findOne({_id:req.body.slotID});
+                   const theAcademicUser= await staffMembers.findOne({id:req.body.academicId});
+                   console.log(theAcademicUser)
+                   console.log(req.body.academicId)
+                   if(theSlot==null || !theSlot.courseTaughtInSlot.equals(myCourse._id))
+                   {
+                       res.status(401).send("You cannot assign this slot to anyone")
+                   }
+                   else if(theAcademicUser==null)
+                   {
+                        res.status(401).send("The academic member that you want to assign this slot too doesn't exist")
+                   }
+                   else
+                   {
+                       var found1=false;
+                        const coursesOfTheAcademic=theAcademicUser.courses;
+                        if(coursesOfTheAcademic!=null)
+                        {
+                            for (const element of coursesOfTheAcademic)
+                            {
+                                 if(myCourse._id.equals(element))
+                                 {
+                                    found1=true;break;
+                                 }
+                            }
+                        }
+                        if(!found1)
+                        {
+                            res.status(404).send("Academic user that you want to assign this slot to is not in this course")
+                        }
+                        else
+                        {
+                            //delete
+                           try
+                           {
+                                await staffMembers.findByIdAndUpdate({_id:sloty.staffTeachingSlot},{$pull: {scheduleSlots:theSlot._id}})  
+                           }
+                           catch(err)
+                           {
+                               console.log(err)
+                           }
+                            var sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:null}, {new: true})
+                            //add
+                            sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:theAcademicUser._id}, {new: true})
+                            await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$push: {scheduleSlots:theSlot._id}})  
+                            const result=
+                            {
+                                startTime: sloty.startTime,
+                                endTime: sloty.endTime,
+                                courseTaughtInSlot: myCourse.name,
+                                staffTeachingSlot: theAcademicUser.name,
+                            }
+                            res.send(result)
+                        }
+                   }
+                }
+           
+            }
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
     });
 
  //  delete assignment of academic member in course(s) he/she is assigned to.
-    router.route("/delete-assign/:id",auth)
+    router.route("/delete-assign/:course")
     .post(
-        [
+        /*[
         check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
          check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
         ]
-        ,async(req,res) =>{
-            const user = await staffModel.findById(req.param.id)
-            const courseID=req.body.courseID;
-            
-    
-        try{
-            if(req.param.id==await courseModel.findOne({instructors:user})){
-            await courseModel.findByIdAndDelete(instructors=objectID(user));
-            await staffModel.findByIdAndUpdate(courses=objectID(courseID),{$push: { courses:ObjectId(courseID)}})   
+        ,*/async(req,res) =>{
+            try
+        {
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                   const theSlot = await slot.findOne({_id:req.body.slotID});
+                   if(theSlot==null || !theSlot.courseTaughtInSlot.equals(myCourse._id))
+                   {
+                       res.status(401).send("You cannot assign this slot to anyone")
+                   }
+                   else
+                   {
+                        await course.findOneAndUpdate({_id:myCourse._id},{unassignedSlots:myCourse.unassignedSlots+1}, {new: true})
+                        try
+                        {
+                            await staffMembers.findByIdAndUpdate({_id:sloty.staffTeachingSlot},{$pull: {scheduleSlots:theSlot._id}})  
+                        }
+                        catch(err)
+                        {
+                            console.log(err);
+                        }
+                        const sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:null}, {new: true})
+                        const result=
+                        {
+                            startTime: sloty.startTime,
+                            endTime: sloty.endTime,
+                            courseTaughtInSlot: myCourse.name,
+                            staffTeachingSlot: "N/A",
+                        }
+                    res.send(result)
+                   }
+                }
+           
+            }
         }
-        if(req.param.id==await courseModel.findOne({coordinator:user})){
-           await courseModel.findByIdAndDelete(coordinator=objectID(user));
-           await staffModel.findByIdAndUpdate(courses=objectID(courseID),{$push: { courses:ObjectId(courseID)}})   
+        catch(err)
+        {
+            console.log(err)
         }
-
-        if(req.param.id==await courseModel.findOne({"teachingAssistants":user})){
-
-            await courseModel.findByIdAndDelete(teachingAssistants=objectID(user));
-            await staffModel.findByIdAndUpdate(courses=objectID(courseID),{$push: { courses:ObjectId(courseID)}})  
-        }
-            res.send("Deleted succesfully");
-        }catch{
-            console.error(err.message);
-                res.status(500).send("Server Error");
-        }
-        });
-
-
+            });
         
 //Assign an academic member in each of his/her course(s) to be a course coordinator.
-router.route("/assign-academic/:id",auth).post(
+router.route("/assign-academic/:course")
+.post(
      [
-       check("userID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24),
-       check("courseID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
+       check("academicID", "Invalid data type. userID must be of type string of length 24").isString().isLength(24)
     ]
     ,async(req,res) =>{
-        const user = await staffModel.findById(req.param.id)
-        const courseID=req.body.courseID;
-        const academicID=req.body.academicID
-
-        
-    try{
-     if(req.param.id==await courseModel.findOne({coordinator:user})){
-         res.sstatus(404).send("already a coordinator")
-     }else{
-         const result = await courseModel.findByIdAndUpdate(_id=courseID,{coordinator:objectID(academicID)})
-         res.json(result);
-     }
-    }catch{
+        try {
+            const userID=req.user.id;
+            const user = await staffMembers.findOne({id:userID})
+            const academicID=req.body.academicID
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                    const coordinator1 = await staffMembers.findOne({id:academicID})
+                    if(coordinator1==null)
+                    {
+                        res.status(404).send("coordinator doesn't exist")
+                    }
+                   else if(coordinator1._id.equals(await course.findOne({coordinator:user}))){
+                        res.status(404).send("already a coordinator")
+                    }
+                    else{
+                        const taList = myCourse.teachingAssistants;
+                        var found2=false;
+                        if(taList!=null)
+                         {
+                            for (const element of taList)
+                            {       
+                                if(element.equals(coordinator1._id))
+                                {
+                                    found2=true;
+                                }
+                            }
+                        }
+                         if(!found2)
+                        {
+                             res.status(401).send("The user that you want to assign as a coordinator is not a TA in this course")
+                        }
+                        const result = await course.findByIdAndUpdate(_id=myCourse._id,{coordinator:coordinator1._id})
+                        const display=
+                        {
+                            "courseName":result.courseName,
+                            "coordinator":coordinator1.name,
+                            "unassignedSlots":result.unassignedSlots,
+                        }
+                        res.send(display);
+                    }
+                }
+           
+            }
+        }
+   catch(err){
         console.error(err.message);
             res.status(500).send("Server Error");
     }
