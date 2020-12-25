@@ -12,7 +12,8 @@
     a) /localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     b)/localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     c)/localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
-    d)/localhost:3000/api/init/hod-init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    d)/localhost:3000/api/init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    e)/localhost:3000/api/init/hr-init. This route is responsible to insert ALL the data need so you can be able to test the HR routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
     =======
 
 6.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE COORDINATOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:ali@guc.com AND PASSWORD: 12345
