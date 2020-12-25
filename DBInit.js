@@ -334,6 +334,7 @@ router.route('/academic-coordinator')
     
 })
 router.post('/staffMems',async(req,res)=>{
+    await staffMembers.deleteMany()
     const salt = await bcrypt.genSalt(12)
     const hashedPassword =await bcrypt.hash("passwordsha2y",salt) 
         const mem = new staffMembers({
@@ -341,9 +342,10 @@ router.post('/staffMems',async(req,res)=>{
             password: hashedPassword,
             id: "43-8530",
             name: "7amada sha3r",
-            type: "Academic", // can either be HR or academic
+            type: "academic", // can either be HR or academic
+            subType: "ta",
             office: "C4.404",
-            dayOff: "Saturday",
+            dayOff: "SAT",
             facultyName: "Tegara", //null for HR
             departmentName: "Fawanees", //null for HR or just set to HR
             attendance: [],

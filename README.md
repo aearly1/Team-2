@@ -22,7 +22,10 @@
 9.  IMPORTANT NOTE: TO BE ABLE TO USE THE COURSE INSTRUCTOR ROUTES, PLEASE USE THE /api/login ROUTE TO LOGIN USING EMAIL:soubra@gmail.com AND PASSWORD: 12345
 10.  You will find the UML in the root (UML.jpg)
 11. # You will find below the description of each route. When you are testing our routes, you can copy the examples written in this document in postman. When you run the routes, you will get a response. The response you get should be identical to the response written in the examples here. That way, you can verify that our work is working correctly
-    # -----------------------------------staffRoutes-----------------------------------
+
+=================================================================================
+--------------------------------staffMembers-------------------------------------
+=================================================================================
 
 Functionality: Logs the staff member in
 Route: /api/login
@@ -43,20 +46,19 @@ Route: /api/staffs/profile
 Request type: GET
 Response: JSON Object containing staff member details
 Example: {
-"Name": "7amada sha3r",
-"Email": "sexysoso@hotmail.com",
-"ID": "43-8530",
-"Office": "C4.404",
-"FacultyName": "Sebaka",
-"DepartmentName": "Fawanees",
-"Courses": [
-"ABC123",
-"XYZ567"
-],
-"DayOff": "Friday",
-"annualLeaves": 5,
-"accidentalLeavesLeft": 3,
-"Salary": 10
+    "Name": "7amada sha3r",
+    "Email": "sexysoso@hotmail.com",
+    "ID": "43-8530",
+    "Office": "C4.404",
+    "FacultyName": "Tegara",
+    "DepartmentName": "Fawanees",
+    "Courses": [
+        "ABC123",
+        "XYZ567"
+    ],
+    "DayOff": "SAT",
+    "annualLeaves": 5,
+    "Salary": 10
 }
 
 ---
@@ -71,7 +73,7 @@ Request Body: {
 "department":"Mo5abarat",
 "salary":10000
 }
-NOTE: faculty, department & salary only update in the DB only if the logged in member is not "Academic"
+NOTE: faculty, department & salary only update in the DB only if the logged in member is not "academic"
 
 ---
 

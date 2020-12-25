@@ -54,7 +54,7 @@ const missingdays = require('../functions/funcs').missingdays
         u.office = req.body.office
         if(req.body.email)
         u.email = req.body.email
-        if(req.user.type!="Academic"){
+        if(req.user.type!="academic"){
             if(req.body.salary)
             u.Salary=req.body.salary
             if(req.body.department)
@@ -120,24 +120,24 @@ const missingdays = require('../functions/funcs').missingdays
         res.status(401).send("Sign in first")
         u.attendance.push(lastop)
         switch (u.dayOff) {
-            case "Saturday":
+            case "SAT":
                 dayoff=6
                 break;
-            case "Sunday":
+            case "SUN":
                 dayoff=0
-            case "Monday":
+            case "MON":
                 dayoff=1
                 break;
-            case "Tuesday":
+            case "TUE":
                 dayoff=2
                 break;
-            case "Wednesday":
+            case "WED":
                 dayoff=3
                 break;
-            case "Thursday":
+            case "THU":
                 dayoff=4
                 break;
-            case "Friday":
+            case "FRI":
                 dayoff=5
                 break;
         }
