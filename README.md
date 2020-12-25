@@ -1148,7 +1148,7 @@ NOTE: slotID IS AN OBJECT ID REPRESENTING THE SLOT THAT YOU WANT TO UPDATE ITS A
 Functionality: Remove an assigned academic member in course(s) he/she is assigned to.
 Route: /api/instructor/remove-academicMember/:course/:id
 Parameters: id is the id of the academic member that the course instructor wants to remove
-Example of how to call the route: /api/instructor/remove-academicMember/CSEN605: DSD/43-10273
+Example of how to call the route: /api/instructor/remove-academicMember/CSEN605: DSD/ac-10273
 Request type: POST
 Response: Indication that the academic instructor has been succesfully deleted from course
 

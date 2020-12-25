@@ -499,6 +499,115 @@ router.route("/update-assign/:course",)
             console.log(err)
         }
             });
+    
+    //Remove an assigned academic member in course(s) he/she is assigned to.
+    router.route("/remove-academicMember/:course/:id")
+    .post(
+        async(req,res) =>{
+            try
+        {
+            const myCourse= await course.findOne({"courseName":req.params.course});
+            console.log(myCourse)
+            if(myCourse==null)
+            {
+                res.status(404).send("Course not found!")
+            }
+            else
+            {
+                const instructorId=req.user.id;
+                const instructor= await staffMembers.findOne({id:instructorId});
+                const intructorsList = myCourse.instructors;
+                var found=false;
+                if(intructorsList!=null)
+                {
+                    for (const element of intructorsList)
+                    {
+                        if(element.equals(instructor._id))
+                        {
+                            found=true;
+                        }
+                    }
+                }
+                if(!found)
+                {
+                    res.status(401).send("User is not an instructor or is not an instructor of that course")
+                }
+                else
+                {
+                   const theAcademicUser = await staffMembers.findOne({id:req.params.id});
+                   if(theAcademicUser==null)
+                   {
+                       res.status(404).send("The academic user that you are trying to remove from your course does not exist.")
+                   }
+                   else
+                   {
+                        //check if he's in the course
+                        const coursesOfAcademicUser = theAcademicUser.courses;
+                        var foundIt=false;
+                        if(coursesOfAcademicUser!=null)
+                        {
+                            for (const element of coursesOfAcademicUser)
+                            {
+                                const temp=(myCourse._id)
+                                if(temp.equals(element))
+                                {
+                                    foundIt=true;break;
+                                }
+                            }
+                        }
+                        if(!foundIt)
+                        {
+                            res.status(404).send("The user that you are trying to remove from your course is not part of the course")
+                        }
+                        else
+                        {
+                            await course.findByIdAndUpdate({_id:myCourse._id},{$pull: {instructors:theAcademicUser._id}}) 
+                            await course.findByIdAndUpdate({_id:myCourse._id},{$pull: {teachingAssistants:theAcademicUser._id}}) 
+                            try
+                            {
+                                if(theAcademicUser.id.equals(myCourse._id.coordinator)) 
+                                {
+                                    await course.findByIdAndUpdate({_id:myCourse_id},{coordinator:null}) 
+                                }
+                            }
+                            catch(err)
+                            {
+                                console.log(err);
+                            }
+                            await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$pull: {courses:myCourse._id}}) 
+                            const courseSlots= myCourse.teachingSlots;
+                            if(courseSlots!=null)
+                            {
+                            for (const elem of courseSlots)
+                            {
+                                const theSLot= await slot.findOne({_id:elem});
+                                try
+                                {
+                                    if(theSlot.staffTeachingSlot.equals(theAcademicUser._id))
+                                    {
+                                        await slot.findByIdAndUpdate({_id:theSLot._id},{staffTeachingSlot:null}) 
+                                        await staffMembers.findByIdAndUpdate({_id:theAcademicUser},{$pull: {scheduleSlots:theSLot._id}}) 
+                                        await course.findByIdAndUpdate({_id:myCourse._id},{unassignedSlots:myCourse.unassignedSlots+1}) ;
+                                    }
+                                }
+                                catch(err)
+                                {
+                                    console.log(err);
+                                }
+                            }
+                        }
+                        res.send("User removed from course succesfully")
+                        }
+                   }
+                }
+           
+            }
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
+            });
         
 //Assign an academic member in each of his/her course(s) to be a course coordinator.
 router.route("/assign-academic/:course")
