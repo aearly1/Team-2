@@ -19,15 +19,15 @@ const missingdays = require('../functions/funcs').missingdays
 
 //         jwt.verify(token, accessTokenSecret, (err, user,type) => {
 //             if (err) {
-//                 res.sendStatus(403);
+//                 return res.sendStatus(403);
 //             }
 //             if(type != 'HR')
-//                 res.sendStatus(403).send('Incorrect user Type');
+//                 return res.sendStatus(403).send('Incorrect user Type');
 //             req.user = user;
 //             next();
 //         });
 //     } else {
-//         res.sendStatus(401);
+//         return res.sendStatus(401);
 //     }
 // };
 
@@ -41,13 +41,11 @@ router.post('/addLocation',[
  
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can add rooms");
-        return;
+        return res.status(400).send("Only HR members can add rooms");
     }
     const roomNr = req.body.roomNr
     const roomType = req.body.roomType
@@ -58,10 +56,9 @@ router.post('/addLocation',[
     });
    await loc.save((err) => {
       if (err) 
-    {        res.status(500).send(err);
-             return; 
+    {        return res.status(500).send(err);
     } else 
-          res.send("Added location successfully");
+          return res.send("Added location successfully");
     });
    
 });
@@ -75,13 +72,12 @@ router.post('/editLocation',[
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return  res.status(400).send("Error with arguments types");
+        
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can add rooms");
-        return;
+        return res.status(400).send("Only HR members can add rooms");
     }
     let location = {}
     location.roomNr= req.body.roomNr
@@ -91,37 +87,32 @@ router.post('/editLocation',[
     if(locat){
     await staffModel.findOne({office:location.roomNr},(err,loca)=>{
         if(err){
-            res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
         }
         else{
             if(loca!=null){
-                res.status(400).send("Cannot edit a location that has registered staff members in it")
-                    return;
+                return res.status(400).send("Cannot edit a location that has registered staff members in it")
             }
         }
     })
 
     await slotModel.findOne({slotLocation:locat._id},(err,loca)=>{
         if(err){
-            res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
          }
         else{
             if(loca!=null){
-                res.status(400).send("Cannot edit a location that has an assigned slot in it")
-                return;
+                return res.status(400).send("Cannot edit a location that has an assigned slot in it")
                  }
         }
     })
     
   await  locationModel.findOneAndUpdate({roomNr:location.roomNr}, {$set:location}, (err, docs)=> { 
     if (err){ 
-        res.status(500).send(err) 
-        return;
+        return res.status(500).send(err) 
     } 
     else{ 
-        res.send("Updated location : "+ docs); 
+        return res.send("Updated location : "+ docs); 
     } 
 });
 }
@@ -134,50 +125,43 @@ router.post('/deleteLocation',[
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can delete rooms");
-        return;
+        return res.status(400).send("Only HR members can delete rooms");
     }
     const roomNr= req.body.roomNr
     const locat = await locationModel.findOne({roomNr:roomNr})
     if(locat){
     await staffModel.findOne({office:roomNr},(err,loca)=>{
         if(err){
-            res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
         }
         else{
             if(loca!=null){
-                res.status(400).send("Cannot delete a location that has registered staff members in it")
-                return;
+                return res.status(400).send("Cannot delete a location that has registered staff members in it")
             }
         }
     })
 
     await slotModel.findOne({slotLocation:locat._id},(err,loca)=>{
         if(err){
-            res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
         }
         else{
             if(loca!=null){
-                res.status(400).send("Cannot delete a location that has an assigned slot in it")
-                return;
+                return res.status(400).send("Cannot delete a location that has an assigned slot in it")
             }
         }
     })
     
   await  locationModel.findOneAndDelete({roomNr:locat.roomNr},  (err, docs)=> { 
     if (err){ 
-        res.status(500).send(err) 
-        return;
+        return res.status(500).send(err) 
     } 
     else{ 
-        res.send("Deleted location : "+ docs); 
+        return res.send("Deleted location : "+ docs); 
     
     } 
 });
@@ -192,13 +176,11 @@ router.post('/addFaculty',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can add faculties");
-        return;
+        return res.status(400).send("Only HR members can add faculties");
     }
 
 
@@ -209,24 +191,21 @@ router.post('/addFaculty',[
        await  departmentModel.findOne({_id:departmentId},(err,department)=>{
             if(err)
             {   
-                res.status(500).send(err);
-                return;
+                return res.status(500).send(err);
             }
                 else
             if(department == null){
-                res.status(400).send("Incorrect department Id")
-                return;
+                return res.status(400).send("Incorrect department Id")
             }
        })
     })
     const fac = new facultyModel({facultyName:facultyName,departments:departments});
     await fac.save((err) => {
       if (err) {
-            res.status(500).send(err);
-            return;
+            return res.status(500).send(err);
         }
 
-    res.send("Successfully added faculty: "+ facultyName)
+    return res.send("Successfully added faculty: "+ facultyName)
         });
 
 });
@@ -237,14 +216,12 @@ router.post('/editFaculty',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can update faculties");
-        return;
+        return res.status(400).send("Only HR members can update faculties");
     }
     let fac = {}
     fac.facultyName = req.body.facultyName
@@ -252,23 +229,20 @@ router.post('/editFaculty',[
     fac.departments.forEach(async departmentId=>{
         await departmentModel.findOne({_id:departmentId},(err,department)=>{
             if(err){
-            res.status(500).send(error)
-            return;
+            return res.status(500).send(error)
         } 
            else
             if(department == null){
-                res.status(400).send("Incorrect department id")
-                return;
+                return res.status(400).send("Incorrect department id")
                     }
         })
     })
          await  facultyModel.findOneAndUpdate({facultyName:fac.facultyName},{$set:fac}, (err, docs)=> { 
     if (err){ 
-        res.status(500).send(err) 
-        return;
+        return res.status(500).send(err) 
     } 
     else{ 
-        res.send("Updated faculty : " + docs); 
+        return res.send("Updated faculty : " + docs); 
     } 
 });
 });
@@ -279,13 +253,11 @@ router.post('/deleteFaculty',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can delete faculties");
-        return;
+        return res.status(400).send("Only HR members can delete faculties");
     }
 
 
@@ -294,25 +266,23 @@ router.post('/deleteFaculty',[
     await staffModel.find({facultyName:facultyName},(err,staff)=>{
         if(err)
         {
-            res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
         }
         staff.forEach(async s=>{
           await  staffModel.findOneAndUpdate({_id:s._id},{facultyName:null},(error,updatedS)=>{
               if(error)
-          {    res.status(500).send(error)
-            return;  
+          {    return res.status(500).send(error)
         }  
         })
         })
     })
         await facultyModel.findOneAndDelete({facultyName:facultyName},(err, docs)=> { 
     if (err){ 
-        res.sendStatus(500).send(err) 
+        return res.sendStatus(500).send(err) 
         return;
     } 
     else{ 
-        res.send("Removed faculty : "+ docs); 
+        return res.send("Removed faculty : "+ docs); 
     } 
 });
 });
@@ -326,7 +296,7 @@ router.post('/deleteFaculty',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
+        return res.status(400).send("Error with arguments types");
     }
 
     const departmentName = req.body.departmentName
@@ -334,15 +304,15 @@ router.post('/deleteFaculty',[
     const courses = req.body.courses
     const HOD = await staffModel.findOne({id:HOD_Id})
     if(HOD == null ){
-        res.status(400).send("The ID does not match any of the staff members")
+        return res.status(400).send("The ID does not match any of the staff members")
     }
     const dep = new departmentModel({departmentName:departmentName,
         HOD_id:HOD._id, courses:courses });
    await dep.save((err) => {
       if (err) 
-            res.sendStatus(500).send(err);
+            return res.sendStatus(500).send(err);
       else
-            res.send("Successfully added department")
+            return res.send("Successfully added department")
         });
 });
 */
@@ -353,13 +323,11 @@ router.post('/addDepartment',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can add departments");
-        return;
+        return res.status(400).send("Only HR members can add departments");
     }
     const departmentName = req.body.departmentName
     const facultyName = req.body.facultyName
@@ -367,34 +335,31 @@ router.post('/addDepartment',[
     let department = await departmentModel.findOne({departmentName:departmentName})
     let faculty = await facultyModel.findOne({facultyName:facultyName})
     if(department ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
 if(faculty ==null)
-    {res.status(400).send("Incorrect faculty name")
-    return;}
+    {return res.status(400).send("Incorrect faculty name")
+}
     facultyModel.find((err,fac)=>{
         if(err)
-        {res.status(500).send(err)
-            return;
+        {return res.status(500).send(err)
         }
         fac.forEach(async f=>{
             let departs = f.departments
             departs = departs.filter(d=>{return d==department._id})
             if(departs.length>0)
-           {res.status(400).send("the department already is assigned to another faculty")
-           return;
+           {return res.status(400).send("the department already is assigned to another faculty")
         }})
         })
 
         staffModel.find({departmentName:department.departmentname},(err,staff)=>{
             if(err)
-            {res.status(500).send(err)
-                return;}
+            {return res.status(500).send(err)
+}
             staff.forEach(async s=>{
               await  staffModel.findOneAndUpdate({_id:s._id},{facultyName:facultyName},(error,updatedS)=>{
                   if(error)
-                  {res.status(500).send(error)
-                    return;
+                  {return res.status(500).send(error)
                 }
             })
             })
@@ -403,11 +368,10 @@ if(faculty ==null)
     faculty.departments.push(department._id)
     await facultyModel.findOneAndUpdate({facultyName:faculty.facultyName},{departments:faculty.departments},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;
+            {return res.status(500).send(err);
             }
                 else
-        res.send("Successfully added department to faculty")
+        return res.send("Successfully added department to faculty")
     });
 
 
@@ -424,7 +388,7 @@ if(faculty ==null)
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
+        return res.status(400).send("Error with arguments types");
     }
 
     const departmentName = req.body.departmentName
@@ -433,12 +397,12 @@ if(faculty ==null)
     courses.forEach(courseId=>{
     await courseModel.findOne({_id:courseId},(err,course=>{
         if(course == null)
-        res.status(400).send("Incorrect course Ids does not exist")
+        return res.status(400).send("Incorrect course Ids does not exist")
     }))
         })
     const HOD = await staffModel.findOne({id:HOD_Id})
     if(HOD == null ){
-        res.status(400).send("The ID does not match any of the staff members")
+        return res.status(400).send("The ID does not match any of the staff members")
     }
     let dep = {}
     dep.departmentName = departmentName
@@ -447,10 +411,10 @@ if(faculty ==null)
 
         await  departmentModel.findOneAndUpdate({departmentName:departmentName}, {$set:dep}, (err, docs)=> { 
     if (err){ 
-        res.sendStatus(500).send(err) 
+        return res.sendStatus(500).send(err) 
     } 
     else{ 
-        res.send("Updated department : " + docs); 
+        return res.send("Updated department : " + docs); 
     } 
 });
 });
@@ -460,20 +424,20 @@ router.post('/deleteDepartment', [
     check("departmentName", "departmentName must be a string").isString()], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
+        return res.status(400).send("Error with arguments types");
     }
 
 
     const departmentName = req.body.departmentName
     const staff = staffModel.findOne({departmentName:departmentName})
     if(staff)
-        res.status(400).send("Unable to delete the deparment because staff members are assigned to it")
+        return res.status(400).send("Unable to delete the deparment because staff members are assigned to it")
     await departmentModel.findOneAndDelete({departmentName:departmentName},(err, docs)=> { 
     if (err){ 
-        res.sendStatus(500).send(err) 
+        return res.sendStatus(500).send(err) 
     } 
     else{ 
-        res.send("Removed department : "+ docs); 
+        return res.send("Removed department : "+ docs); 
     } 
 });
 });
@@ -486,13 +450,11 @@ router.post('/editDepartment',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can update departments");
-        return;
+        return res.status(400).send("Only HR members can update departments");
     }
     const departmentName = req.body.departmentName
     const oldFacultyName = req.body.oldFacultyName
@@ -501,45 +463,42 @@ router.post('/editDepartment',[
     let newFaculty = await facultyModel.findOne({facultyName:newFacultyName})
     let department = await departmentModel.findOne({departmentName:departmentName})
     if(newFaculty ==null)
-    {res.status(400).send("Incorrect Faculty name")
-    return;}
+    {return res.status(400).send("Incorrect Faculty name")
+}
     if(oldFaculty ==null)
-    {res.status(400).send("Incorrect Faculty name")
-    return;}
+    {return res.status(400).send("Incorrect Faculty name")
+}
     if(department ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     newFaculty.departments.push(department._id)
     oldFaculty.departments=oldFaculty.departments.filter(departmentId=>{
        return String(departmentId) != String(department._id )
     })
     await facultyModel.findOneAndUpdate({facultyName:oldFaculty.facultyName},{departments:oldFaculty.departments},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;
+            {return res.status(500).send(err);
             }
             });
 
     staffModel.find({departmentName:department.departmentname},(err,staff)=>{
         if(err)
-        {res.status(500).send(err)
-            return;
+        {return res.status(500).send(err)
         }
         staff.forEach(async s=>{
           await  staffModel.findOneAndUpdate({_id:s._id},{facultyName:newFacultyName},(error,updatedS)=>{
               if(error)
-              {res.status(500).send(error)
-                return;}
+              {return res.status(500).send(error)
+}
                   })
         })
     })
 
     await facultyModel.findOneAndUpdate({facultyName:newFaculty.facultyName},{departments:newFaculty.departments},(err,docs) => {
       if (err){ 
-            res.status(500).send(err);
-            return;
+            return res.status(500).send(err);
         }else
-        res.send("Successfully added department to faculty")
+        return res.send("Successfully added department to faculty")
     });
 });
 
@@ -552,40 +511,38 @@ router.post('/deleteDepartment',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can delete departments");
-        return;}
+        return res.status(400).send("Only HR members can delete departments");
+}
     const departmentName = req.body.departmentName
     const oldFacultyName = req.body.oldFacultyName
     let oldFaculty = await facultyModel.findOne({facultyName:oldFacultyName})
     let department = await departmentModel.findOne({departmentName:departmentName})
     if(oldFaculty ==null)
-    {res.status(400).send("Incorrect Faculty name")
-    return;}
+    {return res.status(400).send("Incorrect Faculty name")
+}
     if(department ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     oldFaculty.departments= oldFaculty.departments.filter(departmentId=>{
        return String(departmentId) != String(department._id)
     })
     
     await staffModel.findOneAndUpdate({departmentName:departmentName},{departmentName:null},(err,docs) => {
         if (err) 
-    {          res.status(500).send(err);
-        return;
+    {          return res.status(500).send(err);
     }     });
 
           await facultyModel.findOneAndUpdate({facultyName:oldFaculty.facultyName},{departments:oldFaculty.departments},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;}
+            {return res.status(500).send(err);
+}
         else
-        res.send("Successfully removed department from faculty")
+        return res.send("Successfully removed department from faculty")
 
         });
 
@@ -602,7 +559,7 @@ router.post('/addCourse',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
+        return res.status(400).send("Error with arguments types");
     }
     
     const courseName = req.body.courseName
@@ -613,7 +570,7 @@ router.post('/addCourse',[
           res,status(500).send(err)
           else
           if(instructor==null)
-          res.status(400).send("Incorrect instructor id")
+          return res.status(400).send("Incorrect instructor id")
           
       })
     })
@@ -625,14 +582,14 @@ router.post('/addCourse',[
             res,status(500).send(err)
             else
             if(TA==null)
-            res.status(400).send("Incorrect teaching assitant id")
+            return res.status(400).send("Incorrect teaching assitant id")
             
         })
       })
     const coordinator = req.body.coordinator
     const coord =  await staffModel.findOne({_id:coordinator})
     if(coord == null){
-        res.status(400).send("Incorrect coordinator id")
+        return res.status(400).send("Incorrect coordinator id")
     }
     const teachingSlots = req.body.teachingSlots
     teachingSlots.forEach(slotId=>{
@@ -641,7 +598,7 @@ router.post('/addCourse',[
             res,status(500).send(err)
             else
             if(slot==null)
-            res.status(400).send("Incorrect slot id")
+            return res.status(400).send("Incorrect slot id")
             
         })
       })
@@ -650,7 +607,7 @@ router.post('/addCourse',[
     instructors:instructors, teachingAssistants:TAs,coordinator:coordinator,teachingSlots:teachingSlots,unassignedSlots:unassignedSlots });
    await course.save((err) => {
       if (err) 
-            res.sendStatus(500).send(err);
+            return res.sendStatus(500).send(err);
     });
 });
 */
@@ -660,14 +617,12 @@ router.post('/addCourse',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can add courses to departments");
-        return;
+        return res.status(400).send("Only HR members can add courses to departments");
     }
 
     const courseName = req.body.courseName
@@ -675,18 +630,18 @@ router.post('/addCourse',[
     let department = await departmentModel.findOne({departmentName:departmentName})
     let course = await courseModel.findOne({courseName:courseName})
     if(department ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     if(course ==null)
-    {res.status(400).send("Incorrect course name")
-    return;}
+    {return res.status(400).send("Incorrect course name")
+}
     department.courses.push(course._id)
     await departmentModel.findOneAndUpdate({departmentName:department.departmentName},{courses:department.courses},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;}
+            {return res.status(500).send(err);
+}
       else
-        res.send("Successfully added course to department")
+        return res.send("Successfully added course to department")
     });
 });
 
@@ -699,14 +654,12 @@ router.post('/editCourse',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can update courses under departments");
-        return;
+        return res.status(400).send("Only HR members can update courses under departments");
     }
 
     const courseName = req.body.courseName
@@ -716,14 +669,14 @@ router.post('/editCourse',[
     let newDepartment = await departmentModel.findOne({departmentName:newDepartmentName})
     let course = await courseModel.findOne({courseName:courseName})
     if(newDepartment ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     if(oldDepartment ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     if(course ==null)
-    {res.status(400).send("Incorrect course name")
-    return;}
+    {return res.status(400).send("Incorrect course name")
+}
     newDepartment.courses.push(course._id)
     oldDepartment.courses=oldDepartment.courses.filter(courseId=>{
        return String(courseId) != String(course._id)
@@ -731,15 +684,15 @@ router.post('/editCourse',[
     
     await departmentModel.findOneAndUpdate({departmentName:oldDepartment.departmentName},{courses:oldDepartment.courses},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;}});
+            {return res.status(500).send(err);
+}});
 
     await departmentModel.findOneAndUpdate({departmentName:newDepartment.departmentName},{courses:newDepartment.courses},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);
-                return;}
+            {return res.status(500).send(err);
+}
                 else
-        res.send("Successfully added course to department")
+        return res.send("Successfully added course to department")
     });
 });
 //delete course
@@ -749,14 +702,12 @@ router.post('/deleteCourse',[
   ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can delete courses from departments");
-        return;
+        return res.status(400).send("Only HR members can delete courses from departments");
     }
 
     const courseName = req.body.courseName
@@ -764,20 +715,20 @@ router.post('/deleteCourse',[
     let oldDepartment = await departmentModel.findOne({departmentName:oldDepartmentName})
     let course = await courseModel.findOne({courseName:courseName})
     if(oldDepartment ==null)
-    {res.status(400).send("Incorrect department name")
-    return;}
+    {return res.status(400).send("Incorrect department name")
+}
     if(course ==null)
-    {res.status(400).send("Incorrect course name")
-    return;}
+    {return res.status(400).send("Incorrect course name")
+}
     oldDepartment.courses=oldDepartment.courses.filter(courseId=>{
         return String(courseId) != String(course._id)
     })
     
     await departmentModel.findOneAndUpdate({departmentName:oldDepartment.departmentName},{courses:oldDepartment.courses},(err,docs) => {
       if (err) 
-            {res.status(500).send(err);    
-                return;}
-    res.send("Successfully removed course from the department")
+            {return res.status(500).send(err);    
+}
+    return res.send("Successfully removed course from the department")
 
         })
 });
@@ -836,13 +787,11 @@ router.post('/addStaffMember',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const uType = req.user.type;
     if(uType != "HR"){
-        res.status(400).send("Only HR members can create new staff members ");
-        return;
+        return res.status(400).send("Only HR members can create new staff members ");
     }
 
     const email = req.body.email
@@ -867,8 +816,7 @@ router.post('/addStaffMember',[
     if(facultyName)
     await facultyModel.findOne({facultyName:facultyName},async (error,results)=>{
         if(error){
-            res.status(400).send("Cannot find faculty") 
-            return;
+            return res.status(400).send("Cannot find faculty") 
         }
     })
     let depart;
@@ -876,24 +824,21 @@ router.post('/addStaffMember',[
     depart=await departmentModel.findOne({departmentName:departmentName});
 
     if (depart == null ){
-        res.status(400).send("Cannot find department") 
-        return;
+        return res.status(400).send("Cannot find department") 
     }
     }
     await locationModel.findOne({roomNr:office},async (error,results)=>{
     if(error){
-        res.status(500).send("Cannot find office") 
-        return;
+        return res.status(500).send("Cannot find office") 
     } 
     else{ 
         if(results.roomType != 'office')
-        {res.status(400).send("The office must have type office")
-        return;
+        {return res.status(400).send("The office must have type office")
     }
         else{
       await  staffModel.find({roomNr:office},async(error1,results1)=>{     
             if(error1)
-            {res.sendStatus(500)
+            {return res.sendStatus(500)
                 return;}
                 else{
                let len = 0
@@ -911,8 +856,7 @@ router.post('/addStaffMember',[
         }
         req.body.id = id
         if(dayOff!="Saturday"){            
-            res.status(422).send("HR must have Saturday as day off")
-            return;
+            return res.status(422).send("HR must have Saturday as day off")
         }
         else{
         const staff = new staffModel({email:email,id:id,
@@ -924,9 +868,9 @@ router.post('/addStaffMember',[
             facultyName:facultyName, password:password,firstLogin:true});
    await staff.save((err3) => {
       if (err3) 
-            {res.status(500).send(err3);
-                return;}
-                res.send("Successfully added staff Member")
+            {return res.status(500).send(err3);
+}
+                return res.send("Successfully added staff Member")
         });
     }}
     else if (type == 'academic'){
@@ -951,25 +895,24 @@ router.post('/addStaffMember',[
             facultyName:facultyName, password:password,firstLogin:true});
        await staff.save((err) => {
           if (err) 
-                {res.status(500).send(err);
-                    return;}
+                {return res.status(500).send(err);
+}
                 });
             let sta;
             if(hodFlag)
             sta =await  staffModel.findOne({id:id})
             await departmentModel.findOneAndUpdate({departmentName:depart.departmentName},{HOD_id:sta._id},(er,uD)=>{
                 if(er)
-                {res.status(500).send(er)
-                    return;}
+                {return res.status(500).send(er)
+}
                 })
                 
-            res.send("Successfully added staff Member")
+            return res.send("Successfully added staff Member")
 
         }
     }
     else{   
-        res.status(422).send("The office selected is at full capacity");
-        return;
+        return res.status(422).send("The office selected is at full capacity");
     }    
 }
     });
@@ -993,13 +936,11 @@ router.post('/editStaffMember',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const uType = req.user.type;
     if(uType != "HR"){
-        res.status(400).send("Only HR members can update staff members ");
-        return;
+        return res.status(400).send("Only HR members can update staff members ");
     }
 
 
@@ -1016,15 +957,13 @@ router.post('/editStaffMember',[
     if(facultyName)
     await facultyModel.findOne({facultyName:facultyName},async (error,results)=>{
         if(error){
-            res.status(400).send("Cannot find faculty") 
-            return;
+            return res.status(400).send("Cannot find faculty") 
         }
     })
     if(departmentName)
     await departmentModel.findOne({departmentName:departmentName},async (error,results)=>{
         if(error){
-            res.status(400).send("Cannot find department") 
-            return;
+            return res.status(400).send("Cannot find department") 
         }
     })
 
@@ -1032,23 +971,21 @@ router.post('/editStaffMember',[
     if(office !=null){
    locationModel.findOne({roomNr:office},async (error,results)=>{
     if(error){
-        res.status(500).send(error) 
-        return;
+        return res.status(500).send(error) 
     } 
     else{ 
         staffModel.find({roomNr:office},(error1,results1)=>{     
             if(error1)
-            {res.status(500).send(error1) 
-                return;
+            {return res.status(500).send(error1) 
             }else{
                 if(results.roomType != 'office')
-                {res.status(400).send("The office must have type office")
-                return;}
+                {return res.status(400).send("The office must have type office")
+}
         if(results.capacity < results1.length){
         staffModel.findOne({id:id},async (err,staffMember)=>{
                 if(err)
-                {res.status(500).send(err) 
-                    return;}
+                {return res.status(500).send(err) 
+}
              else{
             if(type =='HR'||(staffMember.type =='HR'&&type!='academic'))
             {
@@ -1056,17 +993,16 @@ router.post('/editStaffMember',[
                     delete req.body.subType
                 if(dayOff){
                 if(dayOff!="Saturday"){            
-                    res.status(422).send("HR dayoff must be Saturday")
-                    return;
+                    return res.status(422).send("HR dayoff must be Saturday")
                   }
                 else{
                     
             await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err2,docs2) => {
               if (err2) 
-                    {res.status(500).send(err2);
-                        return;}
+                    {return res.status(500).send(err2);
+}
              else{
-                    res.send("Updated staff: "+ docs2)  ;
+                    return res.send("Updated staff: "+ docs2)  ;
                 }});
             }}}
             else { //not HR
@@ -1076,36 +1012,36 @@ router.post('/editStaffMember',[
                     if(req.body.departmentName){
                        await departmentModel.findOneAndUpdate({HOD_id:sta._id},{HOD_id:null},(er,uD)=>{
                      if(er)
-                     {res.status(500).send(er)
-                        return;}
+                     {return res.status(500).send(er)
+}
                     })
                         await departmentModel.findOneAndUpdate({departmentName:req.body.departmentName},{HOD_id:sta._id},(er,uD)=>{
                      if(er)
-                     {res.status(500).send(er)
-                        return;}
+                     {return res.status(500).send(er)
+}
                     })
                 }
                 else
                 departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:sta._id},(er,uD)=>{
                     if(er)
-                    {res.status(500).send(er)
-                        return;}
+                    {return res.status(500).send(er)
+}
                     })
                 }  
                 else if(req.body.subType == "instructor"||req.body.subType == "ta")
                 departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:null},(er,uD)=>{
                     if(er)
-                    {res.status(500).send(er)
-                        return;}
+                    {return res.status(500).send(er)
+}
                     })
         
                                 
                 await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err1,docs1) => {
                     if (err1) 
-                          {res.status(500).send(err1);
-                            return;}
+                          {return res.status(500).send(err1);
+}
                             else
-                          res.send("Updated staff: "+ docs1)  ;
+                          return res.send("Updated staff: "+ docs1)  ;
                       });
                   }
         }
@@ -1113,7 +1049,7 @@ router.post('/editStaffMember',[
       
     }
     else{   
-        res.sendStatus(422);
+        return res.sendStatus(422);
         return;
     }    
 }
@@ -1125,8 +1061,8 @@ router.post('/editStaffMember',[
    else{ 
     const staffMember =  staffModel.findOne({id:id},async (err)=>{
         if(err)
-        {res.status(500).send(err)
-            return;}
+        {return res.status(500).send(err)
+}
         })
     if(type =='HR'||(staffMember.type =='HR'&&type!='academic'))
     {
@@ -1134,17 +1070,16 @@ router.post('/editStaffMember',[
             delete req.body.subType
         
         if(dayOff!="Saturday"){            
-            {res.status(422).send("HR dayoff must be Saturday")
-            return;
+            {return res.status(422).send("HR dayoff must be Saturday")
             }
     }
         else{
      await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err2,docs2) => {
       if (err) 
-            {res.status(500).send(err2);
-                return;}
+            {return res.status(500).send(err2);
+}
                 else
-            res.send("Updated staff: "+ docs2)  ;
+            return res.send("Updated staff: "+ docs2)  ;
         });
     }}
     else { //not HR
@@ -1154,36 +1089,35 @@ router.post('/editStaffMember',[
             if(req.body.departmentName){
                await departmentModel.findOneAndUpdate({HOD_id:sta._id},{HOD_id:null},(er,uD)=>{
              if(er)
-             {res.status(500).send(er)
-                return;}
+             {return res.status(500).send(er)
+}
             })
                 await departmentModel.findOneAndUpdate({departmentName:req.body.departmentName},{HOD_id:sta._id},(er,uD)=>{
              if(er)
-             {res.status(500).send(er)
-                return;
+             {return res.status(500).send(er)
                 }
             })
         }
         else
         departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:sta._id},(er,uD)=>{
             if(er)
-            {res.status(500).send(er)
-                return;}
+            {return res.status(500).send(er)
+}
             })
         }  
         else if(req.body.subType == "instructor"||req.body.subType == "ta")
         departmentModel.findOneAndUpdate({departmentName:sta.departmentName},{HOD_id:null},(er,uD)=>{
             if(er)
-            {res.status(500).send(er)
-                return;}
+            {return res.status(500).send(er)
+}
             })
 
         await staffModel.findOneAndUpdate({id:id},{$set:req.body},(err1,docs1) => {
             if (err1) 
-                  {res.status(500).send(err1);
-                    return;}
+                  {return res.status(500).send(err1);
+}
                 else
-                  res.send("Updated staff: "+ docs1)  ;
+                  return res.send("Updated staff: "+ docs1)  ;
               });
           }
         }
@@ -1196,21 +1130,21 @@ router.post('/deleteStaffMember',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;}
+        return res.status(400).send("Error with arguments types");
+}
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can delete staff members ");
-        return;}
+        return res.status(400).send("Only HR members can delete staff members ");
+}
 
  
     const id = req.body.id
    await staffModel.findOneAndDelete({id:id},(err, docs)=> { 
     if (err){ 
-        res.status(500).send(err) 
-        return;} 
+        return res.status(500).send(err) 
+} 
     else{ 
-        res.send("Removed Staff Member : "+ docs); 
+        return res.send("Removed Staff Member : "+ docs); 
     } 
 });
 });
@@ -1221,13 +1155,11 @@ router.post('/addAttendanceRecord',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can create new staff members ");
-        return;
+        return res.status(400).send("Only HR members can create new staff members ");
     }
 
     const email = req.email;
@@ -1239,12 +1171,11 @@ router.post('/addAttendanceRecord',[
     attendanceRecord[1].net = timeSpent
       await  staffModel.findOne({id:id},(err,staffMember)=>{
             if(err)
-            {res.sendStatus(500)
+            {return res.sendStatus(500)
                 return;}
                 else{
                 if(staffMember==null){
-                    res.status(400).send("Incorrect id")
-                    return;
+                    return res.status(400).send("Incorrect id")
                 }
                 let matchingRecords = staffMember.attendance.filter(elem=>{
                 return elem.time.getFullYear()==attendanceRecord[0].time.getFullYear()&& elem.time.getMonth()==attendanceRecord[0].time.getMonth() && elem.time.getDate()==attendanceRecord[0].time.getDate() && elem.op=="sign out"
@@ -1283,10 +1214,10 @@ router.post('/addAttendanceRecord',[
                     staffMember.attendance.push(attendanceRecord[1])
                     staffModel.findOneAndUpdate({id:staffMember.id},{attendance:staffMember.attendance},(errror,attend)=>{
                 if(errror)
-                {res.status(500).send(errror)
-                    return;}
+                {return res.status(500).send(errror)
+}
                     else
-                res.send("Successfully updated the missing attendance")
+                return res.send("Successfully updated the missing attendance")
 
                     })                        
             }
@@ -1305,23 +1236,21 @@ router.post('/viewAttendance',[
  
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can view attendance of other staff members ");
-    return;
+        return res.status(400).send("Only HR members can view attendance of other staff members ");
     }
 
 const id = req.body.id
 staffModel.findOne({id:id},(err,staffMember)=>{
 if(err){
-res.sendStatus(500)
+return res.sendStatus(500)
 return;
 }else{
-    res.send(staffMember.attendance);
+    return res.send(staffMember.attendance);
 }
 })
 })
@@ -1333,14 +1262,13 @@ router.post('/viewMissingDaysOrHours', async (req, res) => {
 
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can view attendance of other staff members ");
-        return;
+        return res.status(400).send("Only HR members can view attendance of other staff members ");
     }
 
 
 await staffModel.find((err,result)=>{
 if(err)
-{res.sendStatus(500)
+{return res.sendStatus(500)
     return;}
     else{
 let users = result.filter(u =>{
@@ -1351,7 +1279,7 @@ let users = result.filter(u =>{
         return missingDays.length>0||Math.sign(mins)==-1 || Math.sign(hours)==-1
 })
 users = users.map(user => user.id+" "+user.name)
-res.send(users);
+return res.send(users);
 
 }});
 
@@ -1364,24 +1292,22 @@ router.post('/updateSalary', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-        return;
+        return res.status(400).send("Error with arguments types");
     }
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can update the base salary ");
-        return;
+        return res.status(400).send("Only HR members can update the base salary ");
     }
 
     const id = req.body.id
     const salary = req.body.salary
    await staffModel.findOneAndUpdate({id:id},{Salary:salary},(err, docs)=> { 
     if (err){ 
-        res.sendStatus(500).send(err) 
+        return res.sendStatus(500).send(err) 
         return;
     } 
     else{ 
-        res.send("Update salary of Staff Member : "+ docs); 
+        return res.send("Update salary of Staff Member : "+ docs); 
     } 
 });
 });
@@ -1393,25 +1319,22 @@ router.post('/viewSalary', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).send("Error with arguments types");
-    return;}
+        return res.status(400).send("Error with arguments types");
+}
     const type = req.user.type;
     if(type != "HR"){
-        res.status(400).send("Only HR members can view the salary of other staff members");
-    return;
+        return res.status(400).send("Only HR members can view the salary of other staff members");
 }
 
 
     const id = req.body.id
     await staffModel.findOne({id:id},(err, u)=> { 
     if (err){ 
-        res.status(500).send(err) 
-    return;
+        return res.status(500).send(err) 
     } 
     else{ 
         if(u==null){
-            res.status(400).send("Incorrect user ID")
-            return;
+            return res.status(400).send("Incorrect user ID")
         }
         let baseSalary = u.Salary;
         const missingHours =  missinghrs(u);
@@ -1425,7 +1348,7 @@ router.post('/viewSalary', [
             timeDeduction = Math.abs(hours*60+mins) *(baseSalary/(180*60))
         const deduction = timeDeduction+daysDeduction
         const salary = baseSalary-deduction
-        res.send("salary: "+salary)   
+        return res.send("salary: "+salary)   
     } 
 });
 });
