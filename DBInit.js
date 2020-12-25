@@ -571,4 +571,227 @@ router.get('/hod-init', async (req,res)=>{
         res.status(500).send("Server Error");
     }
 })
+
+
+
+
+
+
+
+
+
+router.get('/hr-init', async (req,res)=>{
+    try { 
+        await course.deleteMany({});
+        await location.deleteMany({});
+        await slot.deleteMany({});
+        await department.deleteMany({});
+        await staffMembers.deleteMany({});
+        await request.deleteMany({})
+        await faculty.deleteMany({});
+    
+        const salt = await bcrypt.genSalt(12)
+
+        // Make an academic user 
+        let hashedPassword =await bcrypt.hash("12345",salt)
+        let ac1 = new staffMembers({ 
+            id: "ac-1",
+            name: "Academic Member",
+            email: "AC1@gmail.com",
+            password: hashedPassword,
+            "type": "academic",
+            "subType": "instructor",
+            "courses": [], 
+            "dayOff": "SUN",
+            "annualLeaves": 20,
+            "accidentalLevesLeft": 4,
+            "Salary": 50000,
+            "firstLogin" : false
+        })
+        await ac1.save();
+
+        // Make an academic user 
+        let hashedPassword2 =await bcrypt.hash("12345",salt)
+        let ac2 = new staffMembers({ 
+            id: "ac-2",
+            name: "Academic Member2",
+            email: "AC2@gmail.com",
+            password: hashedPassword2,
+            "type": "academic",
+            "subType": "instructor",
+            "courses": [], 
+            "dayOff": "SUN",
+            "annualLeaves": 20,
+            "accidentalLevesLeft": 4,
+            "Salary": 50000,
+            "firstLogin" : false
+        })
+        await ac2.save();
+
+        //Make an hr user
+        hashedPassword =await bcrypt.hash("12345",salt)
+        let hr1 = new staffMembers({
+            id: "hr-1",
+            name: "HR 1",
+            email: "HR1@guc.edu.eg",
+            password: hashedPassword,
+            "type": "HR",
+            "subType": null,
+            "courses": [], 
+            "dayOff": "SAT",
+            "annualLeaves": 16,
+            "accidentalLevesLeft": 1,
+            "Salary": 18000,
+            "firstLogin": false
+        })
+        await hr1.save();
+
+        // MAKE A COURSE
+        ac1 = await staffMembers.findOne({"id": "ac-1"})
+        let course1 = new course({
+            courseName: "Csen301",
+            teachingAssistants : [ObjectId(ac1._id)]  });
+        await course1.save();
+        
+        
+        //MAKE A DEPARTMENT
+        let hod = await staffMembers.findOne({"id": "ac-1"})
+        let department1 = new department({
+            departmentName: "CSEN",
+            HOD_id: ObjectId(hod._id), //ac-1
+        });
+        await department1.save();
+       
+        //MAKE A DEPARTMENT
+        let hod2 = await staffMembers.findOne({"id": "ac-2"})
+        let department2 = new department({
+            departmentName: "DMET",
+            HOD_id: ObjectId(hod2._id), //ac-2
+        });
+        await department2.save();
+
+        /*
+        //MAKE A FACULTY
+        let department2 = await department.findOne({"departmentName": "MET"})
+        let faculty1 = new faculty({
+            facultyName: "Engineering",
+            departments: [ department2._id] //MET department
+        });
+        await faculty1.save()
+
+        //ADD LOCATION 1
+        let location1 = new location({
+            roomNr: "C6.304",
+            roomType: "lab", //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 23
+            });
+        await location1.save()
+    
+        
+        //ADD LOCATION 2
+        let location2 = new location({
+            roomNr: "C6.305",
+            roomType: "tutorial", //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 24
+        });
+        await location2.save();
+        
+        //ADD SLOT 1
+        //let staffMem1 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        //let staffMem2 = await staffMembers.findOne({"name":"Milad Ghantous"})
+        let location3 = await location.findOne({"roomNr":"C6.304"})
+        let slot1 = new slot({
+            startTime: Date.now(), //start time of slot
+            endTime: Date.now(), // end time of slot
+            courseTaughtInSlot: course2._id, //what course will be taught in the slot 
+            //staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
+            slotLocation: ObjectId(location3._id), //ex. H14, C7.301
+            //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
+        });
+        await slot1.save()
+        
+        //ADD SLOT 2
+        let staffMem1 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        //let staffMem2 = await staffMembers.findOne({"name":"Milad Ghantous"})
+        let location4 = await location.findOne({"roomNr":"C6.305"})
+        let slot2 = new slot({
+            startTime: Date.now(), //start time of slot
+            endTime: Date.now(), // end time of slot
+            courseTaughtInSlot: course2._id, //what course will be taught in the slot 
+            staffTeachingSlot: staffMem1._id,// null if this slot is still not assigned to anyone
+            slotLocation: ObjectId(location4._id), //ex. H14, C7.301
+            //replacementStaff: staffMem2._id //if another staff member will replace a staff member on leave
+        });
+        await slot2.save();
+
+        //EDIT SOME STUFF IN COURSE CSEN 701
+        let slot3 = await slot.findOne({"slotLocation": ObjectId(location3._id)})
+        let slot4 = await slot.findOne({"slotLocation": ObjectId(location4._id)})
+        await course.updateOne({"courseName":"CSEN 701 - Embedded Systems"},{
+            "teachingSlots" : [slot3._id, slot4._id],
+            "unassignedSlots": 1
+        });
+
+        //ADD REQUEST
+        let course5 = await course.findOne({"courseName": "CSEN 701 - Embedded Systems"})
+        let staffMem2 = await staffMembers.findOne({"name":"Hassan Soubra"})
+        let staffMem3 = await staffMembers.findOne({"name":"Slim"})
+        let replaceSlot = await slot.findOne({"courseTaughtInSlot" : course5._id})
+        let request1 = new request({
+            senderID: staffMem2._id, //id of the staff member sending the request
+            recieverID: staffMem3._id, //id of the staff member recieving the request
+            requestType: "annual leave", //the available request types are change day off OR slot linking OR leave OR replacement)
+            status: "pending", //the value of status can either be accepted or rejected or pending
+            replacementSlot: replaceSlot._id, //id of slot for replacement request
+            requestReason: "My horse is stuck in a fridge",// this field is used by the person sending the request in case this a leave request or a request to change day off
+            startOfLeave: Date.now(),
+            endOfLeave: Date.now()
+        });
+        await request1.save()
+
+        //UPDATE HOD
+        let faculty11 = await faculty.findOne({"facultyName": "Engineering"})
+        let department11 = await department.findOne({"departmentName": "MET"})
+        let request11 = await request.findOne({"requestType": "annual leave"})
+        await staffMembers.updateOne({"name":"Slim"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName, 
+            "receivedRequests" : [request11._id] 
+        });
+
+        //UPDATE Soubra
+        await staffMembers.updateOne({"name":"Hassan Soubra"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName,
+            "sentRequests" : [request11._id]
+        });
+
+        //UPDATE MILAD
+        await staffMembers.updateOne({"name":"Milad Ghantous"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName
+        });
+        
+        await staffMembers.updateOne({"name":"Ahmed Hesham"},{
+            "facultyName": faculty11.facultyName,
+            "departmentName": department11.departmentName,
+            courses: [course5.courseName]
+        });
+*/
+        res.status(200).send("DB seeded successfully!")
+    }
+    catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+})
+
+
+
+
+
+
+
+
+
 module.exports=router;

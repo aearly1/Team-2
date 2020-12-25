@@ -1158,6 +1158,284 @@ Response Example:
 },
 "unassignedSlots" : "1"
 
+
+
+
+=================================================================================
+-----------------------------------HRRoutes-----------------------------------
+=================================================================================
+To begin testing you will need a token. To get the token, send a post request with 
+the follow body:
+{
+    "email":"HR1@guc.edu.eg",
+    "password":"12345"
+}
+then the token will be returned in the header. For any upcoming request, include 
+the returend token in the header of the request to authenticate.
+----------------------------------------------------------------------------------
+
+
+Functionality: Adds a new location
+Route: /api/hr/addLocation
+Request type: POST
+Request Body: {
+    "roomNr":"C3.101",
+    "roomType":"tutorial room",
+    "capacity":10
+}
+---------------------------------------------------------------------------------
+
+
+Functionality: Adds a new location
+Route: /api/hr/addLocation
+Request type: POST
+Request Body: {
+    "roomNr":"C3.210",
+    "roomType":"lab",
+    "capacity":25
+}
+---------------------------------------------------------------------------------
+
+Functionality: Edits an existing location
+Route: /api/hr/editLocation
+Request type: POST
+Request Body: {
+	"roomNr":"C3.210",
+	"capacity":14,
+    "roomType":"office"
+}
+---------------------------------------------------------------------------------
+
+Functionality: Deletes an existing location
+Route: /api/hr/deleteLocation
+Request type: POST
+Request Body: {
+    "roomNr":"C3.101"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Adds a new faculty
+Route: /api/hr/addFaculty
+Request type: POST
+Request Body: {
+    "facultyName":"MET"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Adds a new faculty
+Route: /api/hr/addFaculty
+Request type: POST
+Request Body: {
+    "facultyName":"IET"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Adds a new faculty
+Route: /api/hr/addFaculty
+Request type: POST
+Request Body: {
+    "facultyName":"EMS"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Update an existing faculty by adding the department we defined in the
+init route to it. the ._id used in the department array is the retrived from the 
+depratment that is defined in the init file
+Route: /api/hr/editFaculty
+Request type: POST
+Request Body: {
+    "facultyName":"MET",
+    "departments": ["5fe52b88b0bf8714dc4987d0"]
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: delete an existing Faculty
+Route: /api/hr/deleteFaculty
+Request type: POST
+Request Body: {
+    "facultyName":"MET"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: add a department under a faculty
+Route: /api/hr/addDepartment
+Request type: POST
+Request Body: {
+    "departmentName":"CSEN",
+    "facultyName":"IET"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Update a department under faculty
+Route: /api/hr/editDepartment
+Request type: POST
+Request Body: {
+    "departmentName":"CSEN",
+    "oldFacultyName":"IET",
+    "newFacultyName":"EMS"
+}
+---------------------------------------------------------------------------------
+
+Functionality: delete a department under faculty
+Route: /api/hr/deleteDepartment
+Request type: POST
+Request Body: {
+    "departmentName":"CSEN",
+    "oldFacultyName":"EMS"
+	}
+
+---------------------------------------------------------------------------------
+
+Functionality: add a course under a department
+Route: /api/hr/addCourse
+Request type: POST
+Request Body: {
+    "departmentName":"CSEN",
+    "courseName":"Csen301"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: Update a course under a department
+Route: /api/hr/editCourse
+Request type: POST
+Request Body: {
+    "courseName":"Csen301",
+    "oldDepartmentName":"CSEN",
+    "newDepartmentName":"DMET"
+}
+---------------------------------------------------------------------------------
+
+Functionality: delete a course under a department
+Route: /api/hr/deleteCourse
+Request type: POST
+Request Body: {
+    "courseName":"Csen301",
+    "oldDepartmentName":"DMET"
+	}
+---------------------------------------------------------------------------------
+
+Functionality: add a new staff member
+Route: /api/hr/addStaffMember
+Request type: POST
+Request Body: {
+          "email":"HR2@guc.edu.eg",
+          "name":"HR Employee Name",
+	      "type":"HR",
+	      "office":"C3.210",
+	      "dayOff":"Saturday",
+          "Salary":3000,
+          "facultyName":"MET"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: update staff member
+Route: /api/hr/editStaffMember
+Request type: POST
+Request Body: {
+	      "id":"hr-2",
+          "email":"HRNew@guc.edu.eg",
+          "name":"HRNew Employee Name"
+}
+
+
+---------------------------------------------------------------------------------
+
+Functionality: delete staff member
+Route: /api/hr/deleteStaffMember
+Request type: POST
+Request Body: {
+          "id":"hr-2"
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: add missing attendance record
+Route: /api/hr/addAttendanceRecord
+Request type: POST
+Request Body: {
+"id":"ac-1",
+"attendanceRecord":  [{
+        "op": "sign in",
+        "time": "2020-12-20T14:08:31.848Z"}
+        ,{
+        "op": "sign out",
+        "time": "2020-12-20T14:11:31.848Z",
+		"net":"-324"
+}
+]
+}
+
+---------------------------------------------------------------------------------
+
+Functionality: view staff member attendance record
+Route: /api/hr/viewAttendance
+Request type: POST
+Request Body: {
+"id":"ac-1"
+}
+Response: Returns the overall attendance record
+Example: [
+    {
+        "op": "sign in",
+        "time": "2020-12-20T14:08:31.848Z"}
+        ,
+        {
+        "op": "sign out",
+        "time": "2020-12-20T17:08:31.848Z",
+		"net":"-324"
+}
+]
+
+
+---------------------------------------------------------------------------------
+
+Functionality: view staff members with missing days/hours
+Route: /api/hr/viewMissingDaysOrHours
+Request type: POST
+
+Response: Returns an array containing the ids + names of staff with missing days/hours
+Example: [
+[
+    "ac-1 Academic Member",
+    "hr-1 HR 1",
+    "ac-2 Academic Member2"
+]]
+
+---------------------------------------------------------------------------------
+
+Functionality: edit staff members base salary(before deductions)
+Route: /api/hr/updateSalary
+Request type: POST
+Request Body: {
+          "id":"hr-1",
+		  "salary":5000
+}
+
+
+
+---------------------------------------------------------------------------------
+
+Functionality: view staff members salary after deductions
+Route: /api/hr/viewSalary
+Request type: POST
+Request Body: {
+          "id":"hr-1"
+}
+Response: Returns the salary after the deduction based on missing days, hours and minutes
+Example: 4000
+
+---------------------------------------------------------------------------------
+
+
 ## }
 
 ---
