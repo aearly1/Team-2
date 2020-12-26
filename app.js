@@ -21,6 +21,6 @@ app.use("/api/academicMember",require("./routes/academicMemberRoutes"))
 app.use("/api/coordinator", require("./routes/courseCoordinatorRoutes"));
 app.use("/api/instructor", require("./routes/courseInstructorRoute"));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

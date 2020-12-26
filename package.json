@@ -5,9 +5,12 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js",
+    "server": "nodemon app.js",
     "test": "jest --forceExit",
-    "staffRoutes": "nodemon routes/staffRoutes.js"
+    "staffRoutes": "nodemon routes/staffRoutes.js",
+    "client": "npm start --prefix client",
+    "clientinstall": "npm install --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +21,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.8.0",
-    "jest": "^26.6.3",
+    "jest": "^26.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.8",
@@ -27,7 +30,9 @@
     "supertest": "^6.0.1",
     "uuid": "^8.3.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "concurrently": "^5.3.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aearly1/Team-2.git"
