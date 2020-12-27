@@ -13,7 +13,7 @@ node_modules/
 
 # testing
 /coverage
-
+client/.eslintcache
 # production
 /build
 
