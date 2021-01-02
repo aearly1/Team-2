@@ -1,9 +1,9 @@
 import React from 'react';
-import { Nav, Navbar, Form, FormControl } from 'react-bootstrap';
+import { Nav, Navbar} from 'react-bootstrap';
 import styled from 'styled-components';
 
 const Styles = styled.div`
-  .navbar { background-color: rgb(184,60,50) }
+  .navbar { background-color: rgb(50,164,155) }
   a, .navbar-nav, .navbar-light .nav-link {
     color: #fff;
     &:hover { color: white; }
@@ -23,7 +23,7 @@ const Styles = styled.div`
 const NavigationBar = () => (
   <Styles>
     <Navbar expand="lg">
-      <Navbar.Brand href="/"> <i className='fas fa-university'/> &nbsp;&nbsp;Team 2 University System</Navbar.Brand>
+      <Navbar.Brand href="/"> <i className='fas fa-bars'/> &nbsp;&nbsp;Team 2 University System</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav"/>
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ml-auto">

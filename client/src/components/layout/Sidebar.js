@@ -8,7 +8,7 @@ const StyledSideNav = styled.div`
     width: 140px;     /* Set the width of the sidebar */
     z-index: 1;      /* Stay on top of everything */
     top: 3.7em;      /* Stay at the top */
-    background-color: rgb(233,133,116); 
+    background-color: rgb(20,70,80); 
     overflow-x: hidden;     /* Disable horizontal scroll */
     padding-top: 10px;
 `;
@@ -28,7 +28,7 @@ class SideNav extends React.Component {
                 },
                 {
                   path: '/about',
-                  text: "about",
+                  text: "About",
                   name: 'About',
                   css: 'fa fa-fw fa-clock',
                   key: 2
@@ -79,12 +79,11 @@ const StyledNavItem = styled.div`
     width: 140px; /* width must be same size as NavBar to center */
     text-align: center; /* Aligns <a> inside of NavIcon div */
     margin-bottom: 0;   /* Puts space between NavItems */
-    font-size: 0.5 em;
     a {
         font-size: 2.7em;
-        color: ${(props) => props.active ? "#124" : "white"};
+        color: ${(props) => props.active ? "rgb(230,110,95)" : "white"};
         :hover {
-            color: rgb(50,56,112);
+            opacity: 0.7;
             text-decoration: none; /* Gets rid of underlining of icons */
         }  
     }
