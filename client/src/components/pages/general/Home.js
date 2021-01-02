@@ -1,10 +1,8 @@
 import React from 'react'
-
+import {Container, Button , Form} from 'react-bootstrap'
 const Home = () => {
     return (
-        <div className="container">
-            <h1>Home</h1>
-        </div>
+        <h1>Home</h1>
     )
 }
 
