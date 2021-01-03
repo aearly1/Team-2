@@ -13,7 +13,7 @@ const About = () => {
                 <Container fluid className = "pl-5">    
                     <ul>
                         <li>{"Abdelrahman Diab  --  43-11809"}</li>
-                        <li>{"Ali Elbadry  --  43-no one knows cuz he submits everything"}</li>
+                        <li>{"Ali Elbadry  --  43-6833"}</li>
                         <li>{"Mayaaaaaar  --  43-6645"}</li>
                         <li>{"Mostafa Sohob  --  43-8530"}</li>
                         <li>{"Saeed Ashraf  --  43-8342"}</li>

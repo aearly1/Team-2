@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import './App.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
