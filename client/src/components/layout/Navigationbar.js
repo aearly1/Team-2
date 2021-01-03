@@ -33,7 +33,7 @@ function NavigationBar (props) {
       
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Nav className="ml-auto">
-        {props.isLoggedIn?(<Nav.Item><Nav.Link href="/">{props.name}</Nav.Link></Nav.Item> ):(<Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}><Nav.Link href="/login">Login</Nav.Link></Nav.Item>) }
+        {props.isLoggedIn?(<Nav.Item><Nav.Link href="/" style = {{textDecoration:"underline"}}>{props.name}</Nav.Link></Nav.Item> ):(<Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}><Nav.Link href="/login">Login</Nav.Link></Nav.Item>) }
         <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
 
       </Nav>
@@ -48,7 +48,7 @@ NavigationBar.propTypes = {
 }
 
 NavigationBar.defaultProps = {
-  isLoggedIn: false,
+  isLoggedIn: true,
   name: "Hassan Soubra",
 };
 

@@ -6,17 +6,24 @@ import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
-import Ali from './components/pages/AliPages/Ali'
+import Ali from './components/pages/AliPages/Ali';
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import {Container} from 'react-bootstrap';
-const App =() => {
+import PropTypes from 'prop-types';
+
+function App (props ){
+  let style1 = {paddingLeft: 180, paddingTop:90}
+  let style2 = {paddingTop: 90}
   return (
     <Router>
      <Fragment>
        <Navi/>
-       <Sidebar />
-        <Container fluid style= {{paddingLeft: 180 , paddingTop:90}}>
+       {
+        props.isLoggedIn?(
+        <>
+        <Sidebar/>
+        <Container fluid style= {style1}>
           <Switch>
             <Route exact path = '/' component = {Home} />
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
@@ -24,9 +31,33 @@ const App =() => {
             <Route exact path = '/login' component = {Login} />
           </Switch>
         </Container>
+        </>  
+        )
+        :
+        (
+        <Container fluid style={style2}>
+          <Switch>
+            <Route exact path = '/about' component = {About} />
+            <Route exact path = '/' component = {Login} />
+            <Route exact path = '/login' component = {Login} />
+          </Switch>
+        </Container>
+        ) 
+       }  
+        
       </Fragment>
     </Router>
   );
 }
+
+App.propTypes = {
+  isLoggedIn: PropTypes.bool,
+  name: PropTypes.string
+}
+
+App.defaultProps = {
+  isLoggedIn: true
+};
+
 
 export default App;
