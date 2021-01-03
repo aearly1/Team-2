@@ -6,6 +6,7 @@ import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
+import NotFound from './components/pages/general/NotFound';
 import Ali from './components/pages/AliPages/Ali';
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
@@ -29,6 +30,7 @@ function App (props ){
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
+            <Route component= {NotFound}/>
           </Switch>
         </Container>
         </>  
@@ -40,6 +42,7 @@ function App (props ){
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/' component = {Login} />
             <Route exact path = '/login' component = {Login} />
+            <Route component= {NotFound}/>
           </Switch>
         </Container>
         ) 
@@ -51,8 +54,7 @@ function App (props ){
 }
 
 App.propTypes = {
-  isLoggedIn: PropTypes.bool,
-  name: PropTypes.string
+  isLoggedIn: PropTypes.bool
 }
 
 App.defaultProps = {
