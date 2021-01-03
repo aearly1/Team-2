@@ -6,6 +6,7 @@ import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
+import Ali from './components/pages/AliPages/Ali'
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import {Container} from 'react-bootstrap';
