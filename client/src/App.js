@@ -7,6 +7,7 @@ import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import Sidebar from './components/layout/Sidebar';
+import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import {Container} from 'react-bootstrap';
 const App =() => {
   return (
@@ -14,9 +15,10 @@ const App =() => {
      <Fragment>
        <Navi/>
        <Sidebar />
-        <Container fluid style= {{paddingLeft: 180 , paddingTop:20}}>
+        <Container fluid style= {{paddingLeft: 180 , paddingTop:90}}>
           <Switch>
             <Route exact path = '/' component = {Home} />
+            <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
           </Switch>

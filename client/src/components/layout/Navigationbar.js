@@ -3,7 +3,11 @@ import { Nav, Navbar} from 'react-bootstrap';
 import styled from 'styled-components';
 
 const Styles = styled.div`
-  .navbar { background-color: #0C0A3E }
+  .navbar { background-color: #0C0A3E ;
+    position: fixed;
+    width: 100%;
+    z-index: 1; 
+  }
   a, .navbar-nav, .navbar-light .nav-link {
     color: #fff;
     &:hover { color: white; }
@@ -24,7 +28,7 @@ const NavigationBar = () => (
   <Styles>
     <Navbar>
       <Navbar.Brand href="/"> Team 2 University System</Navbar.Brand>
-      
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
        <Nav className="ml-auto">
        <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}><Nav.Link href="/login">Login</Nav.Link></Nav.Item> 
           <Nav.Item><Nav.Link href="/">Home</Nav.Link></Nav.Item> 
