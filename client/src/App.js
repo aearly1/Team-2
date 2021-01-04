@@ -46,7 +46,7 @@ function App (props ){
             <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/schedule' component = {AcademicSchedule} />
             <Route exact path = '/manageSlots' component = {SlotsPage} />
-            <Route exact path = '/manageSlots' component = {Requests} />
+            <Route exact path = '/requests' component = {Requests} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
             <Route exact path = '/profile' component = {Profile} />
