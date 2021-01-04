@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
 import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
@@ -9,6 +10,7 @@ import Login from './components/pages/general/Login';
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import {Container} from 'react-bootstrap';
+
 const App =() => {
   return (
     <Router>
