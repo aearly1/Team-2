@@ -7,6 +7,7 @@ import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/academicSchedule'
+import SlotsPage from './components/pages/AliPages/slots'
 import NotFound from './components/pages/general/NotFound';
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
@@ -29,6 +30,7 @@ function App (props ){
             <Route exact path = '/' component = {Home} />
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/schedule' component = {AcademicSchedule} />
+            <Route exact path = '/manageSlots' component = {SlotsPage} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
             <Route component= {NotFound}/>

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button,Badge,Container,Row,Col} from 'react-bootstrap'
+import {Container,Row,Col} from 'react-bootstrap'
 
 function AcademicSchedule()
 {
