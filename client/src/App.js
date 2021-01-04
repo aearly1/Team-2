@@ -8,6 +8,11 @@ import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/academicSchedule'
 import SlotsPage from './components/pages/AliPages/slots'
+import ReplacementRequests from './components/pages/AliPages/ReplacementRequests'
+import SlotLinking from './components/pages/AliPages/SlotLinkingtRequest'
+import ChangeDayOff from './components/pages/AliPages/ChangeDayOff'
+import Requests from './components/pages/AliPages/MainRequestPage'
+import Leaves from './components/pages/AliPages/Leaves'
 import NotFound from './components/pages/general/NotFound';
 import Sidebar from './components/layout/Sidebar';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
@@ -33,6 +38,11 @@ function App (props ){
             <Route exact path = '/manageSlots' component = {SlotsPage} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
+            <Route exact path = '/replacementRequest' component = {ReplacementRequests} />
+            <Route exact path = '/slotLinkingRequest' component = {SlotLinking} />
+            <Route exact path = '/changeDayOffRequest' component = {ChangeDayOff} />
+            <Route exact path = '/leaveRequest' component = {Leaves} />
+            <Route exact path = '/requests' component = {Requests} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
