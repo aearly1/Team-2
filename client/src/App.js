@@ -9,10 +9,11 @@ import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/academicSchedule'
 import SlotsPage from './components/pages/AliPages/slots'
 import NotFound from './components/pages/general/NotFound';
-import Sidebar from './components/layout/Sidebar/SidebarMain';
+import Sidebar from './components/layout/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import HODViewStaff from './components/pages/DiabPages/HODViewStaff';
 import HODCourseStaff from './components/pages/DiabPages/HODCourseStaff';
+import HODCourseCov from './components/pages/DiabPages/HODCourseCov';
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import PropTypes from 'prop-types';
@@ -31,6 +32,7 @@ function App (props ){
           <Switch>
             <Route exact path = '/' component = {Home} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
+            <Route exact path = '/course-cov' component = {HODCourseCov}/>
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/schedule' component = {AcademicSchedule} />

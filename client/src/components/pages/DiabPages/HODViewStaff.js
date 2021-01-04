@@ -34,23 +34,15 @@ function HODViewStaff(props) {
         
         <Container fluid >
         
-        <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
-        <div style = {{whiteSpace: 'nowrap', paddingLeft:0, marginLeft:0}}>
-        <strong style = {{whiteSpace: 'nowrap'}}>View staff for specific course instead:</strong>
+        {(props.course==='')?
+        (
+          //if this is not coming from /course-staff then it's just a view all staff
+          <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
+        ):(
+          //but if the course is not empty, then it came from a /course-staff
+          <h1 style = {{whiteSpace: 'nowrap'}}>Staff members assigned to {props.course}:</h1>
+        )}
         
-        <Dropdown as={ButtonGroup} style= {{paddingLeft:30}}>
-        <Dropdown.Toggle variant="warning"> {(value1==="")?"Select Course":value1} </Dropdown.Toggle>
-        <Dropdown.Menu >
-        {props.courses.map(course => {
-                return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
-            }
-            )}
-        </Dropdown.Menu>
-            
-        
-        </Dropdown>
-        <Button variant="secondary" style={{width:"100"}} href={'/course-staff'}>View</Button>
-        </div>
         {props.staff.map(staffMem => {
             return (
             <StaffCard style ={{paddingTop:20 }} >
@@ -94,6 +86,7 @@ function HODViewStaff(props) {
 }
 HODViewStaff.propTypes = {
     staff: PropTypes.array,
+    course: PropTypes.string,
     courses: PropTypes.array
   }
   
@@ -119,7 +112,8 @@ HODViewStaff.propTypes = {
         email: "MAbuelkheir@guc.edu.eg",
         name: "Mervat Abuelkheir"
     }],
-    courses: ["Course 1","Course 2","Course 3"]
+    courses: ["Course 1","Course 2","Course 3"],
+    course: ""
   };
   
 export default HODViewStaff
