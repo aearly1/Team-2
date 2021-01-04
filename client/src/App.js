@@ -13,6 +13,8 @@ import Sidebar from './components/layout/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import HODViewStaff from './components/pages/DiabPages/HODViewStaff';
 import HODCourseStaff from './components/pages/DiabPages/HODCourseStaff';
+import HODStaffDO from './components/pages/DiabPages/HODStaffDO';
+import HODStaffDOS from './components/pages/DiabPages/HODStaffDOS';
 import HODCourseCov from './components/pages/DiabPages/HODCourseCov';
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
@@ -32,6 +34,8 @@ function App (props ){
           <Switch>
             <Route exact path = '/' component = {Home} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
+            <Route exact path = '/staff-do' component = {HODStaffDO}/>
+            <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
             <Route exact path = '/course-cov' component = {HODCourseCov}/>
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/view-staff' component = {HODViewStaff} />

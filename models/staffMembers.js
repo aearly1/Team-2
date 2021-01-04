@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema
 const staffSchema = new schema ({
+    imgLink: String,
     email: {type:String,unique:true},
     password: String,
     id: {type:String,unique:true}, 

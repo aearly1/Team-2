@@ -1,6 +1,8 @@
 import React from 'react'
 
 import * as FAIcons from 'react-icons/fa'
+import * as FiIcons from 'react-icons/fi'
+import * as BiIcons from 'react-icons/bi'
 import * as AiIcons from 'react-icons/ai'
 import * as IoIcons from 'react-icons/io'
 import * as RiIcons from 'react-icons/ri'
@@ -35,6 +37,31 @@ export const SidebarData = [
       icon: <MdIcons.MdAssignmentTurnedIn />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
-  
+    },
+    {
+      title: 'Staff day offs',
+      path: '#',
+      icon: <FAIcons.FaUserSlash />,
+      iconClosed: <RiIcons.RiArrowDownSFill />,
+      iconOpened: <RiIcons.RiArrowUpSFill />,
+      subNav: [
+        {
+          title: 'All staff dayoffs',
+          path: '/staff-do',
+          icon: <FiIcons.FiUsers />
+        },
+        {
+          title: 'Single staff dayoff',
+          path: '/staff-dos',
+          icon: <BiIcons.BiMale/>
+        }
+      ]
+    },
+    {
+      title: 'Teaching Assignments',
+      path: '/teach-assignments',
+      icon: <FAIcons.FaChalkboardTeacher />,
+      iconClosed: <RiIcons.RiArrowDownSFill />,
+      iconOpened: <RiIcons.RiArrowUpSFill />,
     }
   ];

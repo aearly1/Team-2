@@ -1,13 +1,6 @@
 import React, {useState} from 'react';
 import {Container,Alert, Form, Dropdown,DropdownButton} from 'react-bootstrap';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
-const StaffCard = styled.div`
-  .staffCard{
-    width: auto;
-    box-shadow: 10px 5px;
-  }
-`;
 
 
 function HODCourseCov(props) {   
