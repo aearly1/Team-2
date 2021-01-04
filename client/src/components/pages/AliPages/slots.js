@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Col, Row, DropdownButton, Dropdown, Button, Table} from 'react-bootstrap'
+import {OverlayTrigger,Tooltip, Container, Col, Row, DropdownButton, Dropdown, Button, Table} from 'react-bootstrap'
 //Component for create slots
 function CreateSlot()
 {
@@ -28,7 +28,7 @@ function DropDown(props)
         return <Dropdown.Item href="#/action-1">{elem}</Dropdown.Item>
     })
     return(
-        <DropdownButton id="dropdown-basic-button" variant="warning" title={props.text}>
+        <DropdownButton id="dropdown-basic-button" variant="warning"  drop={"down"} title={props.text}>
         {items}
         </DropdownButton>
     )
@@ -43,7 +43,7 @@ function RowComponent(props)
         <td>{props.endTime}</td>
         <td><DropDown text="Update staff member" array= {props.taughtBy}/></td>
         <td><DropDown text="Delete staff member" array= {props.location}/></td>
-        <td><Button variant="info">Update</Button>{' '}</td>
+        <td><Button variant="info">Update</Button></td>
         <td><Button variant="danger">Cancel</Button></td>
         </tr>
     );
@@ -96,7 +96,7 @@ function Slot()
         <Container>
         <Row>
             <Col><CreateSlot /></Col>
-            <Col> <UpdateDeleteSlot /></Col>
+            <Col> <UpdateDeleteSlot /><br></br></Col>
         </Row>
         </Container>
         
