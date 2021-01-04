@@ -23,26 +23,26 @@ function HODViewStaff(props) {
         backgroundColor:"#0C0A4A" ,
         color: "white" ,
         borderRadius: 10, 
-        boxShadow: "5px 10px 5px #9E9E9E"
+        boxShadow: "5px 10px 5px #9E9E9E",
+        minWidth:750,
     };
-    let style2 = {
-        backgroundColor: 'rgb(34,193,195)',
-        background: 'linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%)'
-    }
+    
     const [value1,setValue1]= useState('');
     const [path1,setPath1]= useState('');
-    const handleSelect=(e)=>{
+    const handleSelect1=(e)=>{
       setValue1(e)
     }
     return (
         
         <Container fluid >
         
-        <h1>Staff members in your department: </h1>
-        <strong>View staff for specific course instead:</strong>
+        <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
+        <div style = {{whiteSpace: 'nowrap', paddingLeft:0, marginLeft:0}}>
+        <strong style = {{whiteSpace: 'nowrap'}}>View staff for specific course instead:</strong>
+        
         <Dropdown as={ButtonGroup} style= {{paddingLeft:30}}>
         <Dropdown.Toggle variant="warning"> {(value1==="")?"Select Course":value1} </Dropdown.Toggle>
-        <Dropdown.Menu style={style2}>
+        <Dropdown.Menu >
         {props.courses.map(course => {
                 return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
             }
@@ -52,15 +52,17 @@ function HODViewStaff(props) {
         
         </Dropdown>
         <Button variant="secondary" style={{width:"100"}} href={'/course-staff'}>View</Button>
+        </div>
         {props.staff.map(staffMem => {
             return (
             <StaffCard style ={{paddingTop:20 }} >
                 <Card style={style1} >
-                <Row xs={2} md={2}>
-                <Col >
+                <Container fluid className="ml-0 pl-0">
+                <Row>
+                <Col md={4}>
                     <img style={{borderRadius:10}} width="250" height="250" src={staffMem.imgLink} alt ="img not found"/>
                 </Col>
-                <Col>
+                <Col md= {8}>
                 <Card.Body >
                     <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.name}</Card.Title>
                     <Card.Text>
@@ -77,6 +79,7 @@ function HODViewStaff(props) {
                 </Col>
                 
                 </Row>
+                </Container>
                 </Card>
             </StaffCard>
             )
