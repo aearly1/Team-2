@@ -2,7 +2,7 @@ import React, {Fragment} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Navi from './components/layout/Navigationbar';
+
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
@@ -14,18 +14,23 @@ import ChangeDayOff from './components/pages/AliPages/ChangeDayOff'
 import Requests from './components/pages/AliPages/MainRequestPage'
 import Leaves from './components/pages/AliPages/Leaves'
 import NotFound from './components/pages/general/NotFound';
-import Sidebar from './components/layout/Sidebar';
+import Sidebar from './components/layout/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
+import HODViewStaff from './components/pages/DiabPages/HODViewStaff';
+import HODCourseStaff from './components/pages/DiabPages/HODCourseStaff';
+import HODStaffDO from './components/pages/DiabPages/HODStaffDO';
+import HODStaffDOS from './components/pages/DiabPages/HODStaffDOS';
+import HODCourseCov from './components/pages/DiabPages/HODCourseCov';
 import {Container} from 'react-bootstrap';
+import Profile from './components/pages/SohobPages/Profile'
 import PropTypes from 'prop-types';
+import Attendance from './components/pages/SohobPages/Attendance';
 
 function App (props ){
-  let style1 = {paddingLeft: 180, paddingTop:90}
-  let style2 = {paddingTop: 90}
+  let style1 = { paddingTop:90}
   return (
     <Router>
      <Fragment>
-       <Navi/>
        {
         props.isLoggedIn?(
         <>
@@ -33,16 +38,19 @@ function App (props ){
         <Container fluid style= {style1}>
           <Switch>
             <Route exact path = '/' component = {Home} />
+            <Route exact path = '/course-staff' component = {HODCourseStaff}/>
+            <Route exact path = '/staff-do' component = {HODStaffDO}/>
+            <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
+            <Route exact path = '/course-cov' component = {HODCourseCov}/>
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
+            <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/schedule' component = {AcademicSchedule} />
             <Route exact path = '/manageSlots' component = {SlotsPage} />
+            <Route exact path = '/manageSlots' component = {Requests} />
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/login' component = {Login} />
-            <Route exact path = '/replacementRequest' component = {ReplacementRequests} />
-            <Route exact path = '/slotLinkingRequest' component = {SlotLinking} />
-            <Route exact path = '/changeDayOffRequest' component = {ChangeDayOff} />
-            <Route exact path = '/leaveRequest' component = {Leaves} />
-            <Route exact path = '/requests' component = {Requests} />
+            <Route exact path = '/profile' component = {Profile} />
+            <Route exact path = '/attendance' component = {Attendance} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
@@ -50,7 +58,7 @@ function App (props ){
         )
         :
         (
-        <Container fluid style={style2}>
+        <Container fluid style={style1}>
           <Switch>
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/' component = {Login} />
