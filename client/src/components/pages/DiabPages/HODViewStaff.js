@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {Container, Button,Card , Col, Row, Dropdown,ButtonGroup, DropdownButton} from 'react-bootstrap';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-
 const StaffCard = styled.div`
   .staffCard{
     width: 100%;
@@ -28,7 +27,6 @@ function HODViewStaff(props) {
     };
     
     const [value1,setValue1]= useState('');
-    const [path1,setPath1]= useState('');
     const handleSelect1=(e)=>{
       setValue1(e)
     }
@@ -57,29 +55,35 @@ function HODViewStaff(props) {
             return (
             <StaffCard style ={{paddingTop:20 }} >
                 <Card style={style1} >
-                <Container fluid className="ml-0 pl-0">
-                <Row>
-                <Col md={4}>
-                    <img style={{borderRadius:10}} width="250" height="250" src={staffMem.imgLink} alt ="img not found"/>
-                </Col>
-                <Col md= {8}>
-                <Card.Body >
-                    <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.name}</Card.Title>
-                    <Card.Text>
-                    Type: {staffMem.subType}
-                    </Card.Text>
-                    <Card.Text>
-                    id: {staffMem.userCode}
-                    </Card.Text>
-                    <Card.Text>
-                   Email: {staffMem.email}
-                    </Card.Text>
-                    <Button variant="warning" href="#">Visit profile (needs routing)</Button>
-                </Card.Body>
-                </Col>
+                <table style={{width: "100%"}}>
+                <colgroup>
+                    <col span="1" style={{width: "10%"}}/>
+                    <col span="1" style={{width: "90%"}}/>
+                </colgroup>
+                <tbody>
+                    <tr>
+                    <td >
+                    {staffMem.imgLink?( <img style={{borderRadius:10}} width="250" height="250" src={staffMem.imgLink} />):(<img style={{borderRadius:10}} width="250" height="250" src='https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg' />)}
+                    </td>
+                    <td >
+                    <Card.Body >
+                        <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.name}</Card.Title>
+                        <Card.Text>
+                        Type: {staffMem.subType}
+                        </Card.Text>
+                        <Card.Text>
+                        id: {staffMem.userCode}
+                        </Card.Text>
+                        <Card.Text>
+                        Email: {staffMem.email}
+                        </Card.Text>
+                        <Button variant="warning" href="#">Visit profile (needs routing)</Button>
+                        </Card.Body>
+                    </td>
+                    </tr>
+                    </tbody>
+                </table>
                 
-                </Row>
-                </Container>
                 </Card>
             </StaffCard>
             )

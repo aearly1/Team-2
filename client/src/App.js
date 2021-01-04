@@ -3,14 +3,13 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import Navi from './components/layout/Navigationbar';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/academicSchedule'
 import SlotsPage from './components/pages/AliPages/slots'
 import NotFound from './components/pages/general/NotFound';
-import Sidebar from './components/layout/Sidebar';
+import Sidebar from './components/layout/Sidebar/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
 import HODViewStaff from './components/pages/DiabPages/HODViewStaff';
 import HODCourseStaff from './components/pages/DiabPages/HODCourseStaff';
@@ -20,13 +19,10 @@ import PropTypes from 'prop-types';
 import Attendance from './components/pages/SohobPages/Attendance';
 
 function App (props ){
-  let style1 = {paddingLeft: 180, paddingTop:90}
-  let style2 = {paddingTop: 90}
-
+  let style1 = { paddingTop:90}
   return (
     <Router>
      <Fragment>
-       <Navi/>
        {
         props.isLoggedIn?(
         <>
@@ -50,7 +46,7 @@ function App (props ){
         )
         :
         (
-        <Container fluid style={style2}>
+        <Container fluid style={style1}>
           <Switch>
             <Route exact path = '/about' component = {About} />
             <Route exact path = '/' component = {Login} />
