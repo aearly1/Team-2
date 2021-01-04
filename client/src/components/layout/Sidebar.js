@@ -25,7 +25,14 @@ class SideNav extends React.Component {
                   name: 'Assign Instructor',
                   css: 'fas fa-chalkboard-teacher',
                   key: 1
-                }
+                },
+                {
+                    path: '/attendance',
+                    text: "Attendance",
+                    name: 'Attendance',
+                    css: 'fas fa-user-check',
+                    key: 2
+                  },
               ]
         }
     }
@@ -64,7 +71,7 @@ const StyledNavItem = styled.div`
     height: 70px;
     width: 140px; /* width must be same size as NavBar to center */
     text-align: center; /* Aligns <a> inside of NavIcon div */
-    margin-top 15px;   /* Puts space between NavItems */
+    margin-top 30px;   /* Puts space between NavItems */
     a {
         font-size: 2.7em;
         color: ${(props) => props.active ? "rgb(247,195,68)" : "white"};

@@ -1,16 +1,15 @@
 import React , {useState} from 'react'
-import {Container, Button, Form,ButtonGroup, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
-function HODEditCourse(){
+import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
+import PropTypes from 'prop-types';
+function HODEditCourse(props){
 
     const [value1,setValue1]= useState('');
     const [value2,setValue2]= useState('');
     
     const handleSelect1=(e)=>{
-      console.log(e);
       setValue1(e)
     }
     const handleSelect2=(e)=>{
-        console.log(e);
         setValue2(e)
       }
     const renderTooltip1 = (props) => (
@@ -34,21 +33,32 @@ function HODEditCourse(){
             <Form.Group controlId="formCourse">
                 <Form.Label>Course:</Form.Label>
                 <DropdownButton variant="warning" onSelect={handleSelect1} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
-                    <Dropdown.Item eventKey="Course-1">Course 1</Dropdown.Item>
-                    <Dropdown.Item eventKey="Course-2">Course 2</Dropdown.Item>                    
-                    <Dropdown.Item eventKey="Course-3">Course 3</Dropdown.Item>
+                  {props.courses.map(course => {
+                      return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
+                  }
+                  )}
                 </DropdownButton>
             </Form.Group>
 
             <Form.Group controlId="formInstructor">
                 <Form.Label>Instructor:</Form.Label>
                 <DropdownButton variant="warning" onSelect={handleSelect2} id="dropdown-basic-button" title={(value2==="")?"Select Instructor":value2}>
-                    <Dropdown.Item eventKey="Instructor-1">Instructor 1</Dropdown.Item>
-                    <Dropdown.Item eventKey="Instructor-2">Instructor 2</Dropdown.Item>
-                    <Dropdown.Item eventKey="Instructor-3">Instructor 3</Dropdown.Item>
+                {props.instructors.map(instructor => {
+                      return <Dropdown.Item eventKey={instructor}>{instructor}</Dropdown.Item>
+                  }
+                  )}
                 </DropdownButton>
             </Form.Group>
+
+            
+
             <div style = {{paddingTop: 20}}>
+                <hr  style={{
+                    color: '#0C0A3E',
+                    backgroundColor: '#0C0A3E',
+                    height: 1,
+                    borderColor : '#0C0A3E'
+                }}/>
                 <OverlayTrigger
                     placement="bottom"
                     delay={{ show: 250, hide: 400 }}
@@ -79,5 +89,13 @@ function HODEditCourse(){
     </Container>
     )
 }
+HODEditCourse.propTypes = {
+    courses: PropTypes.array,
+    instructors: PropTypes.array
+}
 
+HODEditCourse.defaultProps = {
+    courses: ["Course 1","Course 2","Course 3" , "Course 4"],
+    instructors: ['Hassan','Instructor 2','Instructor 3', 'Instructor 4'],
+  };
 export default HODEditCourse
