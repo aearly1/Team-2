@@ -31,9 +31,9 @@ function App (props ){
 
   const { token, setToken } = useToken();
   
-  if(!token) {
-    return <Login setToken={setToken} />
-  }
+  // if(!token) {
+  //   return <Login setToken={setToken} />
+  // }
 
   let style1 = { paddingTop:90}
   return (
@@ -45,7 +45,7 @@ function App (props ){
         <Sidebar/>
         <Container fluid style= {style1}>
           <Switch>
-            <Route exact path = '/' component = {Home} />
+            <Route exact path = '/' component = {Profile} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
             <Route exact path = '/staff-do' component = {HODStaffDO}/>
             <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
