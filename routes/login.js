@@ -40,6 +40,6 @@ const { body, validationResult, check } = require('express-validator');
         const token = jwt.sign(payload,key)
         res.header('auth-token',token)
         //res.redirect(303,'/api/staffs/passwordreset')
-        res.status(200).send("Login successful")
+        res.status(200).send({token: token})
     })
 module.exports = app

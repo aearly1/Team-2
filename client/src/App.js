@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment,useState} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
@@ -22,8 +22,16 @@ import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import PropTypes from 'prop-types';
 import Attendance from './components/pages/SohobPages/Attendance';
+import useToken from './components/pages/general/useToken'
 
 function App (props ){
+
+  const { token, setToken } = useToken();
+  
+  // if(!token) {
+  //   return <Login setToken={setToken} />
+  // }
+
   let style1 = { paddingTop:90}
   return (
     <Router>
@@ -34,7 +42,7 @@ function App (props ){
         <Sidebar/>
         <Container fluid style= {style1}>
           <Switch>
-            <Route exact path = '/' component = {Home} />
+            <Route exact path = '/' component = {Profile} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
             <Route exact path = '/staff-do' component = {HODStaffDO}/>
             <Route exact path = '/staff-dos' component = {HODStaffDOS}/>

@@ -2,26 +2,37 @@ import React,{useState} from 'react';
 import {Container, Button , Form, Col, Row} from 'react-bootstrap'
 import axios from 'axios'
 import Background from '../SohobPages/test.gif'
-const Login = () => {
+import PropTypes from 'prop-types';
+
+async function loginUser(credentials) {
+    return fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentials)
+    })
+      .then(data => data.json())
+   }
+
+export default function Login ({setToken})  {
     const [email,setEmail] = useState("") 
     const [pass,setPass] = useState("") 
-    const handleSubmit = e => {
+
+    const handleSubmit2 = e => {
         e.preventDefault()
         const user = {email: email,password: pass}
-        axios.post("http://localhost:5000/api/login",user)
+        axios.post("",user)
         .then(res => console.log(res.data))
         .catch(err => console.error(err))
         //setEmail("")
         //setPass("")
     }
-    const handleEmail = (e) => {
-        const emailn = e.target.value;
-        setEmail(emailn);
-    }
-    const handlePass = (e) => {
-        const passn = e.target.value;
-        setPass(passn);
-    }
+    const handleSubmit = async e => {
+        e.preventDefault();
+        const token = await loginUser({email: email,password: pass});
+        await setToken(token);
+      }
     return (
         
         <Container style={{ backgroundImage: `url(${Background})`, padding:'100px' }} >
@@ -32,7 +43,7 @@ const Login = () => {
                             <Form.Label style={{ marginLeft: '10%', padding: '8px' }}>Email address</Form.Label>
                             <Col style={{ textAlign: 'center', alignItems: 'center' }}>
 
-                                <Form.Control onChange={handleEmail} type="email" placeholder="Enter email" />
+                                <Form.Control onChange={e => setEmail(e.target.value)} type="email" placeholder="Enter email" />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -41,7 +52,7 @@ const Login = () => {
                         <Row>
                             <Form.Label style={{ marginLeft: '0%', padding: '8px' }}>Password</Form.Label>
                             <Col style={{ textAlign: 'center', alignItems: 'center' }}>
-                                <Form.Control onChange={handlePass} type="password" placeholder="Enter password" />
+                                <Form.Control onChange={e => setPass(e.target.value)} type="password" placeholder="Enter password" />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -56,7 +67,10 @@ const Login = () => {
         
         )
     }
+
+    Login.propTypes = {
+        setToken: PropTypes.func.isRequired
+      }
     
-    export default Login
     
     

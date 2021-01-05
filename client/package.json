@@ -8,15 +8,19 @@
     "@testing-library/user-event": "^12.6.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
+    "history": "^5.0.0",
     "jest": "^26.6.0",
     "jquery": "^3.5.1",
+    "js-cookie": "^2.2.1",
     "popper.js": "^1.16.1",
+    "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
+    "react-select": "^3.1.1",
     "react-transition-group": "^4.4.1",
     "styled-components": "^5.2.1",
     "web-vitals": "^0.2.4"
@@ -44,5 +48,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
   }
 }
