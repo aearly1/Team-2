@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { Container, Row, Col, Button, Modal, Image, Form, InputGroup } from 'react-bootstrap'
+import useToken from '../general/useToken'
 const Profile = props => {
+    const token = useToken().token
+
     const styles = {
         border: '5px groove rgba(0, 0, 0, 0.05)',
         borderRadius: '10px',
@@ -23,7 +26,7 @@ const Profile = props => {
 
                     </Row><div style={{ outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}  >
                         <Row style={{ margin: '25px' }}>
-                            Name: 7amada sha3r
+                            Name: 7amada sha3r 
                         </Row>
                         <Row style={{ margin: '25px' }}>
                             Email: sexysoso@hotmail.com
