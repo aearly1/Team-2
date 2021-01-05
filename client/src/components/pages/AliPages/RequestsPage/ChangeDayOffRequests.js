@@ -1,11 +1,13 @@
 import React from "react"
 import {Form, Table, Button,Container, Row, Col, DropdownButton,Dropdown} from 'react-bootstrap'
 
-function FormApplication()
+function RequestPage()
 {
     return(
-        <Form>
-        <Form.Row>
+        <div>
+            <br></br>
+            <Form>
+            <Form.Row>
             <Form.Group as={Col} controlId="formGridEmail">
             <Form.Label>Desired Day Off</Form.Label>
             <Form.Control as="select" defaultValue="Choose...">
@@ -27,16 +29,8 @@ function FormApplication()
             Submit
         </Button>
         </Form>
-    )
-}
-function Page()
-{
-    return(
-        <div>
-            <br></br>
-            <FormApplication />
         </div>
     )
 }
 
-export default Page
+export default RequestPage

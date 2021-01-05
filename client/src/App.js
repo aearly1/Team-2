@@ -6,13 +6,10 @@ import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
-import AcademicSchedule from './components/pages/AliPages/academicSchedule'
-import SlotsPage from './components/pages/AliPages/slots'
-import ReplacementRequests from './components/pages/AliPages/ReplacementRequests'
-import SlotLinking from './components/pages/AliPages/SlotLinkingtRequest'
-import ChangeDayOff from './components/pages/AliPages/ChangeDayOff'
-import Requests from './components/pages/AliPages/MainRequestPage'
-import Leaves from './components/pages/AliPages/Leaves'
+import AcademicSchedule from './components/pages/AliPages/SchedulesPage/academicSchedule'
+import SlotsPage from './components/pages/AliPages/ManageSlotsPage/MainPage'
+import trial from './components/pages/AliPages/RequestsPage/Ali'
+import Requests from './components/pages/AliPages/RequestsPage/MainPage'
 import NotFound from './components/pages/general/NotFound';
 import Sidebar from './components/layout/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
@@ -42,6 +39,7 @@ function App (props ){
             <Route exact path = '/staff-do' component = {HODStaffDO}/>
             <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
             <Route exact path = '/course-cov' component = {HODCourseCov}/>
+            <Route exact path = '/trial' component = {trial}/>
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/schedule' component = {AcademicSchedule} />

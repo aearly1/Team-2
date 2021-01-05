@@ -509,7 +509,7 @@ Example:
 "requestType": "change day off",
 "status": "pending",
 "DesiredDayOff": "SAT",
-"requestReason": "I love eating chocolate cake on Sataurday and I can't eat chocolate cake at uni"
+"requestReason": I love eating chocolate cake on Sataurday and I can't eat chocolate cake at uni
 }
 
 ---

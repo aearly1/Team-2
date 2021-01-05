@@ -15,8 +15,7 @@ function RowComponent(props)
     );
 }
 
-//component for updating and deleting slots
-function RequestForm()
+function Requestpage()
 {
     const array = [{Day: "TUES", startTime: "8:15 AM", endTime: "10:00 AM", location: "C3. 201"},
     {Day: "WED", startTime: "1:45 AM", endTime: "3:15 PM", location: "C3. 103"},
@@ -31,33 +30,27 @@ function RequestForm()
     location={elem.location}
     />
     })
-    return (
-    <div>
-    <h5>Kindly find bellow the unassigned slots of the course</h5>
-    <Table style={{textAlign:"center"}} striped bordered hover> 
-    <thead>
-    <tr>
-    <th>Day</th>
-    <th>Start Time</th>
-    <th>End Time</th>
-    <th>Location</th>
-    <th>Request Linking</th>
-    </tr>
-    </thead>
-    <tbody>
-    {tableRows}
-    </tbody>
-    </Table>
-    </div>
-);
-}
-function page()
-{
     return(
         <div>
             <br></br>
-            <RequestForm />
+            <div>
+            <h5>Kindly find bellow the unassigned slots of the course</h5>
+            <Table style={{textAlign:"center"}} striped bordered hover> 
+            <thead>
+            <tr>
+            <th>Day</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Location</th>
+            <th>Request Linking</th>
+            </tr>
+            </thead>
+            <tbody>
+            {tableRows}
+            </tbody>
+            </Table>
+            </div>
         </div>
     )
 }
-export default page
+export default Requestpage
