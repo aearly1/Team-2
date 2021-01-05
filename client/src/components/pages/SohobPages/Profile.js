@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import axios from 'axios'
+import React, { useState,useEffect } from 'react'
 import { Container, Row, Col, Button, Modal, Image, Form, InputGroup } from 'react-bootstrap'
 import useToken from '../general/useToken'
 import styled from 'styled-components'
@@ -10,7 +11,6 @@ const StaffCard = styled.div`
 `;  
 const Profile = props => {
     const token = useToken().token
-
     const styles = {
         border: '5px groove rgba(0, 0, 0, 0.05)',
         borderRadius: '10px',
@@ -30,8 +30,51 @@ let style1 = {
     minWidth:750,
   };
   
-    return (<div >
-        <StaffCard>
+    
+   const [user,setUser] = useState({})
+   const [courses,setCourses] = useState([])
+   const [show, setShow] = useState(false);
+   const [edit, setEdit] = useState(false);
+   const [updatedEmail, setEmail] = useState()
+   const [updatedOffice, setOffice] = useState()
+   const handleClose = () => setShow(false);
+   const handleShow = () => setShow(true);
+       useEffect(() =>{
+        axios.get('http://localhost:5000/api/staffs/profile', {
+        headers: {
+          'auth-token': `${token}`
+        }
+      }).then((res) => {
+        setUser(res.data)
+        setCourses(res.data.Courses);
+        console.log(res.data)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+       },[])
+    const handleEdit = () => setEdit(true);
+    const handleEditc = () => setEdit(false);
+    const handleSubmit = () =>{
+        axios.put('http://localhost:5000/api/staffs/profile/update',{email: updatedEmail,office: updatedOffice},{
+            headers: {
+              'auth-token': `${token}`
+            }
+          }).then((res) => {
+            console.log(res.data)
+            //setSuccess(true)
+            handleEdit()
+          })
+          .catch((error) => {
+            console.error(error)
+            console.log("dab")
+            //setAlert(true)
+            handleEdit()
+          })
+    }
+    return (
+            <div >
+            <StaffCard>
         <Container style={style1} fluid="">
             <Row md={1}><div style={{ width: 450, height: 'auto', textAlign: 'center' }}>
                 <Image roundedCircle width="auto" height="180px" src="https://i2-prod.walesonline.co.uk/incoming/article18912156.ece/ALTERNATES/s1200c/0_Borat.jpg"
@@ -42,42 +85,62 @@ let style1 = {
 
                     </Row><div style={{ outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}  >
                         <Row style={{ margin: '25px' }}>
-                            Name: 7amada sha3r 
+                            Name: {user.Name}
+                        </Row>
+                        {!edit?<Row style={{ margin: '25px' }}>
+                            Email: {user.Email}
+                        </Row>:<div>
+                        <Row style={{ margin: '25px' }}>
+                        Email: <input onChange={e=>setEmail(e.target.value)} placeholder="Enter new Email"></input>
+                        </Row></div>}
+                        <Row style={{ margin: '25px' }}>
+                            ID: {user.ID}
                         </Row>
                         <Row style={{ margin: '25px' }}>
-                            Email: sexysoso@hotmail.com
+                            Day Off: {user.DayOff}
                         </Row>
                         <Row style={{ margin: '25px' }}>
-                            ID: 43-8530
-                        </Row>
-                        <Row style={{ margin: '25px' }}>
-                            Day Off: SAT
-                        </Row>
-                        <Row style={{ margin: '25px' }}>
-                            Annual Leaves: 69
+                            Annual Leaves: {user.annualLeaves}
                         </Row></div>
                 </Col>
 
                 <Col><div style={{ outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}  >
+                {!edit?<Row style={{ margin: '25px' }}>
+                            Office: {user.Office}
+                        </Row>:<div>
+                        <Row style={{ margin: '25px' }}>
+                        Office: <input placeholder="Enter new Office" onChange={e=>setOffice(e.target.value)}></input>
+                        </Row></div>}
                     <Row style={{ margin: '25px' }}>
-                        Office: C4.404
+                        Faculty: {user.FacultyName}
                     </Row>
                     <Row style={{ margin: '25px' }}>
-                        Faculty: Tegara
+                        Department: {user.DepartmentName}
                     </Row>
                     <Row style={{ margin: '25px' }}>
-                        Department: Fawanees
+                        Salary: {user.Salary}
                     </Row>
                     <Row style={{ margin: '25px' }}>
-                        Salary: 10 bolbol
-                    </Row>
-                    <Row style={{ margin: '25px' }}>
-                        <Button variant ="warning">View Courses</Button>
+                        <Button onClick={handleShow}>View Courses</Button>
                     </Row></div>
                 </Col>
+                {!edit?<Button show='false' onClick ={handleEdit}>Edit</Button>:
+                <div><Button onClick={handleSubmit}>Save</Button><Button onClick ={handleEditc}>Cancel</Button></div>}
             </Row>
         </Container>
         </StaffCard>
+
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Courses</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ margin: '25px' }}> 
+                <ul>
+            {courses.map(c => <li>{c}</li>)}
+                </ul>
+                </Modal.Body>
+        </Modal>
+        
     </div>
     )
 }
