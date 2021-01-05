@@ -12,32 +12,31 @@ const StaffCard = styled.div`
 
 function HODCourseStaff(props) {   
 
-    const [value1,setValue1]= useState('');
-    const handleSelect1=(e)=>{
-      setValue1(e)
-    }
-    return (
-        <Container fluid >
-        <Form>
-            <Form.Group controlId="formCourse">
-            <Form.Label><h1>  Select a course to view its staff members:</h1></Form.Label>
-            <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
-            
-            <Dropdown as={ButtonGroup} style= {{paddingLeft:30}}>
-            <Dropdown.Toggle variant="warning"> {(value1==="")?"Select Course":value1} </Dropdown.Toggle>
-            <Dropdown.Menu >
-            {props.courses.map(course => {
-                //TODO: Need to set this bit to put the course in the payload to the view staff page
-                return <Dropdown.Item href="/view-staff">{course}</Dropdown.Item>
-            }
-        )}
-        </Dropdown.Menu>
-        </Dropdown>
-        </div>
-        </Form.Group>
-        </Form>
-        </Container>
-        )
+  const [value1,setValue1]= useState('');
+  const handleSelect1=(e)=>{
+    setValue1(e)
+  }
+  return (
+      <Container fluid >
+      <Form>
+          <Form.Group controlId="formCourse">
+          <Form.Label><h1>  Select a course to view its staff members:</h1></Form.Label>
+          <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
+          <Dropdown as={ButtonGroup} style= {{paddingLeft:30}}>
+          <Dropdown.Toggle variant="warning"> {(value1==="")?"Select Course":value1} </Dropdown.Toggle>
+          <Dropdown.Menu >
+          {props.courses.map(course => {
+              //TODO: Need to set this bit to put the course in the payload to the view staff page
+              return <Dropdown.Item href="/view-staff">{course}</Dropdown.Item>
+          }
+      )}
+      </Dropdown.Menu>
+      </Dropdown>
+      </div>
+      </Form.Group>
+      </Form>
+      </Container>
+  )
 }
 HODCourseStaff.propTypes = {
     courses: PropTypes.string

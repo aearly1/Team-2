@@ -93,12 +93,13 @@ router.post("/assign-instr-course",
 });
 //=========================================================================//
 
+///CHANGED DURING FRONTEND DEV
 // @status  Done & Tested
-// @route   DELETE api/HOD/assign-instr-course
+// @route   POST api/HOD/assign-instr-course
 // @input   courseId, instructorId
 // @desc    delete a course instructor for each course in his department.
 // @access  Private
-router.delete("/del-instr-course",[
+router.post("/del-instr-course",[
     check("courseName", "Course Name needed."),
     check("instructorId", "Instructor Id needed.")
   ]
@@ -259,6 +260,7 @@ router.get("/staff", async (req, res) => {
             let staffOutput = [];
             staff.forEach(staffMem => staffOutput.push({
                 userCode: staffMem.id,
+                imgLink: staffMem.imgLink,
                 subType: staffMem.subType,
                 email: staffMem.email,
                 name: staffMem.name
@@ -277,12 +279,14 @@ router.get("/staff", async (req, res) => {
 });
 //=========================================================================//
 
+
+///CHANGED DURING FRONTEND DEV
 // @status  Done & Tested
-// @route   GET api/hod/staff-crs
+// @route   POST api/hod/staff-crs
 // @input   courseName
 // @desc    View a course's teaching staff
 // @access  Private
-router.get("/staff-crs",[
+router.post("/staff-crs",[
     check("courseName", "Course Name incorrect <backend problem>").not().isEmpty()
   ]
   ,
@@ -359,12 +363,14 @@ router.get("/staff-do",  async (req, res) => {
 });
 //=========================================================================//
 
+
+///CHANGED DURING FRONTEND DEV
 // @status  Done & Tested
-// @route   GET api/hod/staff-dos
+// @route   POST api/hod/staff-dos
 // @input   staff member id  
 // @desc    View the day off of a single staff in his/her department.
 // @access  Private
-router.get("/staff-dos",[
+router.post("/staff-dos",[
     check("staffId", "Staff Id needed")
   ]
   ,
@@ -568,12 +574,14 @@ router.post("/leave-do-req-r",[
 });
 //=========================================================================//
 
+
+///CHANGED DURING FRONTEND DEV
 // @status  Done & Tested
-// @route   GET api/hod/course-cov
+// @route   POST api/hod/course-cov
 // @input   course-Id
 // @desc    View the coverage of each course in his/her department
 // @access  Private
-router.get("/course-cov", [
+router.post("/course-cov", [
     check("courseName", "Course name needed.")
   ]
   ,  async (req, res) => {
@@ -681,6 +689,31 @@ router.get("/teaching-assignments",[
     }
 });
 
+router.get("/courses", async (req, res) => {
+    try {
+        //Get the Logged in User's department
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+        //check if user is head of the department
+
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let coursesOutput = [];
+            depart.courses.forEach(async course =>{
+                crs = await courseModel.findOne({"_id": ObjectId(course)})
+                coursesOutput.push({coursename: crs.courseName})
+            }
+            )
+            res.status(200).json(coursesOutput)
+            }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department")
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
 
 
 module.exports = router;

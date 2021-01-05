@@ -1,11 +1,84 @@
-import React , {useState} from 'react'
-import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
+import React , {useState, useEffect} from 'react'
+import {Container,Alert, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-function HODEditCourse(props){
+import useToken from '../general/useToken';
+import axios from 'axios'
 
-    const [value1,setValue1]= useState('');
-    const [value2,setValue2]= useState('');
-    
+
+/*
+TODOS ==>
+    1. Load Courses from DB
+        1.1 -> need to make a route to get courses
+    2. Load Instructors from DB
+        2.1 -> Load staff members then filter the instructors
+    3. 
+*/
+
+function HODEditCourse(){
+    const token = useToken().token
+
+    const [options1,setOptions1]= useState([]);// Load Course Dropdown
+    const [options2,setOptions2]= useState([]);// Load Instructor Dropdown
+    const [alertext,setAlertext]= useState();
+    const [value1,setValue1]= useState(''); // This is the course
+    const [value2,setValue2]= useState(''); // This is the instructor
+    useEffect(async ()=>{
+        //GET THE Courses under department
+        await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+            alert(JSON.stringify(res.data))
+            let items = []
+            res.data.map(course => {items.push({ courseName:course.courseName})})
+            setOptions1(items);
+        }).catch(err=>alert(err))
+
+        //GET THE Instructors under department
+        await axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
+            alert(JSON.stringify(res.data))
+            let items = []
+            res.data.map(staffMem => 
+            {
+            if((staffMem.subType=='head of department')||(staffMem.subType=='instructor')){
+                items.push({instrId:staffMem.userCode, name:staffMem.name})
+            }
+            })
+            setOptions2(items);
+        }).catch(err=>alert(err))
+
+        }, []  )
+
+    const assignInstrReq= ()=> {
+        if(value1&&value2){
+        axios.get('http://localhost:5000/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+            setAlertext(res.data);         
+            }).catch(err=>alert(err))
+        }
+        else{
+            setAlertext("Either an Instructor or a course was not chosen.")
+        }
+    }
+    const deleteInstrReq= () => {
+        if(value1&&value2){
+        axios.get('http://localhost:5000/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+            setAlertext(res.data);      
+            }).catch(err=>alert(err))
+        }
+        else{
+            setAlertext("Either an Instructor or a course was not chosen.")
+        }
+    }
+    const updateInstrReq= () => {
+        if(value1&&value2){
+        axios.get('http://localhost:5000/api/hod/update-instr-course',{courseName:value1,instructorId: value1},{headers:{'auth-token':token}}).then((res)=>{
+            setAlertext(res.data);       
+            }).catch(err=>alert(err))
+        }
+        else{
+            setAlertext("Either an Instructor or a course was not chosen.")
+        }
+    }
+
+
+
     const handleSelect1=(e)=>{
       setValue1(e)
     }
@@ -33,8 +106,8 @@ function HODEditCourse(props){
             <Form.Group controlId="formCourse">
                 <Form.Label>Course:</Form.Label>
                 <DropdownButton variant="warning" onSelect={handleSelect1} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
-                  {props.courses.map(course => {
-                      return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
+                  {options1.map(option => {
+                      return <Dropdown.Item eventKey={option.courseName}>{option.courseName}</Dropdown.Item>
                   }
                   )}
                 </DropdownButton>
@@ -43,15 +116,15 @@ function HODEditCourse(props){
             <Form.Group controlId="formInstructor">
                 <Form.Label>Instructor:</Form.Label>
                 <DropdownButton variant="warning" onSelect={handleSelect2} id="dropdown-basic-button" title={(value2==="")?"Select Instructor":value2}>
-                {props.instructors.map(instructor => {
-                      return <Dropdown.Item eventKey={instructor}>{instructor}</Dropdown.Item>
+                {options2.map(option => {
+                      return <Dropdown.Item eventKey={option.instrId}>{option.name}</Dropdown.Item>
                   }
                   )}
                 </DropdownButton>
             </Form.Group>
 
             
-
+            {(alertext)?(<Alert variant ='warning'>{alertext}</Alert>):(<div></div>)}
             <div style = {{paddingTop: 20}}>
                 <hr  style={{
                     color: '#0C0A3E',
@@ -64,7 +137,7 @@ function HODEditCourse(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip1}
                 >
-                    <Button variant="success" type="submit">Assign </Button>
+                    <Button variant="success" onClick={assignInstrReq} >Assign </Button>
                 </OverlayTrigger>
                                 
                 {' '}
@@ -73,7 +146,7 @@ function HODEditCourse(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip2}
                 >
-                    <Button variant="info" type="submit">Update </Button>
+                    <Button variant="info" onClick={deleteInstrReq} >Update </Button>
                 </OverlayTrigger>
                 
                 {' '}
@@ -82,20 +155,12 @@ function HODEditCourse(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip3}
                 >
-                    <Button variant="danger" type="submit">Delete </Button>
+                    <Button variant="danger" onClick={updateInstrReq} >Delete </Button>
                 </OverlayTrigger>
             </div>
         </Form>
     </Container>
     )
 }
-HODEditCourse.propTypes = {
-    courses: PropTypes.array,
-    instructors: PropTypes.array
-}
 
-HODEditCourse.defaultProps = {
-    courses: ["Course 1","Course 2","Course 3" , "Course 4"],
-    instructors: ['Hassan','Instructor 2','Instructor 3', 'Instructor 4'],
-  };
 export default HODEditCourse

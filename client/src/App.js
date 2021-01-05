@@ -28,9 +28,9 @@ function App (props ){
 
   const { token, setToken } = useToken();
   
-  // if(!token) {
-  //   return <Login setToken={setToken} />
-  // }
+   if(!token) {
+     return <Login setToken={setToken} />
+   }
 
   let style1 = { paddingTop:90}
   return (
