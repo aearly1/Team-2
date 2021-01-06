@@ -15,9 +15,11 @@ async function loginUser(credentials) {
       .then(data => data.json())
    }
 
-export default function Login ({setToken})  {
+export default function Login ({setToken, setTokeypokey})  {
     const [email,setEmail] = useState("") 
     const [pass,setPass] = useState("") 
+
+    
 
     const handleSubmit2 = e => {
         e.preventDefault()
@@ -32,6 +34,7 @@ export default function Login ({setToken})  {
         e.preventDefault();
         const token = await loginUser({email: email,password: pass});
         await setToken(token);
+        await setTokeypokey(true);
       }
     return (
         

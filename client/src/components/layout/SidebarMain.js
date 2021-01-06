@@ -67,7 +67,7 @@ const SidebarWrap = styled.div`
 `;
 
 
-function SidebarMain(props) {
+function SidebarMain({tokey}) {
   const token = useToken().token
   const [sidebar, setSidebar] = useState(false);
   const [name1, setName1] = useState('');
@@ -84,14 +84,14 @@ function SidebarMain(props) {
         <>
         <Navig>
             <Navbar>
-            {token?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
+            {tokey?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
                 <i  class="fas fa-bars" onClick={showSidebar} />
             </NavIcon>):(<div></div>)}
             <Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> 
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-                {token?
+                {tokey?
                 (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
                 <i class="fas fa-user-circle pr-1" >
                 </i>
@@ -112,7 +112,7 @@ function SidebarMain(props) {
             
             </Navbar>
         </Navig>
-        {token?(
+        {tokey?(
         <SidebarNav sidebar={sidebar} >
             <SidebarWrap>
             
