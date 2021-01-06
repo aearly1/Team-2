@@ -14,6 +14,7 @@ node_modules/
 # testing
 /coverage
 client/.eslintcache
+clinet/debug.log
 # production
 /build
 
