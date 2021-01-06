@@ -9,6 +9,7 @@ import axios from 'axios';
 
 import * as AiIcons from 'react-icons/ai'
 import * as FaIcons from 'react-icons/fa'
+import * as GoIcons from 'react-icons/go'
 
 // const Nav = styled.div`
 //     background: #15171c;
@@ -89,7 +90,9 @@ function SidebarMain({tokey}) {
                
                 <Nav.Item >
                 <Nav.Link href="/logout" style = {{textDecoration:"underline",textDecorationColor:"purple", whiteSpace:"nowrap"}}
-                >Sign-out
+                >
+                <GoIcons.GoSignOut/>
+                Sign-out
                 </Nav.Link>
                 </Nav.Item>
                 
@@ -110,7 +113,10 @@ function SidebarMain({tokey}) {
                 </Nav.Item>
                  ) 
                 }
-                <Nav.Item><Nav.Link href="/about" style = {{textDecoration:"underline",textDecorationColor:"gold", whiteSpace:"nowrap"}}>About</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link href="/about" style = {{textDecoration:"underline",textDecorationColor:"gold", whiteSpace:"nowrap"}}>
+                <FaIcons.FaInfoCircle/>
+                About
+                </Nav.Link></Nav.Item>
             </Nav>
             
             </Navbar>
