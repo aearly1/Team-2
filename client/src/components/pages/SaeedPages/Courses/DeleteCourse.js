@@ -1,23 +1,29 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
+import useToken from '../../general/useToken';
+import axios from 'axios';
+
 function DeleteCourse(props){
+const token = useToken().token
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: '+ oldDepartment+" "+Course);
-        e1.preventDefault();
-        }
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/deleteCourse',{'courseName':Course,'oldDepartmentName':oldDepartment},{headers:{'auth-token':token}}).then((res)=>{
+      alert(res.data)    
+      }).catch(err=>alert(err))  
+       }
         const [oldDepartment,setOldDepartment]= useState('');
             const [Course,setCourses]= useState('');
         const changeOldDepartment = (event) =>{
-            setOldDepartment(event)
+            setOldDepartment(event.target.value)
             }
         
           
                       
 
         const changeCourses = (event) =>{
-            setCourses(event)
+            setCourses(event.target.value )
             }
     
     return (
@@ -25,22 +31,13 @@ function DeleteCourse(props){
         <label>
           Course Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeCourses} id="dropdown-basic-button" title={(Course==='')?"Course":Course}>
-                {props.Courses.map(course => {
-                      return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>
-        <br/>
-        <label>
-          Department Name:
+          <input type="text" class="form-control" required value={Course} onChange={changeCourses} />
+     <br/>
+     <label>
+         Department Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeOldDepartment} id="dropdown-basic-button" title={(oldDepartment==='')?"Department":oldDepartment}>
-                {props.Departments.map(department => {
-                      return <Dropdown.Item eventKey={department}>{department}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>    
+          <input type="text" class="form-control" required value={oldDepartment} onChange={changeOldDepartment} />
+        
      <br/>
   
                 <Button variant="success" type="submit"> Delete Course  </Button>

@@ -1,8 +1,11 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-function AddStaff(props){
+import useToken from '../../general/useToken'
+import axios from 'axios';
 
+function AddStaff(props){
+  const token = useToken().token
    /*check("email", "Staff member email must be an email").isEmail(),
     check("name", "Staff member name must be a string").isString(),
     check("type", "Staff member type must be a string").isString(),
@@ -16,8 +19,21 @@ function AddStaff(props){
     check("Salary", "Staff member Salary must be a number").isNumeric()*/
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' +email);
-        e1.preventDefault();
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/addStaffMember',{'email':email,
+    'name':name,
+    'type':type,
+    'subType':subType,
+    'office':office,
+    'dayOff':dayOff,
+    'departmentName':Department,
+    'facultyName':facultyName,
+    'annualLeaves':annualLeaves,
+    'accidentalLeavesLeft':accidentalLeavesLeft,
+    'Salary':Salary
+    },{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))
         }
             const Types = ["HR","academic"];
             const subTypes = ["hod","instructor","ta"];
@@ -25,14 +41,14 @@ function AddStaff(props){
             const [email,setEmail]= useState('');
             const [name,setName]= useState('');
             const [type,setType]= useState('');
-            const [subType,setSubType]= useState(null);
+            const [subType,setSubType]= useState('');
             const [office,setOffice]= useState('');
-            const [dayOff,setDayOff]= useState(null);
-            const [Department,setDepartments]= useState(null);
-            const [facultyName,setFacultyName]= useState(null);
-            const [annualLeaves,setAnnualLeaves]= useState(null);
-            const [accidentalLeavesLeft,setAccidentalLeavesLeft]= useState(null);
-            const [Salary,setSalary]= useState(null);
+            const [dayOff,setDayOff]= useState('');
+            const [Department,setDepartments]= useState('');
+            const [facultyName,setFacultyName]= useState('');
+            const [annualLeaves,setAnnualLeaves]= useState();
+            const [accidentalLeavesLeft,setAccidentalLeavesLeft]= useState();
+            const [Salary,setSalary]= useState();
 
          const changeEmail = (event) =>{
             setEmail(event.target.value)
@@ -50,19 +66,19 @@ function AddStaff(props){
             setSubType(event)
             }            
         const changeOffice = (event) =>{
-            setOffice(event)
+            setOffice(event.target.value)
             }
         
         const changeDayOff = (event) =>{
-            setDayOff(event.target.value)
+            setDayOff(event)
             }
             
         const changeFaculty = (event) =>{
-            setFacultyName(event)
+            setFacultyName(event.target.value)
             }
         
         const changeDepartments = (event) =>{
-            setDepartments(event)
+            setDepartments(event.target.value)
             }            
         const changeAnnualLeaves = (event) =>{
             setAnnualLeaves(event.target.value)
@@ -104,7 +120,7 @@ function AddStaff(props){
                 <label>
           Sub Type:
           </label>
-          <DropdownButton variant="warning" onSelect={changeSubType} id="dropdown-basic-button" title={(subType===null)?"SubType":subType}>
+          <DropdownButton variant="warning" onSelect={changeSubType} id="dropdown-basic-button" title={(subType==='')?"SubType":subType}>
                 {subTypes.map(SubType => {
                       return <Dropdown.Item eventKey={SubType}>{SubType}</Dropdown.Item>
                   }
@@ -114,17 +130,12 @@ function AddStaff(props){
                 <label>
           Office:
           </label>
-          <DropdownButton variant="warning" onSelect={changeOffice} id="dropdown-basic-button" title={(office==='')?"Office":office}>
-                {props.Offices.map(Office => {
-                      return <Dropdown.Item eventKey={Office}>{Office}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     
+          <input  type="text" class="form-control" value={office} onChange={changeOffice} />
                 <br/>
                 <label>
           Day Off:
           </label>
-          <DropdownButton variant="warning" onSelect={changeDayOff} id="dropdown-basic-button" title={(dayOff===null)?"DayOff":dayOff}>
+          <DropdownButton variant="warning" onSelect={changeDayOff} id="dropdown-basic-button" title={(dayOff==='')?"DayOff":dayOff}>
                 {Days.map(day => {
                       return <Dropdown.Item eventKey={day}>{day}</Dropdown.Item>
                   }
@@ -134,21 +145,13 @@ function AddStaff(props){
         <label>
           Faculty:
           </label>
-          <DropdownButton variant="warning" onSelect={changeFaculty} id="dropdown-basic-button" title={(facultyName===null)?"Faculty":facultyName}>
-                {props.Faculties.map(faculty => {
-                      return <Dropdown.Item eventKey={faculty}>{faculty}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     <br/>
+          <input  type="text" class="form-control" value={facultyName} onChange={changeFaculty} />
+        <br/>
         <label>
           Departments:
           </label>
-          <DropdownButton variant="warning" onSelect={changeDepartments} id="dropdown-basic-button" title={(Department===null)?"Departments ":Department}>
-                {props.Departments.map(Department1 => {
-                      return <Dropdown.Item eventKey={Department1}>{Department1}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     <br/>
+          <input  type="text" class="form-control" value={Department} onChange={changeDepartments} />
+            <br/>
                 <label>
           Annual Leaves:
           </label>
@@ -177,15 +180,4 @@ function AddStaff(props){
     check("departmentName", "Staff member department must be a string").optional().isString(),
     check("facultyName", "Staff member faculty must be a string").optional().isString(),
 */
-AddStaff.propTypes = {
-  Offices:PropTypes.array,
-  Departments: PropTypes.array,
-  Faculties: PropTypes.array
-}
-
-AddStaff.defaultProps = {
-  Offices:["c3.101","c5.201","c2,301"],
-  Departments: ['CSEN','DMET','MECHA'],
-  Faculties: ['MET','EMS','IET']
-};
 export default AddStaff

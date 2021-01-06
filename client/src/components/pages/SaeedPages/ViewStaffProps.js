@@ -2,7 +2,11 @@ import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
 import { propTypes } from 'react-bootstrap/esm/Image';
+import useToken from '../general/useToken'
+import axios from 'axios';
 function ViewAttendance(props){
+    const token = useToken().token
+
 
   const renderTooltip1 = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -11,7 +15,7 @@ function ViewAttendance(props){
     );
     const renderTooltip2 = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-        View missing days and hours of the staff member with the selected id   
+       View staff members with missing days or hours 
          </Tooltip>
     );
     const renderTooltip3 = (props) => (
@@ -22,14 +26,39 @@ function ViewAttendance(props){
 
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + Id);
         e1.preventDefault();
+        if(btn == 1)
+        axios.post('http://localhost:5000/api/hr/viewAttendance',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))
+        if(btn == 2)
+        axios.post('http://localhost:5000/api/hr/viewMissingDaysOrHours',{},{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))
+        if(btn == 3)
+        axios.post('http://localhost:5000/api/hr/viewSalary',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))
         }
            
             const [Id,setID]= useState('');
  
             const changeID = (event) =>{
-            setID(event)
+            setID(event.target.value)
+            }
+
+            const [btn,setBtn]= useState(1);
+ 
+            const changeAtt = (event) =>{
+            setBtn(1)
+            }
+ 
+            const changeMD = (event) =>{
+            setBtn(2)
+            }
+ 
+            const changeSalary = (event) =>{
+            setBtn(3)
             }
 
     return (
@@ -37,13 +66,9 @@ function ViewAttendance(props){
          <label>
           Staff Member ID:
           </label>
-          <DropdownButton variant="warning" onSelect={changeID} id="dropdown-basic-button" title={(Id==='')?"Staff Member ID":Id}>
-                {props.IDs.map(id => {
-                      return <Dropdown.Item eventKey={id}>{id}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     
-                <br/>
+          <input required type="text" class="form-control" value={Id} onChange={changeID} />
+        
+        <br/>
 
                 <hr  style={{
                     color: '#0C0A3E',
@@ -56,7 +81,7 @@ function ViewAttendance(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip1}
                 >
-                    <Button variant="success" type="submit">View Attendance </Button>
+                    <Button variant="success" type="submit" onClick={changeAtt}>View Attendance </Button>
                 </OverlayTrigger>
                                 
                 {' '}
@@ -65,7 +90,7 @@ function ViewAttendance(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip2}
                 >
-                    <Button variant="info" type="submit"> View Missing Days </Button>
+                    <Button variant="info" type="submit" onClick={changeMD}> View Missing Days </Button>
                 </OverlayTrigger>
                 
                 {' '}
@@ -74,7 +99,7 @@ function ViewAttendance(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip3}
                 >
-                    <Button variant="danger" type="submit">View Salary  </Button>
+                    <Button variant="danger" type="submit"onClick={changeSalary}>View Salary  </Button>
                 </OverlayTrigger>
       </form>
     )
