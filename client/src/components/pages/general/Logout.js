@@ -1,10 +1,9 @@
-import { Button } from 'react-bootstrap'
 import React,{useEffect, useState} from 'react'
 import useToken from './useToken'
 import axios from 'axios'
 import { useHistory } from 'react-router-dom';
 
-export default function Logout () {
+export default function Logout ({setTokeypokey}) {
     const token = useToken().token
     let history = useHistory()
     
@@ -13,8 +12,9 @@ export default function Logout () {
             headers: {
                 'auth-token': `${token}`
             }
-        }).then((res) => {
+        }).then(async (res) => {
             sessionStorage.removeItem('token')
+            await setTokeypokey(false);
             console.log(res.data)
             history.push("/login");
           })
@@ -25,7 +25,6 @@ export default function Logout () {
 
     return(
         <div>
-            <Button></Button>
         </div>
     )
 }

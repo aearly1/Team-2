@@ -5,7 +5,7 @@ import useToken from '../general/useToken'
 import styled from 'styled-components'
 import { usePromiseTracker,trackPromise } from "react-promise-tracker";
 import ReactLoading from 'react-loading';
- 
+import { useHistory } from 'react-router-dom';
 
 const StaffCard = styled.div`
 .staffCard{
@@ -14,15 +14,16 @@ const StaffCard = styled.div`
 }
 `;  
 const Profile = props => {
-
-    const Example = ({ type, color }) => (
+    let history = useHistory()
+    const Load = ({ type, color }) => (
         <ReactLoading type={type} color={color} height={667} width={375} />
     );
     const LoadingIndicator = props => {
         const { promiseInProgress } = usePromiseTracker();
           return (
             promiseInProgress && 
-            <Example type='balls' color='#FFFFFF'/>
+            <div style={{padding:'100px',marginLeft:'30%'}}>
+            <Load type='balls' color='#0C0A4A' /></div>
          );  
          }
     const token = useToken().token
@@ -78,6 +79,7 @@ let style1 = {
           }).then((res) => {
             console.log(res.data)
             //setSuccess(true)
+            history.push('/logout')
             handleEdit()
           })
           .catch((error) => {

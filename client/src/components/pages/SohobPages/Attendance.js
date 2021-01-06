@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
-import { Modal, Form, Button, Row, Col, Container, Alert } from 'react-bootstrap'
+import { Modal, Form, Button, Row, Col, Container, Alert,Card,CardDeck } from 'react-bootstrap'
 import useToken from '../general/useToken'
 const Attendance = props => {
   const token = useToken().token
@@ -9,7 +9,8 @@ const Attendance = props => {
     borderRadius: '10px',
     padding: '50px',
     Button: 'rgba(0, 0, 0, 0.05)',
-    background: 'rgb(242,225,202)'
+    background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
+    backgroundColor:"#0C0A4A" ,
   };
   const [selection, setSelection] = useState("All")
   const [show, setShow] = useState(false);
@@ -176,28 +177,59 @@ const Attendance = props => {
 
   return (
     <div>
+      
       <Container style={styles} fluid="">
         {alertfunc()}
-        <Row md={2}>
-          <Col xs={2} >
-            <Row md={8} >
-
-            </Row><div style={{ outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}  >
-              <Row style={{ margin: '25px' }}>
-                <Col><i class="far fa-user-circle"></i>
-                  <Button onClick={handleSignin} >Sign in</Button></Col><Col><Button variant="secondary" onClick={handleSignout}>Sign out</Button></Col>
-              </Row>
-              <Row style={{ margin: '25px' }}>
-                <Button onClick={handleShow}>View Attendance</Button>
-                <Button onClick={handleShow1}>View Missing Days</Button><Button onClick={handleShow2}>View Missing Hours</Button>
-              </Row>
-            </div>
-          </Col>
-
-          <Col><div style={{ outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}  >
-          </div>
-          </Col>
-        </Row>
+        <CardDeck>
+  <Card>
+    <Card.Body>
+      <Card.Title>Sign in/out</Card.Title>
+      <Card.Text>
+        This is to either sign in or sign out
+      </Card.Text>
+    </Card.Body>
+    <Card.Footer>
+    <Button onClick={handleSignin} >Sign in</Button>
+    <Button variant="secondary" onClick={handleSignout}>Sign out</Button>
+    </Card.Footer>
+  </Card>
+  <Card>
+    <Card.Body>
+      <Card.Title>View attendance</Card.Title>
+      <Card.Text>
+        This is to view your attendance.{' '}
+      </Card.Text>
+    </Card.Body>
+    <Card.Footer>
+    <Button onClick={handleShow}>View Attendance</Button>
+    </Card.Footer>
+  </Card>
+</CardDeck>
+<br/>
+<CardDeck>
+  <Card>
+    <Card.Body>
+      <Card.Title>View Missing Days</Card.Title>
+      <Card.Text>
+        This is to view the days you missed. Ya fashel yabo mol7a2.
+      </Card.Text>
+    </Card.Body>
+    <Card.Footer>
+    <Button onClick={handleShow1}>View Missing Days</Button>
+    </Card.Footer>
+  </Card>
+  <Card>
+    <Card.Body>
+      <Card.Title>View Missing Hours</Card.Title>
+      <Card.Text>
+        This is to view the hours you missed across the month.{' '}
+      </Card.Text>
+    </Card.Body>
+    <Card.Footer>
+    <Button onClick={handleShow2}>View Missing Hours</Button>
+    </Card.Footer>
+  </Card>
+</CardDeck>
       </Container>
 
       <Modal show={show} onHide={handleClose}>

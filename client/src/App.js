@@ -91,7 +91,7 @@ function App (){
             <Route exact path = '/login' component = {Login} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
-            <Route exact path = '/logout' component = {Logout} />
+            <Route exact path = '/logout' component = {() => <Logout setTokeypokey={setTokeypokey} />} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>

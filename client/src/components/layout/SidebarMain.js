@@ -89,20 +89,28 @@ function SidebarMain({tokey}) {
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-                {(tokey||token)?
-                (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
+            {(tokey||token)?
+                (<>
+                <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
                 <i class="fas fa-user-circle pr-1" >
                 </i>
                 {name1}
                 </Nav.Link>
-                </Nav.Item> )
+                </Nav.Item>
+                <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
+                <Nav.Link href="/logout"
+                >Log out
+                </Nav.Link>
+                </Nav.Item>
+                </> )
                 :
                 (
                 <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
                 <Nav.Link href="/login"
                 >Login
                 </Nav.Link>
-                </Nav.Item>) 
+                </Nav.Item>
+                 ) 
                 }
                 <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
 
