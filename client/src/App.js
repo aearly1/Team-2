@@ -7,7 +7,6 @@ import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/SchedulesPage/academicSchedule'
 import SlotsPage from './components/pages/AliPages/ManageSlotsPage/MainPage'
-import trial from './components/pages/AliPages/RequestsPage/Ali'
 import Requests from './components/pages/AliPages/RequestsPage/MainPage'
 import NotFound from './components/pages/general/NotFound';
 import Sidebar from './components/layout/SidebarMain';
@@ -59,7 +58,6 @@ function App (){
             <Route exact path = '/staff-do' component = {HODStaffDO}/>
             <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
             <Route exact path = '/course-cov' component = {HODCourseCov}/>
-            <Route exact path = '/trial' component = {trial}/>
             <Route exact path = '/assign-instr' component = {HODEditCourse} />
             <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/ViewStaffProps' component = {ViewStaffProps} />
