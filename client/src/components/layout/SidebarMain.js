@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react'
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import { Nav, Navbar} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import SubMenu from './SubMenu';
@@ -8,7 +7,6 @@ import {SidebarData} from './SidebarData'
 import useToken from '../pages/general/useToken';
 import axios from 'axios';
 
-import * as FAIcons from 'react-icons/fa'
 import * as AiIcons from 'react-icons/ai'
 
 // const Nav = styled.div`
@@ -84,28 +82,20 @@ function SidebarMain({tokey}) {
         <>
         <Navig>
             <Navbar>
-            {tokey?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
+            {(tokey||token)?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
                 <i  class="fas fa-bars" onClick={showSidebar} />
             </NavIcon>):(<div></div>)}
             <Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> 
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-                {tokey?
-                
-                (<>
-                <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
+                {(tokey||token)?
+                (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
                 <i class="fas fa-user-circle pr-1" >
                 </i>
                 {name1}
                 </Nav.Link>
-                </Nav.Item>
-                <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
-                <Nav.Link href="/logout"
-                >Log out
-                </Nav.Link>
-                </Nav.Item>
-                </> )
+                </Nav.Item> )
                 :
                 (
                 <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
@@ -120,7 +110,7 @@ function SidebarMain({tokey}) {
             
             </Navbar>
         </Navig>
-        {tokey?(
+        {(tokey||token)?(
         <SidebarNav sidebar={sidebar} >
             <SidebarWrap>
             
@@ -143,15 +133,4 @@ function SidebarMain({tokey}) {
         </>
     )
 }
-
-SidebarMain.propTypes = {
-    isLoggedIn: PropTypes.bool,
-    name: PropTypes.string
-  }
-  
-  SidebarMain.defaultProps = {
-    isLoggedIn: true,
-    name: "Hassan Soubra",
-  };
-  
 export default SidebarMain
