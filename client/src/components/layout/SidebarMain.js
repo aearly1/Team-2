@@ -91,14 +91,10 @@ function SidebarMain({tokey}) {
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-<<<<<<< HEAD
-                {token?
+                {tokey?
+                
                 (<>
                 <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
-=======
-                {tokey?
-                (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
->>>>>>> b85175ddd0d819291ae0d02c33548bc53a6bef1b
                 <i class="fas fa-user-circle pr-1" >
                 </i>
                 {name1}
