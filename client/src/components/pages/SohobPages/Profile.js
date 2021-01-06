@@ -3,6 +3,10 @@ import React, { useState,useEffect } from 'react'
 import { Container, Row, Col, Button, Modal, Image, Form, InputGroup } from 'react-bootstrap'
 import useToken from '../general/useToken'
 import styled from 'styled-components'
+import { usePromiseTracker,trackPromise } from "react-promise-tracker";
+import ReactLoading from 'react-loading';
+ 
+
 const StaffCard = styled.div`
 .staffCard{
   width: 100%;
@@ -10,6 +14,17 @@ const StaffCard = styled.div`
 }
 `;  
 const Profile = props => {
+
+    const Example = ({ type, color }) => (
+        <ReactLoading type={type} color={color} height={667} width={375} />
+    );
+    const LoadingIndicator = props => {
+        const { promiseInProgress } = usePromiseTracker();
+          return (
+            promiseInProgress && 
+            <Example type='balls' color='#FFFFFF'/>
+         );  
+         }
     const token = useToken().token
     const styles = {
         border: '5px groove rgba(0, 0, 0, 0.05)',
@@ -40,7 +55,7 @@ let style1 = {
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
        useEffect(() =>{
-        axios.get('http://localhost:5000/api/staffs/profile', {
+        trackPromise(axios.get('http://localhost:5000/api/staffs/profile', {
         headers: {
           'auth-token': `${token}`
         }
@@ -51,7 +66,7 @@ let style1 = {
       })
       .catch((error) => {
         console.error(error)
-      })
+      }))
        },[])
     const handleEdit = () => setEdit(true);
     const handleEditc = () => setEdit(false);
@@ -74,6 +89,7 @@ let style1 = {
     }
     return (
             <div >
+                <LoadingIndicator/>
             <StaffCard>
         <Container style={style1} fluid="">
             <Row md={1}><div style={{ width: 450, height: 'auto', textAlign: 'center' }}>

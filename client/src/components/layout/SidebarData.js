@@ -68,5 +68,12 @@ export const SidebarData = [
       icon: <FAIcons.FaChalkboardTeacher />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
+    },
+    {
+      title: 'Attendance',
+      path: '/attendance',
+      icon: <FAIcons.FaUserCheck />,
+      iconClosed: <RiIcons.RiArrowDownSFill />,
+      iconOpened: <RiIcons.RiArrowUpSFill />,
     }
   ];

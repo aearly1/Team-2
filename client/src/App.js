@@ -36,6 +36,7 @@ import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
 import useToken from './components/pages/general/useToken'
+import Logout from './components/pages/general/Logout';
 
 function App (){
 
@@ -82,6 +83,7 @@ function App (){
             <Route exact path = '/login' component = {Login} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
+            <Route exact path = '/logout' component = {Logout} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
