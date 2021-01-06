@@ -47,8 +47,13 @@ function App (){
   const [ tokeypokey, setTokeypokey ] = useState(false);
 
   
-
-  let style1 = { paddingTop:90}
+  let style1 = { 
+    padding:0,
+    paddingTop:58,
+    paddingBottom:0,
+    marginBottom:0
+  }
+  let style2 = {paddingTop:90}
   return (
     <Router>
      <Fragment>
@@ -56,7 +61,7 @@ function App (){
        {
         token?(
         <>
-        <Container fluid style= {style1}>
+        <Container fluid style= {style2}>
           <Switch>
             <Route exact path = '/' component = {Profile} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
@@ -88,7 +93,7 @@ function App (){
             <Route exact path = '/manageSlots' component = {SlotsPage} />
             <Route exact path = '/requests' component = {Requests} />
             <Route exact path = '/about' component = {About} />
-            <Route exact path = '/login' component = {Login} />
+            <Route exact path = '/login' component ={Profile} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
             <Route exact path = '/logout' component = {() => <Logout setTokeypokey={setTokeypokey} />} />

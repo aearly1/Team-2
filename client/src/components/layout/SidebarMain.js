@@ -68,14 +68,8 @@ const SidebarWrap = styled.div`
 function SidebarMain({tokey}) {
   const token = useToken().token
   const [sidebar, setSidebar] = useState(false);
-  const [name1, setName1] = useState('');
-  useEffect( ()=>{
-    if(token){
-      axios.get('http://localhost:5000/api/staffs/name',{headers:{'auth-token':token}}).then((res)=>{
-           setName1(res.data)
-        }).catch(err=>alert(err))
-      }}, []  )
- 
+  
+  
 
   const showSidebar = () => setSidebar(!sidebar);
     return (
@@ -91,18 +85,19 @@ function SidebarMain({tokey}) {
             <Nav className="ml-auto">
             {(tokey||token)?
                 (<>
-                <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
-                <i class="fas fa-user-circle pr-1" >
-                </i>
-                {name1}
-                </Nav.Link>
-                </Nav.Item>
-                <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
+               
+                <Nav.Item style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
                 <Nav.Link href="/logout"
                 >Log out
                 </Nav.Link>
                 </Nav.Item>
-                </> )
+                <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
+                Profile
+                </Nav.Link>
+                </Nav.Item>
+                </> 
+                
+                )
                 :
                 (
                 <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
@@ -112,7 +107,7 @@ function SidebarMain({tokey}) {
                 </Nav.Item>
                  ) 
                 }
-                <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link href="/about" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>About</Nav.Link></Nav.Item>
 
             </Nav>
             
