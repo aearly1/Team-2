@@ -1,11 +1,18 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-function DeleteFaculty(props){
+import axios from 'axios';
+import useToken from '../../general/useToken';
+import Select from 'react-select'
 
+function DeleteFaculty(props){
+const token = useToken().token
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + facultyName);
-        e1.preventDefault();
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/deleteFaculty',{'facultyName':facultyName},{headers:{'auth-token':token}}).then((res)=>{
+      alert(res.data)    
+      }).catch(err=>alert(err))
+ 
         }
             const [facultyName,setFacultyName]= useState('');
        

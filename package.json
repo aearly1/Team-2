@@ -27,8 +27,13 @@
     "mongoose": "^5.11.8",
     "nodejs": "0.0.0",
     "nodemon": "^2.0.6",
+    "react-datetime-picker": "^3.0.4",
     "react-icons": "^4.1.0",
+<<<<<<< Updated upstream
     "react-loading": "^2.0.3",
+=======
+    "react-select": "^3.1.1",
+>>>>>>> Stashed changes
     "supertest": "^6.0.1",
     "uuid": "^8.3.2"
   },

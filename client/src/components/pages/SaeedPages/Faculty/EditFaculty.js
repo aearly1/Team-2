@@ -1,22 +1,43 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-function EditFaculty(props){
+import useToken from '../../general/useToken';
+import axios from 'axios';
+import Select from 'react-select'
+function AddFaculty(props){
+
+
+  const token = useToken().token  
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + facultyName+" "+Department);
-        e1.preventDefault();
-        }
+      e1.preventDefault();
+      let IDS = Department.map(d=>d.value) 
+      axios.post('http://localhost:5000/api/hr/editFaculty',{'facultyName':facultyName,'departments':IDS},{headers:{'auth-token':token}}).then((res)=>{
+      alert(res.data)    
+      }).catch(err=>alert(err))        }
             const [facultyName,setFacultyName]= useState('');
-            const [Department,setDepartments]= useState('');
+            const [Departments,setDep]= useState();
+            const [options,setOptions] = useState([]);
+            const [Department,setDepartment]= useState();
+            const [Ids,setID]= useState();
         const changeFaculty = (event) =>{
             setFacultyName(event.target.value)
             }
         
-        const changeDepartments = (event) =>{
-            setDepartments(event)
-            }
-    
+
+
+          const Refresh = (event)=>{
+            axios.get('http://localhost:5000/api/hr/getDepartments',{headers:{'auth-token':token}}).then((res)=>{
+              setID(res.data[1]);
+              setDep(res.data[0]);
+              let op = []
+              for(let i=0;i<Departments.length;i++){
+                op[i] = {label:Departments[i],value:Ids[i]}
+               }
+              setOptions(op)
+             }).catch(err=>console.log(err))   
+          }
+                
     return (
    <form onSubmit={handleSubmit}>
         <label>
@@ -28,21 +49,14 @@ function EditFaculty(props){
         <label>
           Departments:
           </label>
-          <DropdownButton variant="warning" onSelect={changeDepartments} id="dropdown-basic-button" title={(Department==='')?"Departments ":Department}>
-                {props.Departments.map(Department1 => {
-                      return <Dropdown.Item eventKey={Department1}>{Department1}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     <br/>
+          <Select calss= "form-control" onChange={setDepartment} value ={Department} options={options} isMulti />  <br/>  <Button variant="outline-info" onClick={Refresh}>Refresh Departments</Button>
+
+          <br/>
+          <br/>
+          <br/>
                 <Button variant="success" type="submit"> Update Faculty  </Button>
       </form>
     )
 }
-EditFaculty.propTypes = {
-  Departments: PropTypes.array
-}
 
-EditFaculty.defaultProps = {
-  Departments: ['CSEN','DMET','MECHA']
-};
-export default EditFaculty
+export default AddFaculty

@@ -18,10 +18,13 @@ import HODStaffDOS from './components/pages/DiabPages/HODStaffDOS';
 import HODCourseCov from './components/pages/DiabPages/HODCourseCov';
 import ViewStaffProps from './components/pages/SaeedPages/ViewStaffProps';
 import ModifySalary from './components/pages/SaeedPages/ModifySalary';
+import AddMissingAttendance from './components/pages/SaeedPages/AddMissingAttendance';
 import AddLocation from './components/pages/SaeedPages/Locations/AddLocation'
 import EditLocation from './components/pages/SaeedPages/Locations/EditLocation'
 import DeleteLocation from './components/pages/SaeedPages/Locations/DeleteLocation'
 import AddFaculty from './components/pages/SaeedPages/Faculty/AddFaculty'
+import EditFaculty from './components/pages/SaeedPages/Faculty/EditFaculty'
+import DeleteFaculty from './components/pages/SaeedPages/Faculty/DeleteFaculty'
 import AddDepartment from './components/pages/SaeedPages/Departments/AddDepartment'
 import EditDepartment from './components/pages/SaeedPages/Departments/EditDepartment'
 import DeleteDepartment from './components/pages/SaeedPages/Departments/DeleteDepartment'
@@ -65,10 +68,13 @@ function App (){
             <Route exact path = '/view-staff' component = {HODViewStaff} />
             <Route exact path = '/ViewStaffProps' component = {ViewStaffProps} />
             <Route exact path = '/ModifySalary' component = {ModifySalary} />
+            <Route exact path = '/AddMissingAttendance' component = {AddMissingAttendance} />
             <Route exact path = '/AddLocation' component = {AddLocation}/>
             <Route exact path = '/EditLocation' component = {EditLocation}/>
             <Route exact path = '/DeleteLocation' component = {DeleteLocation}/>
             <Route exact path = '/AddFaculty' component = {AddFaculty}/>
+            <Route exact path = '/EditFaculty' component = {EditFaculty}/>
+            <Route exact path = '/DeleteFaculty' component = {DeleteFaculty}/>
             <Route exact path = '/AddDepartment' component = {AddDepartment}/>
             <Route exact path = '/EditDepartment' component = {EditDepartment}/>
             <Route exact path = '/DeleteDepartment' component = {DeleteDepartment}/>
