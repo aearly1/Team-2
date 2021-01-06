@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {Container,Card, Dropdown, DropdownButton} from 'react-bootstrap';
 import styled from 'styled-components';
 import useToken from '../general/useToken';
-import axios from 'axios'
-
+import axios from 'axios';
+import Loading from 'react-loading';
 const StaffCard = styled.div`
   .staffCard{
     width: auto;
@@ -23,6 +23,8 @@ function HODTeachAssignments() {
 };
   const token = useToken().token
   const [value1,setValue1]= useState('');
+  const [loading1,setLoading1]= useState(true);
+  const [loading2,setLoading2]= useState(false);
   const [options1,setOptions1]= useState([]);
   const [slots,setSlots]= useState([]);
   const [rendered,setRendered]= useState(false);
@@ -31,18 +33,20 @@ function HODTeachAssignments() {
     async function doIt(){
     //GET THE Courses under department
     await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
-        let items = []
-        res.data.map(course => {items.push({ courseName:course.courseName})})
-        setOptions1(items);
-        
+      let items = []
+      res.data.map(course => {items.push({ courseName:course.courseName})})
+      setLoading1(false)
+      setOptions1(items);
     }).catch(err=>alert(err))}
     doIt();
     }, []  )
 
   const handleChange= async (e)=>{
+    setLoading2(true);
     setValue1(e)
     await axios.post('http://localhost:5000/api/hod/teaching-assignments',{'courseName':e},{headers:{'auth-token':token}}).then((res)=>{ 
     setSlots(res.data)  
+    setLoading2(false)
     setRendered(true)
     }).catch(err=>alert(err))
   }
@@ -52,13 +56,21 @@ function HODTeachAssignments() {
       <h1>  Select a course to view its slot assignments:</h1>
       <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
       <DropdownButton variant="warning" onSelect={handleChange} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
-          {options1.map(opt => {
+          { (!loading1)?(
+            options1.map(opt => {
               return <Dropdown.Item eventKey={opt.courseName}>{opt.courseName}</Dropdown.Item>
           }
-          )}
+          )):
+          ( 
+            <div align='center'>
+            <Loading type={"bars"} color="#333" height={'20%'} width={'20%'} />
+            </div>
+          )
+          }
         </DropdownButton>
       </div>
-      {rendered?(
+      {(!loading2)?(
+        rendered?(
         slots.map(slot => {
           return (
             
@@ -122,7 +134,12 @@ function HODTeachAssignments() {
         )
       ):(
         <div></div>
-      )}
+      )):
+        ( 
+          <div align='center' style={{paddingTop:100}}>
+          <Loading type={"spinningBubbles"} color="#333" height={'10%'} width={'10%'} />
+          </div>
+        )}
       </Container>
   )
 } 

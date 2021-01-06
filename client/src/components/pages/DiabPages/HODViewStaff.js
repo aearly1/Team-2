@@ -3,7 +3,7 @@ import {Container,Card } from 'react-bootstrap';
 import styled from 'styled-components';
 import useToken from '../general/useToken';
 import axios from 'axios'
-
+import Loading from 'react-loading'
 
 const StaffCard = styled.div`
   .staffCard{
@@ -30,11 +30,13 @@ function HODViewStaff() {
     };
     
     const [staffList,setStaffList]= useState([]);
+    const [loading,setLoading]= useState(true);
     
     const token = useToken().token
     useEffect(()=>{
     axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
         setStaffList(res.data)
+        setLoading(false)
     }).catch(err=>alert(err))
     }, []  )
 
@@ -53,7 +55,8 @@ function HODViewStaff() {
         )*/
         }
         
-        {staffList.map(staffMem => {
+        {(!loading)?(
+          staffList.map(staffMem => {
             return (
             <StaffCard style ={{paddingTop:20 }} >
                 <Card style={style1} >
@@ -96,6 +99,11 @@ function HODViewStaff() {
             </StaffCard>
             )
         }
+        )):
+        ( 
+          <div align='center'>
+          <Loading type={"spinningBubbles"} color="#333" height={'10%'} width={'10%'} />
+          </div>
         )}
         </Container>
     )
