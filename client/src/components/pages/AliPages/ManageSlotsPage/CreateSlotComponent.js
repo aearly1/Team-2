@@ -13,9 +13,7 @@ function CreateSlot()
       setValue2(e)
     }
 
-    const handleClick=(e)=>{
-      setValue2(e)
-    }
+
     const timing=["8:15 AM - 9:45 AM", "10:00 AM - 11:30 AM", "11:45 AM - 1:15 AM", "1:45 AM - 3:15 AM", "3:45 AM - 5:15 AM"];
     const location=["C3. 201", "C3. 103", "C6. 204", "C5. 112"];
     const items1= timing.map(elem=>
@@ -40,7 +38,7 @@ function CreateSlot()
       </DropdownButton>
       <br></br>
 
-      <Button onClick={handleClick} variant="success">Create</Button>
+      <Button variant="success">Create</Button>
     </div>)
 }
 export default CreateSlot;
