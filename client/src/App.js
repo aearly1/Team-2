@@ -3,7 +3,6 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import Home from './components/pages/general/Home';
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/SchedulesPage/academicSchedule'
@@ -33,32 +32,30 @@ import DeleteCourse from './components/pages/SaeedPages/Courses/DeleteCourse'
 import HRAddStaff from './components/pages/SaeedPages/Staff/HRAddStaff'
 import HREditStaff from './components/pages/SaeedPages/Staff/HREditStaff'
 import HRDeleteStaff from './components/pages/SaeedPages/Staff/HRDeleteStaff'
+import HODTeachAssignments from './components/pages/DiabPages/HODTeachAssignments';
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
-import PropTypes from 'prop-types';
 import Attendance from './components/pages/SohobPages/Attendance';
 import useToken from './components/pages/general/useToken'
 
-function App (props ){
+function App (){
 
   const { token, setToken } = useToken();
-  
-   if(!token) {
-     return <Login setToken={setToken} />
-   }
-
+  const Login1 = [<Login setToken={setToken} />]
+  const {tokeypokey, setTokeypokey} = useState('');
   let style1 = { paddingTop:90}
   return (
     <Router>
      <Fragment>
        {
-        props.isLoggedIn?(
+        token?(
         <>
         <Sidebar/>
         <Container fluid style= {style1}>
           <Switch>
             <Route exact path = '/' component = {Profile} />
             <Route exact path = '/course-staff' component = {HODCourseStaff}/>
+            <Route exact path = '/teach-assignments' component = {HODTeachAssignments}/>
             <Route exact path = '/staff-do' component = {HODStaffDO}/>
             <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
             <Route exact path = '/course-cov' component = {HODCourseCov}/>
@@ -94,14 +91,18 @@ function App (props ){
         )
         :
         (
+        
+        <>
+        <Sidebar/>
         <Container fluid style={style1}>
           <Switch>
             <Route exact path = '/about' component = {About} />
-            <Route exact path = '/' component = {Login} />
-            <Route exact path = '/login' component = {Login} />
+            <Route exact path = '/' component = {() => <Login setToken={setToken} />} />
+            <Route exact path = '/login' component = {() => <Login setToken={setToken} />} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
+        </>
         ) 
        }  
         
@@ -109,14 +110,4 @@ function App (props ){
     </Router>
   );
 }
-
-App.propTypes = {
-  isLoggedIn: PropTypes.bool
-}
-
-App.defaultProps = {
-  isLoggedIn: true
-};
-
-
 export default App;

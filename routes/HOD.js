@@ -309,6 +309,7 @@ router.post("/staff-crs",[
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             userCode: staffMem.id,
+            imgLink: staffMem.imgLink,
             subType: staffMem.subType,
             email: staffMem.email,
             name: staffMem.name
@@ -599,7 +600,7 @@ router.post("/course-cov", [
                     if(course.teachingSlots.length!=0){
                         let CourseCov = ((course.teachingSlots.length-course.unassignedSlots)/  course.teachingSlots.length)
                         
-                        res.status(200).json("course " +course.courseName+" has coverage "+ CourseCov*100 +"%, and "+course.unassignedSlots+" unassigned slots")
+                        res.status(200).json("Course " +course.courseName+" has coverage "+ CourseCov*100 +"%, and "+course.unassignedSlots+" unassigned slots")
                     }
                     else{res.status(400).send("Course has no teaching slots")}
                 }
@@ -621,12 +622,12 @@ router.post("/course-cov", [
 //=========================================================================//
 
 // @status  Done & Tested
-// @route   GET api/hod/teaching-assignments
+// @route   POST api/hod/teaching-assignments
 // @input   courseId  
 // @desc    View teaching assignments (which staff members teach which slots) 
 //          of course offered by his department.
 // @access  Private
-router.get("/teaching-assignments",[
+router.post("/teaching-assignments",[
     check("courseName", "Course name needed")
   ]
   ,  async (req, res) => {
@@ -699,11 +700,10 @@ router.get("/courses", async (req, res) => {
 
         if (depart.HOD_id.toString() == currentUser._id.toString()){
             let coursesOutput = [];
-            depart.courses.forEach(async course =>{
-                crs = await courseModel.findOne({"_id": ObjectId(course)})
-                coursesOutput.push({coursename: crs.courseName})
+            for(let i=0;i<depart.courses.length;i++){
+                crs = await courseModel.findOne({"_id": ObjectId(depart.courses[i])})
+                coursesOutput.push({courseName: crs.courseName})
             }
-            )
             res.status(200).json(coursesOutput)
             }
         else{

@@ -30,6 +30,7 @@ const { body, validationResult, check } = require('express-validator');
         const payload = {user: {
             id: staffMem.id,
             email: staffMem.email,
+            name: staffMem.name,
             firstLogin: staffMem.firstLogin,
             type: staffMem.type,
             objectId: staffMem._id

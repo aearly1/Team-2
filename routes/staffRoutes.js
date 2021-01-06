@@ -188,7 +188,13 @@ const missingdays = require('../functions/funcs').missingdays
         res.status(200).send(u.attendance)
         
     })
-
+    /*DIAB ADDED THIS FOR FRONTEND*/
+    app.get('/name',async(req,res)=>{
+        let u = await staffMembers.findOne({email:req.user.email});
+        res.status(200).send(u.name)
+        
+    })
+    /*=============*/
     app.get('/missingdays',async(req,res)=>{
         let u = await staffMembers.findOne({email:req.user.email});
         var out = []
