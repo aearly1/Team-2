@@ -1,11 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Nav, Navbar} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import SubMenu from './SubMenu';
 import {SidebarData} from './SidebarData'
-
+import useToken from '../pages/general/useToken';
+import axios from 'axios';
 
 import * as FAIcons from 'react-icons/fa'
 import * as AiIcons from 'react-icons/ai'
@@ -67,37 +68,70 @@ const SidebarWrap = styled.div`
 
 
 function SidebarMain(props) {
-    const [sidebar, setSidebar] = useState(false);
+  const token = useToken().token
+  const [sidebar, setSidebar] = useState(false);
+  const [name1, setName1] = useState('');
+  useEffect( ()=>{
+    if(token){
+      axios.get('http://localhost:5000/api/staffs/name',{headers:{'auth-token':token}}).then((res)=>{
+           setName1(res.data)
+        }).catch(err=>alert(err))
+      }}, []  )
+ 
 
   const showSidebar = () => setSidebar(!sidebar);
     return (
         <>
         <Navig>
             <Navbar>
-            <NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
+            {token?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
                 <i  class="fas fa-bars" onClick={showSidebar} />
-            </NavIcon>
-            {props.isLoggedIn?(<Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> ):(<Navbar.Brand  href="/login"> Team 2 University System</Navbar.Brand>) }  
+            </NavIcon>):(<div></div>)}
+            <Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> 
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-                {props.isLoggedIn?(<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}><i class="fas fa-user-circle pr-1" ></i>{props.name}</Nav.Link></Nav.Item> ):(<Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}><Nav.Link href="/login">Login</Nav.Link></Nav.Item>) }
+                {token?
+                (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
+                <i class="fas fa-user-circle pr-1" >
+                </i>
+                {name1}
+                </Nav.Link>
+                </Nav.Item> )
+                :
+                (
+                <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
+                <Nav.Link href="/login"
+                >Login
+                </Nav.Link>
+                </Nav.Item>) 
+                }
                 <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
 
             </Nav>
             
             </Navbar>
         </Navig>
+        {token?(
         <SidebarNav sidebar={sidebar} >
             <SidebarWrap>
+            
             <NavIcon to='#'>
                 <AiIcons.AiOutlineClose style={{color:"gold",marginLeft:12, marginTop: 10}} onClick= {showSidebar}/>
             </NavIcon>
             {SidebarData.map((item, index) => {
               return <SubMenu item={item} key={index} />;
             })}
+            
             </SidebarWrap>
-        </SidebarNav>
+            </SidebarNav>
+            )
+            :
+            (
+              <div> </div>
+            )
+            }
+            
         </>
     )
 }

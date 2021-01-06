@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
-import {Container, Button,Card , Col, Row, Dropdown,ButtonGroup, DropdownButton} from 'react-bootstrap';
+import React, {useState, useEffect} from 'react';
+import {Container,Card } from 'react-bootstrap';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import useToken from '../general/useToken';
+import axios from 'axios'
+
+
 const StaffCard = styled.div`
   .staffCard{
     width: 100%;
@@ -16,7 +19,7 @@ const custDropDown = styled.div`
 `
 //<DropdownButton  variant="primary" onSelect={handleSelect} className="dropdown-link" title={(value1==="")?"Select Course":value1} style={style2}>
        
-function HODViewStaff(props) {
+function HODViewStaff() {
     let style1 = {
         background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
         backgroundColor:"#0C0A4A" ,
@@ -26,24 +29,31 @@ function HODViewStaff(props) {
         minWidth:750,
     };
     
-    const [value1,setValue1]= useState('');
-    const handleSelect1=(e)=>{
-      setValue1(e)
-    }
+    const [staffList,setStaffList]= useState([]);
+    
+    const token = useToken().token
+    useEffect(()=>{
+    axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
+        setStaffList(res.data)
+    }).catch(err=>alert(err))
+    }, []  )
+
+   
     return (
         
         <Container fluid >
         
-        {(props.course==='')?
-        (
+        {/*
+          (props.course==='')?(
           //if this is not coming from /course-staff then it's just a view all staff
           <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
         ):(
           //but if the course is not empty, then it came from a /course-staff
           <h1 style = {{whiteSpace: 'nowrap'}}>Staff members assigned to {props.course}:</h1>
-        )}
+        )*/
+        }
         
-        {props.staff.map(staffMem => {
+        {staffList.map(staffMem => {
             return (
             <StaffCard style ={{paddingTop:20 }} >
                 <Card style={style1} >
@@ -55,7 +65,14 @@ function HODViewStaff(props) {
                 <tbody>
                     <tr>
                     <td >
-                    {staffMem.imgLink?( <img style={{borderRadius:10}} width="250" height="250" src={staffMem.imgLink} />):(<img style={{borderRadius:10}} width="250" height="250" src='https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg' />)}
+                    {staffMem.imgLink?
+                      ( 
+                        <img style={{borderRadius:10}} width="250" height="250" src={staffMem.imgLink} />
+                      ):
+                      (
+                        <img style={{borderRadius:10}} width="250" height="250" src='https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg' /> // This is the default icon
+                      )
+                    }
                     </td>
                     <td >
                     <Card.Body >
@@ -69,7 +86,6 @@ function HODViewStaff(props) {
                         <Card.Text>
                         Email: {staffMem.email}
                         </Card.Text>
-                        <Button variant="warning" href="#">Visit profile (needs routing)</Button>
                         </Card.Body>
                     </td>
                     </tr>
@@ -84,36 +100,6 @@ function HODViewStaff(props) {
         </Container>
     )
 }
-HODViewStaff.propTypes = {
-    staff: PropTypes.array,
-    course: PropTypes.string,
-    courses: PropTypes.array
-  }
-  
-  HODViewStaff.defaultProps = {
-    staff: [
-    {
-        userCode: "ac-1",
-        imgLink: "https://met.guc.edu.eg/Repository/Faculty/Photos/Thumbnail/1_Slim_Abdennadher_thumbnail_Slim.jpg.ashx",
-        subType: "head of department",
-        email: "Slim@guc.edu.eg",
-        name: "Slim Abdennadher"
-    },
-    {
-        userCode: "ac-2",
-        imgLink: "https://met.guc.edu.eg/Repository/Faculty/Photos/Thumbnail/3_Haythem_Ismail_thumbnail_JESICS3.JPG.ashx",
-        subType: "instructor",
-        email: "HIsmail@guc.edu.eg",
-        name: "Haythem Ismail"
-    },
-    {
-        userCode: "ac-3",
-        subType: "instructor",
-        email: "MAbuelkheir@guc.edu.eg",
-        name: "Mervat Abuelkheir"
-    }],
-    courses: ["Course 1","Course 2","Course 3"],
-    course: ""
-  };
+
   
 export default HODViewStaff

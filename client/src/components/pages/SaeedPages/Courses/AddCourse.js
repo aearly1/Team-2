@@ -1,20 +1,25 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
+import useToken from '../../general/useToken';
+import axios from 'axios';
+
 function AddCourse(props){
+const token = useToken().token
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + Department+" "+Course);
         e1.preventDefault();
-        }
+        axios.post('http://localhost:5000/api/hr/AddCourse',{'departmentName':Department,'courseName':Course},{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))          }
             const [Department,setDepartmentName]= useState('');
             const [Course,setCourses]= useState('');
         const changeDepartment = (event) =>{
-            setDepartmentName(event)
+            setDepartmentName(event.target.value)
             }
         
         const changeCourses = (event) =>{
-            setCourses(event)
+            setCourses(event.target.value)
             }
     
     return (
@@ -22,34 +27,14 @@ function AddCourse(props){
         <label>
           Course Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeCourses} id="dropdown-basic-button" title={(Course==='')?"Course":Course}>
-                {props.Courses.map(course => {
-                      return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>
-        <br/>
-        <label>
+          <input type="text" class="form-control" required value={Course} onChange={changeCourses} />
+<br/>        <label>
           Department Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeDepartment} id="dropdown-basic-button" title={(Department==='')?"Department":Department}>
-                {props.Departments.map(department => {
-                      return <Dropdown.Item eventKey={department}>{department}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>        
-     <br/>
-                <Button variant="success" type="submit"> Add Course </Button>
+          <input type="text" class="form-control" required value={Department} onChange={changeDepartment} />
+<br/>                <Button variant="success" type="submit"> Add Course </Button>
       </form>
     )
 }
-AddCourse.propTypes = {
-  Courses: PropTypes.array,
-  Departments: PropTypes.array
-}
 
-AddCourse.defaultProps = {
-  Courses: ['csen301','csen401','csen104'],
-  Departments: ['CSEN','DMET','MECHA']
-};
 export default AddCourse

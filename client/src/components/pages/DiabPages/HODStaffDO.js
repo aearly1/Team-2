@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
-import {Container, Form, Card} from 'react-bootstrap';
-import PropTypes from 'prop-types';
-import Select from 'react-select';
+import React, {useState, useEffect} from 'react';
+import {Container, Card} from 'react-bootstrap';
 import styled from 'styled-components'
+import useToken from '../general/useToken';
+import axios from 'axios'
+
+
 const StaffCard = styled.div`
   .staffCard{
     width: 100%;
@@ -10,14 +12,12 @@ const StaffCard = styled.div`
   }
 `;
 
-const options = [
-  { value: 'Slim', label: 'Slim' },
-  { value: 'hassan', label: 'Hassan' },
-  { value: 'milad', label: 'Milad' },
-  { value: 'ahmed', label: 'Ahmed' } 
-];
 
 function HODStaffDO(props) {  
+
+
+  const token = useToken().token
+  
 let style1 = {
   background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
   backgroundColor:"#0C0A4A" ,
@@ -28,20 +28,33 @@ let style1 = {
 };
 
 
-const [rendered,setRendered]= useState(false);
-const handleChange=(e)=>{
-  setRendered(true)
-}
+const [staff,setStaff]= useState([]);
+useEffect(()=>{
+  async function doIt(){
+  //GET THE Courses under department
+  await axios.get('http://localhost:5000/api/hod/staff-do',{headers:{'auth-token':token}}).then((res)=>{
+      let items = []
+      res.data.map(staffMem => {items.push({ 
+        id: staffMem.id,
+        staffMemberName: staffMem.staffMemberName,
+        subType: staffMem.subType,
+        dayOff: staffMem.dayOff
+      })})
+      setStaff(items);
+  }).catch(err=>alert(err))}
+  doIt();
+  }, []  )
+
 
 return (
     <Container fluid >
     <h1>Staff Member Day Offs:</h1>
-    {props.staff.map(staffMem => {
+    {staff.map(staffMem => {
         return (
         <StaffCard style ={{paddingTop:20 }} >
             <Card style={style1} >
                 <Card.Body >
-                <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.staffMemberName} - Needs routing!!!</Card.Title>
+                <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.staffMemberName}</Card.Title>
                 <Card.Text>
                 id: {staffMem.id}
                 </Card.Text>
@@ -60,31 +73,5 @@ return (
     )
 }
 
-HODStaffDO.propTypes = {
-    staff: PropTypes.object,
-    staffMembers: PropTypes.string
-  }
-  
-HODStaffDO.defaultProps = {
-    staff: [
-        {
-            id: "ac-1",
-            staffMemberName: "Slim Abdennadher",
-            subType: "head of department",
-            dayOff: "SUN",
-        },
-        {
-            id: "ac-2",
-            staffMemberName: "Hassan Soubra",
-            subType: "instructor",
-            dayOff: "SAT"
-        },
-        {
-            id: "ac-3",
-            staffMemberName: "Mervat Abuelkheir",
-            subType: "instructor",
-            dayOff: "SAT",
-        }]
-  };
-  
+
 export default HODStaffDO

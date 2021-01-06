@@ -1,13 +1,20 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
+import useToken from '../../general/useToken';
+import axios from 'axios';
+
+ 
 function EditLocation(props){
-const types = ["lab","office","tutorial room","lecture hall"];
+  const token = useToken().token
+  const types = ["lab","office","tutorial room","lecture hall"];
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + roomNr+" "+(type==null)+" "+capacity);
-        e1.preventDefault();
-        }
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/editLocation',{'roomNr':roomNr,'roomType':type,'capacity':capacity},{headers:{'auth-token':token}}).then((res)=>{
+        alert(res.data)    
+        }).catch(err=>alert(err))  
+      }
             const [roomNr,setRoomNr]= useState('');
             const [type,setType]= useState(null);
             const [capacity,setCapacity]= useState(null);

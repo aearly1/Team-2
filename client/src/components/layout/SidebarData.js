@@ -3,14 +3,18 @@ import React from 'react'
 import * as FAIcons from 'react-icons/fa'
 import * as FiIcons from 'react-icons/fi'
 import * as BiIcons from 'react-icons/bi'
-import * as AiIcons from 'react-icons/ai'
-import * as IoIcons from 'react-icons/io'
 import * as RiIcons from 'react-icons/ri'
-import * as BsIcons from 'react-icons/bs'
 import * as MdIcons from 'react-icons/md'
 
 
 export const SidebarData = [
+    {
+      title: 'Instructor Assignment',
+      path: '/assign-instr',
+      icon: <RiIcons.RiUserSharedFill />,
+      iconClosed: <RiIcons.RiArrowDownSFill />,
+      iconOpened: <RiIcons.RiArrowUpSFill />,
+    },
     {
       title: 'View Staff',
       path: '#',
@@ -31,13 +35,7 @@ export const SidebarData = [
         }
       ]
     },
-    {
-      title: 'Course Coverage',
-      path: '/course-cov',
-      icon: <MdIcons.MdAssignmentTurnedIn />,
-      iconClosed: <RiIcons.RiArrowDownSFill />,
-      iconOpened: <RiIcons.RiArrowUpSFill />,
-    },
+    
     {
       title: 'Staff day offs',
       path: '#',
@@ -56,6 +54,13 @@ export const SidebarData = [
           icon: <BiIcons.BiMale/>
         }
       ]
+    },
+    {
+      title: 'Course Coverage',
+      path: '/course-cov',
+      icon: <MdIcons.MdAssignmentTurnedIn />,
+      iconClosed: <RiIcons.RiArrowDownSFill />,
+      iconOpened: <RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'Teaching Assignments',

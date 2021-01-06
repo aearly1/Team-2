@@ -1,26 +1,31 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-function EditCourse(props){
+import useToken from '../../general/useToken';
+import axios from 'axios';
 
+function EditCourse(props){
+const token = useToken().token
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: '+ newDepartment+" " + oldDepartment+" "+Course);
-        e1.preventDefault();
-        }
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/editCourse',{'courseName':Course,'oldDepartmentName':oldDepartment,'newDepartmentName':newDepartment},{headers:{'auth-token':token}}).then((res)=>{
+      alert(res.data)    
+      }).catch(err=>alert(err))  
+              }
         const [newDepartment,setNewDepartment]= useState('');
         const [oldDepartment,setOldDepartment]= useState('');
             const [Course,setCourses]= useState('');
         const changeOldDepartment = (event) =>{
-            setOldDepartment(event)
+            setOldDepartment(event.target.value)
             }
         
             const changeNewDepartment = (event) =>{
-              setNewDepartment(event)
+              setNewDepartment(event.target.value)
               }
                       
 
         const changeCourses = (event) =>{
-            setCourses(event)
+            setCourses(event.target.value)
             }
     
     return (
@@ -28,33 +33,19 @@ function EditCourse(props){
         <label>
           Course Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeCourses} id="dropdown-basic-button" title={(Course==='')?"Course":Course}>
-                {props.Courses.map(course => {
-                      return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>
-        <br/>
-        <label>
-          Old Department Name:
-          </label>
-          <DropdownButton variant="warning" onSelect={changeOldDepartment} id="dropdown-basic-button" title={(oldDepartment==='')?"Department":oldDepartment}>
-                {props.Departments.map(department => {
-                      return <Dropdown.Item eventKey={department}>{department}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>    
+          <input type="text" class="form-control" required value={Course} onChange={changeCourses} />
      <br/>
-     <label>
+        <label>
           New Department Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeNewDepartment} id="dropdown-basic-button" title={(newDepartment==='')?"Department":newDepartment}>
-                {props.Departments.map(department => {
-                      return <Dropdown.Item eventKey={department}>{department}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>     
-     
+          <input type="text" class="form-control" required value={newDepartment} onChange={changeNewDepartment} />
+        
+        <br/>
+     <label>
+          Old Department Name:
+          </label>
+          <input type="text" class="form-control" required value={oldDepartment} onChange={changeOldDepartment} />
+        
      <br/>
                 <Button variant="success" type="submit"> Update Course  </Button>
       </form>

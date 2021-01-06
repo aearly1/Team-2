@@ -166,11 +166,33 @@ router.post('/deleteLocation',[
     } 
 });
 }
+else
+    return res.status(200).send("Room not found to delete")
 });
 
 
 
 //add faculty
+router.get('/getDepartments',async (req,res)=>{
+    const type = req.user.type;
+    if(type != "HR"){
+        return res.status(400).send("Only HR members can add faculties");
+    }
+    departmentModel.find((err,departments)=>{
+        if(err)
+        {
+            return res.status(500).send(err)
+        }
+        else{
+            let departs = [];
+            departs[0] = departments.map(x=> x.departmentName)
+            departs[1] =departments.map(x=>x._id)
+            return res.send(departs);
+        }
+    }
+        )
+})
+
 router.post('/addFaculty',[
     check("facultyName", "facultyName must be a string").isString()
   ], async (req, res) => {
@@ -279,7 +301,6 @@ router.post('/deleteFaculty',[
         await facultyModel.findOneAndDelete({facultyName:facultyName},(err, docs)=> { 
     if (err){ 
         return res.sendStatus(500).send(err) 
-        return;
     } 
     else{ 
         return res.send("Removed faculty : "+ docs); 
@@ -471,6 +492,10 @@ router.post('/editDepartment',[
     if(department ==null)
     {return res.status(400).send("Incorrect department name")
 }
+    newFaculty.departments=newFaculty.departments.filter(departmentId=>{
+    return String(departmentId) != String(department._id )
+    })
+
     newFaculty.departments.push(department._id)
     oldFaculty.departments=oldFaculty.departments.filter(departmentId=>{
        return String(departmentId) != String(department._id )
@@ -677,6 +702,9 @@ router.post('/editCourse',[
     if(course ==null)
     {return res.status(400).send("Incorrect course name")
 }
+    newDepartment.courses=newDepartment.courses.filter(courseId=>{
+       return String(courseId) != String(course._id)
+    })
     newDepartment.courses.push(course._id)
     oldDepartment.courses=oldDepartment.courses.filter(courseId=>{
        return String(courseId) != String(course._id)
@@ -936,6 +964,7 @@ router.post('/editStaffMember',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors)
         return res.status(400).send("Error with arguments types");
     }
     const uType = req.user.type;
@@ -968,7 +997,7 @@ router.post('/editStaffMember',[
     })
 
 
-    if(office !=null){
+    if(!office===''){
    locationModel.findOne({roomNr:office},async (error,results)=>{
     if(error){
         return res.status(500).send(error) 
@@ -1250,7 +1279,10 @@ if(err){
 return res.sendStatus(500)
 return;
 }else{
+    if(staffMember)
     return res.send(staffMember.attendance);
+    else
+    return res.status(500).send("Staff Member does not exist")
 }
 })
 })

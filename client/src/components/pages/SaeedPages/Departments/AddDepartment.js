@@ -1,20 +1,26 @@
 import React , {useState} from 'react'
 import {Container, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import PropTypes from 'prop-types';
+import useToken from '../../general/useToken';
+import axios from 'axios';
+
 function AddDepartment(props){
+const token = useToken().token;
 
     const handleSubmit = (e1)=> {
-        alert('A name was submitted: ' + Faculty+" "+Department);
-        e1.preventDefault();
-        }
+      e1.preventDefault();
+      axios.post('http://localhost:5000/api/hr/addDepartment',{'departmentName':Department,'facultyName':Faculty},{headers:{'auth-token':token}}).then((res)=>{
+      alert(res.data)    
+      }).catch(err=>alert(err))  
+      }
             const [Faculty,setFacultyName]= useState('');
             const [Department,setDepartments]= useState('');
         const changeFaculty = (event) =>{
-            setFacultyName(event)
+            setFacultyName(event.target.value)
             }
         
         const changeDepartments = (event) =>{
-            setDepartments(event)
+            setDepartments(event.target.value)
             }
     
     return (
@@ -22,34 +28,17 @@ function AddDepartment(props){
         <label>
           Department Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeDepartments} id="dropdown-basic-button" title={(Department==='')?"Departments ":Department}>
-                {props.Departments.map(Department1 => {
-                      return <Dropdown.Item eventKey={Department1}>{Department1}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>
+          <input type="text" class="form-control" required value={Department} onChange={changeDepartments} />
+        
         <br/>
         <label>
           Faculty Name:
           </label>
-          <DropdownButton variant="warning" onSelect={changeFaculty} id="dropdown-basic-button" title={(Faculty==='')?"Faculty":Faculty}>
-                {props.Faculties.map(Faculty1 => {
-                      return <Dropdown.Item eventKey={Faculty1}>{Faculty1}</Dropdown.Item>
-                  }
-                  )}
-                </DropdownButton>        
-     <br/>
+          <input type="text" class="form-control" required value={Faculty} onChange={changeFaculty} />
+        
+        <br/>
                 <Button variant="success" type="submit"> Add Department  </Button>
       </form>
     )
 }
-AddDepartment.propTypes = {
-  Departments: PropTypes.array,
-  Faculties: PropTypes.array
-}
-
-AddDepartment.defaultProps = {
-  Departments: ['CSEN','DMET','MECHA'],
-  Faculties: ["MET","EMS","IET"]
-};
 export default AddDepartment
