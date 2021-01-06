@@ -21,6 +21,7 @@ function HODStaffDOS() {
     color: "white" ,
     borderRadius: 10, 
     boxShadow: "5px 10px 5px #9E9E9E",
+    border:0,
     minWidth:750,
   };
   const [options,setOptions]= useState([]);    

@@ -10,6 +10,7 @@ const Attendance = props => {
     padding: '50px',
     Button: 'rgba(0, 0, 0, 0.05)',
     background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
+    border:0,
     backgroundColor:"#0C0A4A" ,
   };
   const [selection, setSelection] = useState("All")
