@@ -1,4 +1,4 @@
-import React, {Fragment,useState} from 'react';
+import React, {Fragment,useState, useEffect} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
@@ -41,16 +41,18 @@ import Logout from './components/pages/general/Logout';
 function App (){
 
   const { token, setToken } = useToken();
-  const Login1 = [<Login setToken={setToken} />]
-  const {tokeypokey, setTokeypokey} = useState('');
+  const [ tokeypokey, setTokeypokey ] = useState(false);
+
+  
+
   let style1 = { paddingTop:90}
   return (
     <Router>
      <Fragment>
+     <Sidebar tokey={tokeypokey} />
        {
         token?(
         <>
-        <Sidebar/>
         <Container fluid style= {style1}>
           <Switch>
             <Route exact path = '/' component = {Profile} />
@@ -91,14 +93,12 @@ function App (){
         )
         :
         (
-        
         <>
-        <Sidebar/>
         <Container fluid style={style1}>
           <Switch>
             <Route exact path = '/about' component = {About} />
-            <Route exact path = '/' component = {() => <Login setToken={setToken} />} />
-            <Route exact path = '/login' component = {() => <Login setToken={setToken} />} />
+            <Route exact path = '/' component = {() => <Login setToken={setToken} setTokeypokey={setTokeypokey} />} />
+            <Route exact path = '/login' component = {() => <Login setToken={setToken} setTokeypokey={setTokeypokey} />} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
