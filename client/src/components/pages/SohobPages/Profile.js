@@ -139,11 +139,11 @@ let style1 = {
                         Salary: {user.Salary}
                     </Row>
                     <Row style={{ margin: '25px' }}>
-                        <Button onClick={handleShow}>View Courses</Button>
+                        <Button variant="warning" onClick={handleShow}>View Courses</Button>
                     </Row></div>
                 </Col>
-                {!edit?<Button show='false' onClick ={handleEdit}>Edit</Button>:
-                <div><Button onClick={handleSubmit}>Save</Button><Button onClick ={handleEditc}>Cancel</Button></div>}
+                {!edit?<Button variant="warning" show='false' onClick ={handleEdit}>Edit</Button>:
+                <div><Button variant="success" onClick={handleSubmit}>Save</Button><Button variant="warning" onClick ={handleEditc}>Cancel</Button></div>}
             </Row>
         </Container>
         </StaffCard>

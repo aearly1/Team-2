@@ -13,10 +13,15 @@ export default function Logout ({setTokeypokey}) {
                 'auth-token': `${token}`
             }
         }).then(async (res) => {
+            try{
             sessionStorage.removeItem('token')
             await setTokeypokey(false);
             console.log(res.data)
             history.push("/login");
+            }
+            catch (er) {
+                alert(er.message);
+              }
           })
           .catch((error) => {
             console.error(error)

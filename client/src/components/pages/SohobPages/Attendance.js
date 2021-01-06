@@ -189,7 +189,7 @@ const Attendance = props => {
       </Card.Text>
     </Card.Body>
     <Card.Footer>
-    <Button onClick={handleSignin} >Sign in</Button>
+    <Button  variant="warning" onClick={handleSignin} >Sign in</Button>
     <Button variant="secondary" onClick={handleSignout}>Sign out</Button>
     </Card.Footer>
   </Card>
@@ -201,7 +201,7 @@ const Attendance = props => {
       </Card.Text>
     </Card.Body>
     <Card.Footer>
-    <Button onClick={handleShow}>View Attendance</Button>
+    <Button variant="warning" onClick={handleShow}>View Attendance</Button>
     </Card.Footer>
   </Card>
 </CardDeck>
@@ -215,7 +215,7 @@ const Attendance = props => {
       </Card.Text>
     </Card.Body>
     <Card.Footer>
-    <Button onClick={handleShow1}>View Missing Days</Button>
+    <Button variant="warning" onClick={handleShow1}>View Missing Days</Button>
     </Card.Footer>
   </Card>
   <Card>
@@ -226,7 +226,7 @@ const Attendance = props => {
       </Card.Text>
     </Card.Body>
     <Card.Footer>
-    <Button onClick={handleShow2}>View Missing Hours</Button>
+    <Button variant="warning" onClick={handleShow2}>View Missing Hours</Button>
     </Card.Footer>
   </Card>
 </CardDeck>

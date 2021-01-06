@@ -4,6 +4,7 @@ import axios from 'axios'
 import Background from '../SohobPages/guc_cairo_campus2.jpg'
 import PropTypes from 'prop-types';
 import styles from '../SohobPages/Sohob'
+import {Redirect,useHistory} from 'react-router-dom'
 async function loginUser(credentials) {
     return fetch('http://localhost:5000/api/login', {
       method: 'POST',
@@ -18,12 +19,18 @@ async function loginUser(credentials) {
 export default function Login ({setToken, setTokeypokey})  {
     const [email,setEmail] = useState("") 
     const [pass,setPass] = useState("") 
-
+    const history = useHistory()
     const handleSubmit = async e => {
         e.preventDefault();
+        try{
         const token = await loginUser({email: email,password: pass});
         await setToken(token);
         await setTokeypokey(true);
+        history.push("/profile");
+        }
+        catch (er) {
+            alert(er.message);
+          }
       }
     return (
 
