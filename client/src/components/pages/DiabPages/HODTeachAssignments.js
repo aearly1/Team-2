@@ -37,7 +37,7 @@ function HODTeachAssignments() {
       res.data.map(course => {items.push({ courseName:course.courseName})})
       setLoading1(false)
       setOptions1(items);
-    }).catch(err=>alert(err))}
+    }).catch(err=>console.log(err.response.data))}
     doIt();
     }, []  )
 
@@ -48,7 +48,7 @@ function HODTeachAssignments() {
     setSlots(res.data)  
     setLoading2(false)
     setRendered(true)
-    }).catch(err=>alert(err))
+    }).catch(err=>console.log(err.response.data))
   }
 
   return (
@@ -97,7 +97,8 @@ function HODTeachAssignments() {
                     Location: {slot.location}
                     </Card.Text>
                     <Card.Text>
-                    Assigned? {slot.isAssigned}
+                    Slot Assignment: {slot.isAssigned?(
+                      <><strong>is assigned!</strong> </>):(<> <strong> not assigned!</strong> </>)}
                     </Card.Text>
                     </Card.Body>
                     </td>

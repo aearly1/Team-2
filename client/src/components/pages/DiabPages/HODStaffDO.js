@@ -43,7 +43,7 @@ useEffect(()=>{
       })})
       setLoading(false);
       setStaff(items);
-  }).catch(err=>alert(err))}
+  }).catch(err=>console.log(err.response.data))}
   doIt();
   }, []  )
 

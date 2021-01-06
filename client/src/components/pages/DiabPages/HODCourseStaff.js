@@ -37,7 +37,7 @@ function HODCourseStaff() {
         res.data.map(course => {items.push({ courseName:course.courseName})})
         setLoading1(false)
         setOptions1(items);
-    }).catch(err=>alert(err))}
+    }).catch(err=>console.log(err.response.data))}
     doIt();
     }, []  )
 
@@ -47,7 +47,7 @@ function HODCourseStaff() {
     await axios.post('http://localhost:5000/api/hod/staff-crs',{'courseName':e},{headers:{'auth-token':token}}).then((res)=>{ 
     setLoading2(false)
     setMembers(res.data)
-    }).catch(err=>alert(err))
+    }).catch(err=>console.log(err.response.data))
 
     setRendered(true)
   }

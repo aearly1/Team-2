@@ -20,7 +20,7 @@ function HODCourseCov() {
           res.data.map(course => {items.push({ courseName:course.courseName})})
           setLoading1(false);
           setOptions1(items);
-      }).catch(err=>alert(err))}
+      }).catch(err=>console.log(err.response.data))}
       doIt();
       }, []  )
 

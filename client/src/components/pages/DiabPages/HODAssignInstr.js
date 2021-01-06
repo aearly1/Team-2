@@ -25,7 +25,7 @@ function HODEditCourse(){
             res.data.map(course => {items.push({ courseName:course.courseName})})
             setLoading1(false)
             setOptions1(items);
-        }).catch(err=>alert(err))
+        }).catch(err=>console.log(err.response.data))
 
         //GET THE Instructors under department
         axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
@@ -38,7 +38,7 @@ function HODEditCourse(){
             })
             setLoading2(false)
             setOptions2(items);
-        }).catch(err=>alert(err))
+        }).catch(err=>console.log(err.response.data))
 
         }, []  )
 
@@ -48,7 +48,9 @@ function HODEditCourse(){
             await axios.post('http://localhost:5000/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
                 setLoading3(false);
                 setAlertext(res.data);         
-            }).catch(err=>setAlertext(err.toString()))
+            }).catch(err=>{
+                setLoading3(false);
+                setAlertext(err.response.data)})
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")
@@ -60,7 +62,9 @@ function HODEditCourse(){
             await axios.post('http://localhost:5000/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setLoading3(false);    
             setAlertext(res.data);      
-            }).catch(err=>setAlertext(err.toString()))
+            }).catch(err=>{
+                setLoading3(false);
+                setAlertext(err.response.data)})
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")
@@ -72,7 +76,9 @@ function HODEditCourse(){
             await axios.post('http://localhost:5000/api/hod/update-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setLoading3(false);
             setAlertext(res.data);       
-            }).catch(err=>setAlertext(err.toString()))
+            }).catch(err=>{
+                setLoading3(false);
+                setAlertext(err.response.data)})
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")

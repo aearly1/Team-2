@@ -37,7 +37,7 @@ function HODStaffDOS() {
       setOptions(items);
       setLoading1(false);
     }
-    ).catch(err=>alert(err))}
+    ).catch(err=>console.log(err.response.data))}
     doIt();
     }, []  )
 
@@ -47,7 +47,7 @@ function HODStaffDOS() {
     setValue1(thingy.name)
    await axios.post('http://localhost:5000/api/hod/staff-dos',{'staffId':thingy.id},{headers:{'auth-token':token}}).then((res)=>{ 
     setMem(res.data)  
-    }).catch(err=>alert(err))
+    }).catch(err=>console.log(err.response.data))
     setLoading2(false)
     setRendered(true)
   }

@@ -37,7 +37,7 @@ function HODViewStaff() {
     axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
         setStaffList(res.data)
         setLoading(false)
-    }).catch(err=>alert(err))
+    }).catch(err=>console.log(err.response.data))
     }, []  )
 
    
