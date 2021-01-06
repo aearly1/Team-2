@@ -1,18 +1,10 @@
 import React , {useState, useEffect} from 'react'
 import {Container,Alert, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
-import PropTypes from 'prop-types';
 import useToken from '../general/useToken';
 import axios from 'axios'
 
 
-/*
-TODOS ==>
-    1. Load Courses from DB
-        1.1 -> need to make a route to get courses
-    2. Load Instructors from DB
-        2.1 -> Load staff members then filter the instructors
-    3. 
-*/
+
 
 function HODEditCourse(){
     const token = useToken().token
@@ -21,23 +13,23 @@ function HODEditCourse(){
     const [options2,setOptions2]= useState([]);// Load Instructor Dropdown
     const [alertext,setAlertext]= useState();
     const [value1,setValue1]= useState(''); // This is the course
-    const [value2,setValue2]= useState(''); // This is the instructor
-    useEffect(async ()=>{
+    const [value2,setValue2]= useState(''); // This is the instructorId
+    const [value3,setValue3]= useState(''); // This is the instructorName
+    useEffect(()=>{
         //GET THE Courses under department
-        await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
-            alert(JSON.stringify(res.data))
+        axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+            
             let items = []
             res.data.map(course => {items.push({ courseName:course.courseName})})
             setOptions1(items);
         }).catch(err=>alert(err))
 
         //GET THE Instructors under department
-        await axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
-            alert(JSON.stringify(res.data))
+        axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
             let items = []
             res.data.map(staffMem => 
             {
-            if((staffMem.subType=='head of department')||(staffMem.subType=='instructor')){
+            if((staffMem.subType==='head of department')||(staffMem.subType==='instructor')){
                 items.push({instrId:staffMem.userCode, name:staffMem.name})
             }
             })
@@ -48,9 +40,9 @@ function HODEditCourse(){
 
     const assignInstrReq= ()=> {
         if(value1&&value2){
-        axios.get('http://localhost:5000/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('http://localhost:5000/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setAlertext(res.data);         
-            }).catch(err=>alert(err))
+            }).catch(err=>setAlertext(err.toString()))
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")
@@ -58,9 +50,9 @@ function HODEditCourse(){
     }
     const deleteInstrReq= () => {
         if(value1&&value2){
-        axios.get('http://localhost:5000/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('http://localhost:5000/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setAlertext(res.data);      
-            }).catch(err=>alert(err))
+            }).catch(err=>setAlertext(err.toString()))
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")
@@ -68,9 +60,9 @@ function HODEditCourse(){
     }
     const updateInstrReq= () => {
         if(value1&&value2){
-        axios.get('http://localhost:5000/api/hod/update-instr-course',{courseName:value1,instructorId: value1},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('http://localhost:5000/api/hod/update-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setAlertext(res.data);       
-            }).catch(err=>alert(err))
+            }).catch(err=>setAlertext(err.toString()))
         }
         else{
             setAlertext("Either an Instructor or a course was not chosen.")
@@ -83,8 +75,11 @@ function HODEditCourse(){
       setValue1(e)
     }
     const handleSelect2=(e)=>{
-        setValue2(e)
+        let thi = JSON.parse(e);
+        setValue2(thi.id)
+        setValue3(thi.name)
       }
+
     const renderTooltip1 = (props) => (
     <Tooltip id="button-tooltip" {...props}>
         The chosen <strong> instructor </strong> will be <strong> assigned</strong>  to the chosen <strong> course</strong>.
@@ -115,9 +110,10 @@ function HODEditCourse(){
 
             <Form.Group controlId="formInstructor">
                 <Form.Label>Instructor:</Form.Label>
-                <DropdownButton variant="warning" onSelect={handleSelect2} id="dropdown-basic-button" title={(value2==="")?"Select Instructor":value2}>
+                <DropdownButton variant="warning" onSelect={handleSelect2} id="dropdown-basic-button" title={(value3==="")?"Select Instructor":value3}>
                 {options2.map(option => {
-                      return <Dropdown.Item eventKey={option.instrId}>{option.name}</Dropdown.Item>
+                        let opt = JSON.stringify({'id': option.instrId, 'name': option.name })
+                      return <Dropdown.Item eventKey={opt}>{option.name}</Dropdown.Item>
                   }
                   )}
                 </DropdownButton>
@@ -146,7 +142,7 @@ function HODEditCourse(){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip2}
                 >
-                    <Button variant="info" onClick={deleteInstrReq} >Update </Button>
+                    <Button variant="info" onClick={updateInstrReq} >Update </Button>
                 </OverlayTrigger>
                 
                 {' '}
@@ -155,7 +151,7 @@ function HODEditCourse(){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip3}
                 >
-                    <Button variant="danger" onClick={updateInstrReq} >Delete </Button>
+                    <Button variant="danger" onClick={deleteInstrReq} >Delete </Button>
                 </OverlayTrigger>
             </div>
         </Form>

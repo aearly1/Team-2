@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Button,Card , Col, Row, Dropdown,ButtonGroup, DropdownButton} from 'react-bootstrap';
+import {Container,Card } from 'react-bootstrap';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import useToken from '../general/useToken';
 import axios from 'axios'
 
@@ -20,7 +19,7 @@ const custDropDown = styled.div`
 `
 //<DropdownButton  variant="primary" onSelect={handleSelect} className="dropdown-link" title={(value1==="")?"Select Course":value1} style={style2}>
        
-function HODViewStaff(props) {
+function HODViewStaff() {
     let style1 = {
         background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
         backgroundColor:"#0C0A4A" ,
@@ -44,14 +43,15 @@ function HODViewStaff(props) {
         
         <Container fluid >
         
-        {(props.course==='')?
-        (
+        {/*
+          (props.course==='')?(
           //if this is not coming from /course-staff then it's just a view all staff
           <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
         ):(
           //but if the course is not empty, then it came from a /course-staff
           <h1 style = {{whiteSpace: 'nowrap'}}>Staff members assigned to {props.course}:</h1>
-        )}
+        )*/
+        }
         
         {staffList.map(staffMem => {
             return (
@@ -100,14 +100,6 @@ function HODViewStaff(props) {
         </Container>
     )
 }
-HODViewStaff.propTypes = {
-    staff: PropTypes.array,
-    course: PropTypes.string,
-    courses: PropTypes.array
-  }
-  
-  HODViewStaff.defaultProps = {
-    course: ""
-  };
+
   
 export default HODViewStaff

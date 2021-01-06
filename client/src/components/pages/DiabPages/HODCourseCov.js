@@ -1,15 +1,32 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Container,Alert, Form, Dropdown,DropdownButton} from 'react-bootstrap';
 import PropTypes from 'prop-types';
-
+import useToken from '../general/useToken';
+import axios from 'axios'
 
 function HODCourseCov(props) {   
+    const token = useToken().token
     const [str,setStr]= useState('');
     const [value1,setValue1]= useState('');
-    const handleSelect1=(e)=>{
+    const [options1,setOptions1]= useState([]);
+
+    useEffect(()=>{
+      async function doIt(){
+      //GET THE Courses under department
+      await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+          let items = []
+          res.data.map(course => {items.push({ courseName:course.courseName})})
+          setOptions1(items);
+      }).catch(err=>alert(err))}
+      doIt();
+      }, []  )
+
+
+     const handleSelect1= (e)=>{
       setValue1(e);
-      //PULL THIS Dynamically from route later
-      setStr("Course coverage for course "+e+" is: 30% (needs routing)");
+      axios.post('http://localhost:5000/api/hod/course-cov',{courseName:e},{headers:{'auth-token':token}}).then((res)=>{
+       setStr(res.data);         
+      }).catch(err=>setStr(err.toString())) 
     }
     return (
         <Container fluid >
@@ -18,8 +35,8 @@ function HODCourseCov(props) {
             <Form.Label><h1>  Select a course to view its coverage:</h1></Form.Label>
             <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
             <DropdownButton className="pb-3" variant="warning" onSelect={handleSelect1} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
-              {props.courses.map(course => {
-                  return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
+              {options1.map(course => {
+                  return <Dropdown.Item eventKey={course.courseName}>{course.courseName}</Dropdown.Item>
               }
             )}
             </DropdownButton>

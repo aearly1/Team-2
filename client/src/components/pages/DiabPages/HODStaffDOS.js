@@ -27,16 +27,21 @@ function HODStaffDOS() {
   const [mem,setMem]= useState({});
   const [rendered,setRendered]= useState(false);
   const [value1, setValue1] = useState('');
-  useEffect(async ()=>{
+  useEffect(()=>{
+    async function doIt(){
     await axios.get('http://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
         let items = []
-        res.data.map(staffMem =>{items.push({value:staffMem.userCode, name:staffMem.name})})
+        res.data.map(staffMem =>{items.push({id:staffMem.userCode, name:staffMem.name})})
         setOptions(items);
-    }).catch(err=>alert(err))
+    }
+    ).catch(err=>alert(err))}
+    doIt();
     }, []  )
 
-  const handleChange=(e)=>{
-    axios.post('http://localhost:5000/api/hod/staff-dos',{'staffId':e},{headers:{'auth-token':token}}).then((res)=>{ 
+  const handleChange= async (e)=>{
+    let thingy = JSON.parse(e)
+    setValue1(thingy.name)
+   await axios.post('http://localhost:5000/api/hod/staff-dos',{'staffId':thingy.id},{headers:{'auth-token':token}}).then((res)=>{ 
     setMem(res.data)  
     }).catch(err=>alert(err))
 
@@ -48,9 +53,10 @@ function HODStaffDOS() {
       <Container fluid >
         <h1>  Select a staff member to view his day off:</h1>
         <div style = {{whiteSpace: 'nowrap', paddingLeft:0, marginLeft:0}}>
-        <DropdownButton variant="warning" onSelect={handleChange} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
+        <DropdownButton variant="warning" onSelect={handleChange} id="dropdown-basic-button" title={(value1==="")?"Select Member":value1}>
           {options.map(option => {
-              return <Dropdown.Item eventKey={option.value}>{option.name}</Dropdown.Item>
+              let opt = JSON.stringify({id: option.id, name: option.name})
+              return <Dropdown.Item eventKey={opt}>{option.name}</Dropdown.Item>
           }
           )}
         </DropdownButton>
@@ -60,7 +66,7 @@ function HODStaffDOS() {
             {/*Need to hange info here to axios get request*/}
           <Card style={style1} >
             <Card.Body >
-            <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{mem.staffMemberName} - Needs routing!!!</Card.Title>
+            <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{mem.staffMemberName}</Card.Title>
             <Card.Text>
             id: {mem.id}
             </Card.Text>
