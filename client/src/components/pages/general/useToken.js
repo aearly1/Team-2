@@ -9,6 +9,10 @@ export default function useToken() {
 
   const [token, setToken] = useState(getToken());
 
+  const destroyToken = ()=>{
+    return sessionStorage.removeItem('token')
+  }
+
   const saveToken = userToken => {
     sessionStorage.setItem('token', JSON.stringify(userToken));
     setToken(userToken.token);
@@ -16,6 +20,7 @@ export default function useToken() {
 
   return {
     setToken: saveToken,
-    token
+    token,
+    destroy: destroyToken
   }
 }

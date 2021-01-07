@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react'
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import { Nav, Navbar} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import SubMenu from './SubMenu';
@@ -8,8 +7,9 @@ import {SidebarData} from './SidebarData'
 import useToken from '../pages/general/useToken';
 import axios from 'axios';
 
-import * as FAIcons from 'react-icons/fa'
 import * as AiIcons from 'react-icons/ai'
+import * as FaIcons from 'react-icons/fa'
+import * as GoIcons from 'react-icons/go'
 
 // const Nav = styled.div`
 //     background: #15171c;
@@ -67,52 +67,61 @@ const SidebarWrap = styled.div`
 `;
 
 
-function SidebarMain(props) {
+function SidebarMain({tokey}) {
   const token = useToken().token
   const [sidebar, setSidebar] = useState(false);
-  const [name1, setName1] = useState('');
-  useEffect( ()=>{
-    if(token){
-      axios.get('http://localhost:5000/api/staffs/name',{headers:{'auth-token':token}}).then((res)=>{
-           setName1(res.data)
-        }).catch(err=>alert(err))
-      }}, []  )
- 
+  
+  
 
   const showSidebar = () => setSidebar(!sidebar);
     return (
         <>
         <Navig>
             <Navbar>
-            {token?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
+            {(tokey||token)?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
                 <i  class="fas fa-bars" onClick={showSidebar} />
             </NavIcon>):(<div></div>)}
             <Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> 
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-                {token?
-                (<Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline", whiteSpace:"nowrap"}}>
-                <i class="fas fa-user-circle pr-1" >
-                </i>
-                {name1}
+            {(tokey||token)?
+                (<>
+               
+                <Nav.Item >
+                <Nav.Link href="/logout" style = {{textDecoration:"underline",textDecorationColor:"purple", whiteSpace:"nowrap"}}
+                >
+                <GoIcons.GoSignOut/>
+                Sign-out
                 </Nav.Link>
-                </Nav.Item> )
+                </Nav.Item>
+                
+                <Nav.Item><Nav.Link href="/profile" style = {{textDecoration:"underline",textDecorationColor:"gold", whiteSpace:"nowrap"}}>
+                <FaIcons.FaUserCircle />
+                Profile
+                </Nav.Link>
+                </Nav.Item>
+                </> 
+                
+                )
                 :
                 (
                 <Nav.Item className = "border border-1 border-warning mr-2" style={{borderRadius: 8}}>
                 <Nav.Link href="/login"
                 >Login
                 </Nav.Link>
-                </Nav.Item>) 
+                </Nav.Item>
+                 ) 
                 }
-                <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
-
+                <Nav.Item><Nav.Link href="/about" style = {{textDecoration:"underline",textDecorationColor:"gold", whiteSpace:"nowrap"}}>
+                <FaIcons.FaInfoCircle/>
+                About
+                </Nav.Link></Nav.Item>
             </Nav>
             
             </Navbar>
         </Navig>
-        {token?(
+        {(tokey||token)?(
         <SidebarNav sidebar={sidebar} >
             <SidebarWrap>
             
@@ -135,15 +144,4 @@ function SidebarMain(props) {
         </>
     )
 }
-
-SidebarMain.propTypes = {
-    isLoggedIn: PropTypes.bool,
-    name: PropTypes.string
-  }
-  
-  SidebarMain.defaultProps = {
-    isLoggedIn: true,
-    name: "Hassan Soubra",
-  };
-  
 export default SidebarMain
