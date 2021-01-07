@@ -53,6 +53,9 @@ let style1 = {
    const [edit, setEdit] = useState(false);
    const [updatedEmail, setEmail] = useState()
    const [updatedOffice, setOffice] = useState()
+   const [updatedDepartment, setDepartment] = useState()
+   const [updatedFaculty, setFaculty] = useState()
+   const [updatedSalary, setSalary] = useState()
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
        useEffect(() =>{
@@ -72,7 +75,7 @@ let style1 = {
     const handleEdit = () => setEdit(true);
     const handleEditc = () => setEdit(false);
     const handleSubmit = () =>{
-        axios.put('http://localhost:5000/api/staffs/profile/update',{email: updatedEmail,office: updatedOffice},{
+        axios.put('http://localhost:5000/api/staffs/profile/update',{email: updatedEmail,office: updatedOffice,salary:updatedSalary,faculty:updatedFaculty,department:updatedDepartment},{
             headers: {
               'auth-token': `${token}`
             }
@@ -95,7 +98,7 @@ let style1 = {
             <StaffCard>
         <Container style={style1} fluid="">
             <Row md={1}><div style={{ width: 450, height: 'auto', textAlign: 'center' }}>
-                <Image roundedCircle width="auto" height="180px" src="https://i2-prod.walesonline.co.uk/incoming/article18912156.ece/ALTERNATES/s1200c/0_Borat.jpg"
+                <Image roundedCircle width="auto" height="180px" src={user.img}
                 /></div></Row>
             <Row md={2}>
                 <Col xs={2} >
@@ -129,15 +132,24 @@ let style1 = {
                         <Row style={{ margin: '25px' }}>
                         Office: <input placeholder="Enter new Office" onChange={e=>setOffice(e.target.value)}></input>
                         </Row></div>}
-                    <Row style={{ margin: '25px' }}>
-                        Faculty: {user.FacultyName}
-                    </Row>
-                    <Row style={{ margin: '25px' }}>
-                        Department: {user.DepartmentName}
-                    </Row>
-                    <Row style={{ margin: '25px' }}>
-                        Salary: {user.Salary}
-                    </Row>
+                        {(!edit||user.Type=="academic")?<Row style={{ margin: '25px' }}>
+                            Faculty: {user.FacultyName}
+                        </Row>:<div>
+                        <Row style={{ margin: '25px' }}>
+                        Faculty: <input onChange={e=>setFaculty(e.target.value)} placeholder="Enter new Faculty"></input>
+                        </Row></div>}
+                    {(!edit||user.Type=="academic")?<Row style={{ margin: '25px' }}>
+                    Department: {user.DepartmentName}
+                        </Row>:<div>
+                        <Row style={{ margin: '25px' }}>
+                        Department: <input onChange={e=>setDepartment(e.target.value)} placeholder="Enter new Department"></input>
+                        </Row></div>}
+                    {(!edit||user.Type=="academic")?<Row style={{ margin: '25px' }}>
+                    Salary: {user.Salary}
+                        </Row>:<div>
+                        <Row style={{ margin: '25px' }}>
+                        Salary: <input onChange={e=>setSalary(e.target.value)} placeholder="Enter new Salary"></input>
+                        </Row></div>}
                     <Row style={{ margin: '25px' }}>
                         <Button variant="warning" onClick={handleShow}>View Courses</Button>
                     </Row></div>

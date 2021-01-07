@@ -34,7 +34,9 @@ const missingdays = require('../functions/funcs').missingdays
             DayOff: staffMem.dayOff,
             annualLeaves: staffMem.annualLeaves,
             accidentalLeavesLeft: staffMem.accidentalLeavesLeft,
-            Salary: staffMem.Salary
+            Salary: staffMem.Salary,
+            Type: staffMem.type,
+            img: staffMem.imgLink
         }
         res.status(200).send(out);
     })
