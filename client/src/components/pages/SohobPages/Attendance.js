@@ -4,8 +4,7 @@ import { Modal, Form, Button, Row, Col, Container, Alert,Card,CardDeck } from 'r
 import useToken from '../general/useToken'
 const Attendance = props => {
   const token = useToken().token
-  const styles = {
-    border: '5px groove rgba(0, 0, 0, 0.05)',
+  const styles = {border:0,
     borderRadius: '10px',
     padding: '50px',
     Button: 'rgba(0, 0, 0, 0.05)',
@@ -120,7 +119,7 @@ const Attendance = props => {
       setSuccess2(true)
     })
       .catch((error) => {
-        console.error(error)
+        console.error(error.response.data)
         console.log("dab")
         setAlert2(true)
       })

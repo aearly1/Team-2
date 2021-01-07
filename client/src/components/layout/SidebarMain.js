@@ -92,7 +92,7 @@ function SidebarMain({tokey}) {
                 <Nav.Link href="/logout" style = {{textDecoration:"underline",textDecorationColor:"purple", whiteSpace:"nowrap"}}
                 >
                 <GoIcons.GoSignOut/>
-                Sign-out
+                Log out
                 </Nav.Link>
                 </Nav.Item>
                 
