@@ -12,6 +12,95 @@ const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 
+router.route('/theSlots')
+    .get(async(req,res)=>{
+        console.log("START")
+        var ObjectId = require('mongodb').ObjectId; 
+
+        const userID=req.user.objectId;
+        let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
+        const courseList = await course.find();
+
+        courseId=null;
+        if(courseList!=null)
+        for (const element of courseList) 
+        {
+            if(element.coordinator.equals(userID))
+            {
+                courseId=element._id;break;
+            }
+        }
+        if(courseId==null)
+        {
+            res.status(404).send("Not coordinator")
+        }
+        else
+        {
+            const c= await course.findOne({_id:courseId})
+            const locs= await location.find();
+            const array=[];
+            for (const element of locs) {
+                array.push(element.roomNr);
+            }
+            const staffIDs=c.instructors.concat(c.teachingAssistants);
+            const staffNames=[]
+            if(staffIDs!=null)
+           for (const element of staffIDs) 
+            {
+               const person=await staffMembers.findOne({_id:element});
+
+               staffNames.push(person.name);
+            }
+            const results=[];
+            const theslots=c.teachingSlots;
+           if(theslots!=null)
+           for (const element of theslots) 
+            {
+                var sloto=await slot.findOne(element);
+                var dayNr=sloto.day;
+                var DAYO="";
+                if(dayNr==1)
+                {
+                    DAYO="SAT"
+                }
+                else if(dayNr==2)
+                {
+                    DAYO="SUN"
+                }
+                else if(dayNr==3)
+                {
+                    DAYO="MON"
+                }
+                else if(dayNr==4)
+                {
+                    DAYO="TUES"
+                }
+                else if(dayNr==5)
+                {
+                    DAYO="WED"
+                }
+                else if(dayNr==6)
+                {
+                    DAYO="THURS"
+                }
+                else
+                {
+                    DAYO="FRI"
+                }
+                var object=
+                {
+                    id: sloto._id,
+                    Day: DAYO,
+                    startTime: sloto.startTime.toLocaleTimeString(), 
+                    endTime: sloto.endTime.toLocaleTimeString(), 
+                    taughtBy: staffNames, 
+                    location: array
+                }
+                results.push(object);
+            }
+            res.send(results)
+        }
+    })
 router.route('/slotLinkingRequest')
     .get([
         body('courseName').isString().withMessage("CourseName must be a string")
@@ -167,11 +256,9 @@ router.route('/slotLinkingRequest')
     })
     router.route('/addCourseSlot')
     .post([
-        body('courseName').isString().withMessage("courseName must be a string")
+        body('day').isString().withMessage("day must be a string")
     ],[
-        body('startTime').isString().withMessage("startTimeHours must be a string")
-    ],[
-        body('endTime').isString().withMessage("endTimeHours must be a string")
+        body('slotNr').isString().withMessage("slotNr must be a numeric")
     ], [
         body('slotLocation').isString().withMessage("slotLocation must be a string")
     ], async(req,res)=>
@@ -182,68 +269,134 @@ router.route('/slotLinkingRequest')
             return res.status(400).json({ errors: errors.array() });
         }
         var ObjectId = require('mongodb').ObjectId; 
-
         const userID=req.user.objectId;        
-        const coursename=req.body.courseName;
-        const startTime1=req.body.startTime;
-        const endTime1=req.body.endTime;
+        const day=req.body.day;
+        const slotoNr=req.body.slotNr;
         const SLOTLOCATION=req.body.slotLocation;
+    
+        var startTimo=null;
+        var endTimo=null
+                if(slotoNr=="1st")
+                {
+                    startTimo="2020-12-20T10:08:15.000Z";
+                    endTimo="2020-12-20T10:09:45.000Z";
+                }
+                else if(slotoNr=="2nd")
+                {
+                    startTimo="2020-12-20T10:10:00.000Z";
+                    endTimo="2020-12-20T10:11:30.000Z";
+                }
+                else if(slotoNr=="3rd")
+                {
+                    startTimo="2020-12-20T10:11:45.000Z";
+                    endTimo="2020-12-20T10:13:15.000Z";
+                }
+                else if(slotoNr=="4th")
+                {
+                    startTimo="2020-12-20T10:13:45.000Z";
+                    endTimo="2020-12-20T10:15:15.000Z";
+                }
+                else if(slotoNr=="5th")
+                {
+                    startTimo="2020-12-20T10:15:45.000Z";
+                    endTimo="2020-12-20T10:17:15.000Z";
+                }
+                var dayNr=0;
+                if(day=="Sataurday")
+                {
+                    dayNr=1;
+                }
+                else if(day=="Sunday")
+                {
+                    dayNr=2;
+                }
+                else if(day=="Monday")
+                {
+                    dayNr=3;
+                }
+                else if(day=="Tuesday")
+                {
+                    dayNr=4;
+                }
+                else if(day=="Wednesday")
+                {
+                    dayNr=5;
+                }
+                else if(day=="Thursday")
+                {
+                    dayNr=6;
+                }
+                else
+                {
+                    dayNr=7;
+                }
         try
         {
             //get user
             let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-            let courseObject = await course.findOne({courseName:coursename})//course of coordinator
 
-            //check that user is a coordinator
-            if(courseObject==null)
+            const courseList = await course.find();
+
+            courseId=null;
+            if(courseList!=null)
+            for (const element of courseList) 
             {
-                res.status(404).send("Course doesn't exist")
-            }
-            if(!courseObject.coordinator.equals(user._id))
-            {
-                res.status(401).send("User is not the course coordinator of this course")
-            }
-            //perhaps I should do checks on the time?
-           //check that slot location exists
-           const loc = await location.findOne({roomNr:SLOTLOCATION});
-           if(loc==null)
-           {
-               res.status(404).send("Location doesnt exist. It might exist in lala land. Who knows?");
-           }
-           else
-           {
-            const newSlot=  new slot(
+                if(element.coordinator.equals(userID))
                 {
-                    startTime: new Date(startTime1), //start time of slot
-                    endTime: new Date(endTime1), // end time of slot
-                    courseTaughtInSlot: courseObject._id, //what course will be taught in the slot 
-                    slotLocation: loc._id, //ex. H14, C7.301
+                    courseId=element._id;break;
                 }
-            );
-            newSlot.save();
-            await course.findOneAndUpdate({_id :
-                courseObject._id}, {unassignedSlots:courseObject.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
-            
-             var result=
+            }
+            if(courseId==null)
             {
-                "startTime": newSlot.startTime,
-                "endTime": newSlot.endTime,
-                 "courseTaughtInSlot": courseObject.courseName,
-                 "slotLocation": loc.roomNr
+                res.status(404).send("Not coordinator")
             }
-            res.send(result);
-           }
-            
-            }
-        catch(err)
-        {
-            console.log(err)
-        }
+            else
+            {
+                //perhaps I should do checks on the time?
+                //check that slot location exists
+                const c= await course.findOne({_id:courseId})
+                const loc = await location.findOne({roomNr:SLOTLOCATION});
+                if(loc==null)
+                {
+                    res.status(404).send("Location doesnt exist. It might exist in lala land. Who knows?");
+                }
+                else
+                {
+                    const newSlot=  new slot(
+                        {
+                            slotNr:slotoNr,
+                            day: dayNr,
+                            startTime: new Date(startTimo), //start time of slot
+                            endTime: new Date(endTimo), // end time of slot
+                            courseTaughtInSlot: c._id, //what course will be taught in the slot 
+                            slotLocation: loc._id, //ex. H14, C7.301
+                        }
+                    );
+                    await newSlot.save();
+                    await course.findOneAndUpdate({_id :
+                        c._id}, {unassignedSlots:c.unassignedSlots+1, $push: { teachingSlots: newSlot._id}}, {new: true})
+                    
+                    var result=
+                    {
+                        "slotNr":slotoNr,
+                        "day": dayNr,
+                        "startTime": newSlot.startTime,
+                        "endTime": newSlot.endTime,
+                        "courseTaughtInSlot": c.courseName,
+                        "slotLocation": loc.roomNr
+                    }
+                    console.log(result)
+                    res.send(result);
+                }
+                }    
+                }
+                catch(err)
+                {
+                    console.log(err)
+                }
     })
     router.route('/updateCourseSlot')
     .put([
-        body('courseName').isString().withMessage("coursename must be a string")
-    ],[
         body('slotID').isString().isLength(24).withMessage("slotID must be a string")
     ],[
         body('staffTeachingSlot').isString().optional().withMessage("staffTeachingSlot must be a string")
@@ -278,14 +431,20 @@ router.route('/slotLinkingRequest')
             var staffToBeAssigned = null;
             if(STAFFTEACHINGSLOT!=null)
             staffToBeAssigned=await staffMembers.findOne({name:STAFFTEACHINGSLOT});
-            //check that user is a coordinator
-            if(courseObject==null)
+            const courseList = await course.find();
+
+            courseId=null;
+            if(courseList!=null)
+            for (const element of courseList) 
             {
-                res.status(404).send("Course doesn't exist")
+                if(element.coordinator.equals(userID))
+                {
+                    courseId=element._id;break;
+                }
             }
-            else if(!courseObject.coordinator.equals(user._id))
+            if(courseId==null)
             {
-                res.status(401).send("User is not the course coordinator of this course")
+                res.status(404).send("Not coordinator")
             }
             else if(STAFFTEACHINGSLOT==null && SLOTLOCATION==null)
             {
@@ -301,6 +460,8 @@ router.route('/slotLinkingRequest')
             }
            else
            {
+                const courseObject= await course.findOne({_id:courseId})
+
                var teachesCourse=false;
                //check if the person you want to assing the slot teaches this course in the first place
                var array=null;
@@ -326,7 +487,7 @@ router.route('/slotLinkingRequest')
             await staffMembers.findOneAndUpdate({_id :
                 sloteObject.staffTeachingSlot}, {$pull: { teachingSlots: sloteObject._id}}, {new: true});
             var result=null;
-            if(STAFFTEACHINGSLOT==null)
+            if(STAFFTEACHINGSLOT=="Update staff member")
             {
                 result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {slotLocation:loc._id}, {new: true})
@@ -340,7 +501,7 @@ router.route('/slotLinkingRequest')
                     }
                     res.send(slotInfo);
             }
-            else if(SLOTLOCATION==null)
+            else if(SLOTLOCATION=="Update location")
             {
                  result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {staffTeachingSlot:staffToBeAssigned._id}, {new: true})
@@ -385,8 +546,6 @@ router.route('/slotLinkingRequest')
     })
     router.route('/deleteCourseSlot')
     .post([
-        body('courseName').isString().withMessage("courseName must be a string")
-    ],[
         body('slotID').isString().withMessage("slotID must be a string")
     ], async(req,res)=>
     {
@@ -403,18 +562,28 @@ router.route('/slotLinkingRequest')
         try
         {
             //get object of supposed coordinator
-            const user = await staffMembers.findOne({_id:userID});
-            //get course that our user is supposedly the coordinator of
-            const courseCoordinated = await course.findOne({courseName:coursename});
-            //check that user is a coordinator and that course exists
-            if(courseCoordinated==null)
+            let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
+
+            const courseList = await course.find();
+
+            courseId=null;
+            if(courseList!=null)
+            for (const element of courseList) 
             {
-                res.status(404).send("Course doesn't exist")
+                if(element.coordinator.equals(userID))
+                {
+                    courseId=element._id;break;
+                }
             }
-            if(!courseCoordinated.coordinator.equals(ObjectId(user._id)))
+            if(courseId==null)
             {
-                res.status(401).send("User is not the course coordinator of this course")
+                res.status(404).send("Not coordinator")
             }
+            else
+            {
+                //perhaps I should do checks on the time?
+                //check that slot location exists
+                const courseCoordinated= await course.findOne({_id:courseId})
             //check that slot exists in course
             const slotToBeDeleted= await slot.findOne({_id:ObjectId(slotID)});
             if(slotToBeDeleted==null)
@@ -438,10 +607,12 @@ router.route('/slotLinkingRequest')
                     { multi: true }
                 )
                 //passed all checks delete slot
+                console.log("right route")
                 const result= await slot.deleteOne({_id :
                     slotToBeDeleted._id})
                     res.send("Successfully deleted slot")
             }
+        }
         }
         catch(err)
         {

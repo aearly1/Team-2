@@ -1,20 +1,43 @@
-import React from 'react'
-import {Table,Container,Row,Col} from 'react-bootstrap'
+import React , {useEffect, useState} from 'react'
+import useToken from 'client/src/components/pages/general/useToken'
+import axios from 'axios'
+import {Container,Row,Col} from 'react-bootstrap'
 
 function AcademicSchedule()
 {
+    const token = useToken().token
+
     let style1 = {borderStyle:"solid", borderWidth: 3, backgroundColor: "#F7C344"}
     let style2 = {borderStyle:"solid", borderWidth: 3}
-
-    const arr=[["SAT","CSEN703 - C3. 201","CSEN703 - C3. 201","FREE","CSEN703 - C3. 102","FREE"],
+    const arr=[["SAT","FREE","FREE","FREE","FREE","FREE"],
                ["SUN","FREE","FREE","FREE","FREE","FREE"],
                ["MON","FREE","FREE","FREE","FREE","FREE"],
-               ["TUES","FREE","CSEN703 - C3. 201","FREE","CSEN703 - C3. 102","FREE"],
-               ["WED","CSEN703 - C3. 201","CSEN703 - C3. 201","FREE","FREE","FREE"],
-               ["THURS","CSEN703 - C3. 201","CSEN703 - C3. 201","FREE","CSEN703 - C3. 102","FREE"],
+               ["TUES","FREE","FREE","FREE","FREE","FREE"],
+               ["WED","FREE","FREE","FREE","FREE","FREE"],
+               ["THURS","FREE","FREE","FREE","FREE","FREE"],
                ["FRI","FREE","FREE","FREE","FREE","FREE"]];
+    var [schedule, setSchedule] = useState(arr)
+    
+    useEffect(async ()=>{
+        //GET THE Courses under department
+        async function doIt()
+        {
+            await axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
+            let items=res.data;
+            var array = [...schedule];
+            for (const element of items) 
+            {
+                const day=element.day-1;
+                const slot=element.slotNr;
+                array[day][slot]=element.courseTaughtInSlot + " - " + element.slotLocation + "\n" + "Replacement staff: "+ element.replacementStaff
+            }
+            setSchedule(array);
+        }).catch(err=>alert(err))}
+            doIt();
+        }, []  )
 
-    const tableRows = arr.map((elem)=>
+    
+    const tableRows = schedule.map((elem)=>
     {
         return (<Row>
                 <Col style={style1}><br></br>{elem[0]}<br></br><br></br></Col>

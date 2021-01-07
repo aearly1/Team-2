@@ -130,6 +130,8 @@ router.route('/courseInstructor')
     await loc.save();
     const slot1=new slot(
         {
+            day:4,
+            slotNr:2,
             startTime: new Date("2020-12-20T12:10:00"), //start time of slot
             endTime: new Date("2020-12-20T12:11:30"), // end time of slot
             courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
@@ -143,6 +145,8 @@ router.route('/courseInstructor')
         newCourse._id},  { $push: {  teachingSlots: slot1._id}}, {new: true});
     const slot2=new slot(
         {
+            day:5,
+            slotNr:1,
             startTime: new Date("2020-12-20T12:08:00"), //start time of slot
             endTime: new Date("2020-12-20T12:09:30"), // end time of slot
             courseTaughtInSlot: newCourse._id, //what course will be taught in the slot ,
@@ -221,6 +225,7 @@ router.route('/academic-coordinator')
         password: pass,
         id: 'ac-6835', // Generated using uuidv4
         name: 'Ali',
+        subType: 'TA',
         gender:'Male',
         type: 'academic', // can either be HR or academic
         office: 'C3-205',
@@ -268,8 +273,42 @@ router.route('/academic-coordinator')
         }
     );
     loc.save();
+    const loc1 = new location(
+        {
+            roomNr: 'C3. 201',
+            roomType: 'tutorial room', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    loc1.save();
+    const loc2 = new location(
+        {
+            roomNr: 'C3. 103',
+            roomType: 'tutorial room', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    loc2.save();
+    const loc3 = new location(
+        {
+            roomNr: 'C6. 204',
+            roomType: 'tutorial room', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    loc3.save();
+    const loc4 = new location(
+        {
+            roomNr: 'C5. 112',
+            roomType: 'tutorial room', //only posible values are lecture halls, tutorial rooms, labs and offices
+            capacity: 300
+        }
+    );
+    loc4.save();
    const newSlot= new slot(
     {
+        day:4,
+        slotNr:1,
         startTime: new Date("2020-12-20T12:08:15"), //start time of slot
         endTime: new Date("2020-12-20T12:09:45"), // end time of slot
         courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
@@ -279,6 +318,8 @@ router.route('/academic-coordinator')
    newSlot.save();
     const mySlot= new slot(
         {
+            day:5,
+            slotNr:1,
             startTime: new Date("2020-12-20T12:10:00"), //start time of slot
             endTime: new Date("2020-12-20T12:11:30"), // end time of slot
             courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 
@@ -300,6 +341,8 @@ router.route('/academic-coordinator')
 
             const hisSlot= new slot(
                 {
+                    day:5,
+                    slotNr:2,
                     startTime: new Date("2020-12-20T12:10:00"), //start time of slot
                     endTime: new Date("2020-12-20T12:11:30"), // end time of slot
                     courseTaughtInSlot: newCourse._id, //what course will be taught in the slot 

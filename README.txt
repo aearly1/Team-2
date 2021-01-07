@@ -367,13 +367,16 @@ Request type: GET
 Response: Array containing JSON objects representing the slots.
 Example:
 [
-{
-"startTime": "2020-12-20T10:10:00.000Z",
-"endTime": "2020-12-20T10:11:30.000Z",
-"staffTeachingSlot": "Shaka",
-"slotLocation": "H14",
-"replacementStaff": "NA"
-}
+    {
+        "day": 5,
+        "slotNr": 1,
+        "startTime": "2020-12-20T10:10:00.000Z",
+        "endTime": "2020-12-20T10:11:30.000Z",
+        "courseTaughtInSlot": "CSEN701: Embedded Systems",
+        "staffTeachingSlot": "Shaka",
+        "slotLocation": "H14",
+        "replacementStaff": "NA"
+    }
 ]
 
 ---

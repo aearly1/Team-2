@@ -9,7 +9,22 @@ const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-
+router.route('/location')
+.get(async(req,res)=>
+{
+    try{
+        const locs= await location.find();
+        const array=[];
+        for (const element of locs) {
+            array.push(element.roomNr);
+        }
+        res.send(array);
+    }
+    catch(err)
+    {
+        console.log(err)
+    }
+})
 router.route('/schedule')
     .get(async(req,res)=>
         {
@@ -19,7 +34,6 @@ router.route('/schedule')
             try{
             //get user object
             const user= await staffMembers.findOne({_id:userID});
-            console.log(user)
             const slotsArray=user.scheduleSlots;
             const schedule=[];
             if(user.type=="HR")
@@ -36,9 +50,11 @@ router.route('/schedule')
                 var user2 = await staffMembers.findOne({_id: slot1.replacementStaff})
                 var displayedSlot=
                 {
+                    "day": slot1.day,
+                    "slotNr":slot1.slotNr,
                     "startTime": slot1.startTime,
                     "endTime": slot1.endTime, // end time of slot
-                    "courseTaughtInSlot": coursE.name,
+                    "courseTaughtInSlot": coursE.courseName,
                     "staffTeachingSlot": U==null?"NA":U.name,
                     "slotLocation": loc.roomNr,
                     "replacementStaff": user2==null?"NA":user2.name,

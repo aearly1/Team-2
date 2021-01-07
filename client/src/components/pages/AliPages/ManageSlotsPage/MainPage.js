@@ -1,54 +1,101 @@
-import React , {useState} from "react"
+import React , {useEffect, useState} from 'react'
+import useToken from 'client/src/components/pages/general/useToken'
+import axios from 'axios'
 import DropDown from "./DropDown"
-
-import RowComponent from "./RowComponent"
-import CreateSlot from "./CreateSlotComponent"
-import UpdateDeleteSlot from "./UpdateDeleteSlot"
 import {OverlayTrigger,Tooltip, Container, Col, Row, DropdownButton, Dropdown, Button, Table} from 'react-bootstrap'
 
 //slot page component
 function Slot()
 {
+    const token = useToken().token
+    var[options2, setOptions2]= useState([]);
+    var[options2, setOptions2]= useState([]);
+    var [arr,setArr]= useState([]);
+
+    useEffect(async ()=>{
+        async function doIt()
+        {
+            await axios.get('http://localhost:5000/api/academicMember/location',{headers:{'auth-token':token}}).then((res)=>{
+            let items=res.data;
+            setOptions2(items);
+        }).catch(err=>alert(err))}
+            await doIt();
+        
+        async function tableLoading()
+        {
+            await axios.get('http://localhost:5000/api/coordinator/theSlots',{headers:{'auth-token':token}}).then((res)=>{
+            let items=res.data;
+            setArr(items);
+        }).catch(err=>alert(err))}
+            await tableLoading();
+        }, []  )
+
     //create slot stuff
     const [value1,setValue1]= useState("Select timing of slot");
     const [value2,setValue2]= useState("Select location of slot");
+    const [value3,setValue3]= useState("Select day");
+    const [drop1,setDrop1]= useState([]);
+    const [drop2,setDrop2]= useState([]);
     const handleSelect1=(e)=>{
       setValue1(e)
     }
     const handleSelect2=(e)=>{
       setValue2(e)
     }
+    const handleSelect3=(e)=>{
+        setValue3(e)
+      }
 
-    const timing=["8:15 AM - 9:45 AM", "10:00 AM - 11:30 AM", "11:45 AM - 1:15 AM", "1:45 AM - 3:15 AM", "3:45 AM - 5:15 AM"];
-    const location=["C3. 201", "C3. 103", "C6. 204", "C5. 112"];
+    const timing=["1st", "2nd", "3rd", "4th", "5th"];
+    const days=["Sataurday", "Sunday", "Monday", "Tuesday", "Wedneday", "Thursday"];
     const items1= timing.map(elem=>
       {
           return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
       })
-      const items2= location.map(elem=>
+      const items2= options2.map(elem=>
         {
-            return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+            return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
         })
+        const items3= days.map(elem=>
+            {
+                return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+            })
     //update delete stuff
-    const array = [{Day: "TUES", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]},
+    /*const array = [{Day: "TUES", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]},
     {Day: "WED", startTime: "1:45 AM", endTime: "3:15 PM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]},
-    {Day: "THURS", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]}];
+    {Day: "THURS", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]}];*/
     
-      var [arr,setArr]= useState(array);
-      const handleClick=()=>{
-          const splitValue=value1.split(" - ")
+      const createClick=()=>{
           if(value1!="Select timing of slot" && value2!="Select location of slot")
           {
-              setArr(prevArray=>[...prevArray, 
-                {Day: "TUES", startTime: splitValue[0], endTime: splitValue[1], taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]}
-              ])
+              async function createSlots()
+              {
+                    await axios.post('http://localhost:5000/api/coordinator/addCourseSlot',{day:value3, slotNr:value1, slotLocation:value2},{headers:{'auth-token':token}}).then((res)=>{       
+                    }).catch(err=>alert(err));
+               }
+                createSlots();
+               window.location.reload(); 
           }
       }
-      const deleteClick=(e)=>{
-        var array = [...arr]; // make a separate copy of the array
+      const updateClick=(e)=>{
         var index = e.target.id
-        array.splice(index, 1);
-        setArr(array);
+        async function updateSlots()
+              {
+                    await axios.post('http://localhost:5000/api/coordinator/updateCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
+                    }).catch(err=>alert(err));
+               }
+            updateSlots();
+            window.location.reload(); 
+    }
+      const deleteClick=(e)=>{
+        var index = e.target.id
+        async function deleteSlots()
+              {
+                    await axios.post('http://localhost:5000/api/coordinator/deleteCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
+                    }).catch(err=>alert(err));
+               }
+                deleteSlots();
+               window.location.reload(); 
     }
     return (<div>
         <h1>Manage Course Slots</h1>
@@ -58,6 +105,11 @@ function Slot()
             <Col>
             <div>
             <h5>Create Course Slot</h5>
+            <p>Day</p>
+            <DropdownButton onSelect={handleSelect3} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value3}>
+                {items3}
+            </DropdownButton>
+            <br></br>
             <p>Slot timing</p>
             <DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
                 {items1}
@@ -68,7 +120,9 @@ function Slot()
                 {items2}
             </DropdownButton>
             <br></br>
-            <Button onClick={handleClick} variant="success">Create</Button>
+            <br></br>
+            
+            <Button onClick={createClick} variant="success">Create</Button>
             </div>
             </Col>
             <Col> 
@@ -93,10 +147,14 @@ function Slot()
                 return(
                 <tr>
                 <td>{elem.Day}</td>
-                <td>{elem.startTime}</td>
-                <td>{elem.endTime}</td>
-                <td><DropDown text="Update staff member" array= {elem.taughtBy}/></td>
-                <td><DropDown text="Delete staff member" array= {elem.location}/></td>
+                <td>{elem.startTime.substring(3)}</td>
+                <td>{elem.endTime.substring(3)}</td>
+                <td><DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
+                     {elem.taughtBy.map(elem2=> {return <Dropdown.Item eventKey={elem2}>{elem2}</Dropdown.Item>})}
+                </DropdownButton></td>
+                <td><DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
+                {elem.location.map(elem2=> {return <Dropdown.Item eventKey={elem2}>{elem2}</Dropdown.Item>})}
+                </DropdownButton></td>
                 <td>
                 <>
                 <OverlayTrigger placement="bottom"
@@ -106,7 +164,7 @@ function Slot()
                         </Tooltip>
                     }
                     >
-                    <Button variant="info">Update</Button>
+                    <Button Button id={elem.id+"-"+i} onClick={updateClick} variant="info">Update</Button>
                     </OverlayTrigger>
                 </>
                 </td>
@@ -119,7 +177,7 @@ function Slot()
                         </Tooltip>
                     }
                     >
-                    <Button id={i} onClick={deleteClick} variant="danger">Delete</Button>
+                    <Button id={elem.id} onClick={deleteClick} variant="danger">Delete</Button>
                     </OverlayTrigger>
                 </>
                 </td>
