@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {Container, Card} from 'react-bootstrap';
 import styled from 'styled-components'
 import useToken from '../general/useToken';
-import axios from 'axios'
-
+import axios from 'axios';
+import Loading from 'react-loading';
 
 const StaffCard = styled.div`
   .staffCard{
@@ -24,11 +24,13 @@ let style1 = {
   color: "white" ,
   borderRadius: 10, 
   boxShadow: "5px 10px 5px #9E9E9E",
+  border:0,
   minWidth:750,
 };
 
 
 const [staff,setStaff]= useState([]);
+const [loading,setLoading]= useState(true);
 useEffect(()=>{
   async function doIt(){
   //GET THE Courses under department
@@ -40,8 +42,9 @@ useEffect(()=>{
         subType: staffMem.subType,
         dayOff: staffMem.dayOff
       })})
+      setLoading(false);
       setStaff(items);
-  }).catch(err=>alert(err))}
+  }).catch(err=>console.log(err.response.data))}
   doIt();
   }, []  )
 
@@ -49,26 +52,38 @@ useEffect(()=>{
 return (
     <Container fluid >
     <h1>Staff Member Day Offs:</h1>
-    {staff.map(staffMem => {
+    
+    {(!loading)?
+    (        
+      staff.map(staffMem => {
         return (
         <StaffCard style ={{paddingTop:20 }} >
-            <Card style={style1} >
-                <Card.Body >
-                <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.staffMemberName}</Card.Title>
-                <Card.Text>
-                id: {staffMem.id}
-                </Card.Text>
-                <Card.Text>
-                day-off: {staffMem.dayOff}
-                </Card.Text>
-                <Card.Text>
-                type: {staffMem.subType}
-                </Card.Text>
-                </Card.Body>
-            </Card>
+          <Card style={style1} >
+            <Card.Body >
+            <Card.Title style ={{fontSize: 30, textDecoration:"underline", textDecorationColor: "#B33F62"}}>{staffMem.staffMemberName}</Card.Title>
+            <Card.Text>
+            id: {staffMem.id}
+            </Card.Text>
+            <Card.Text>
+            day-off: {staffMem.dayOff}
+            </Card.Text>
+            <Card.Text>
+            type: {staffMem.subType}
+            </Card.Text>
+            </Card.Body>
+          </Card>
         </StaffCard>
         )
-    })}
+    })
+    ):
+    ( 
+      <div align='center'>
+      <Loading type={"spinningBubbles"} color="#333" height={'10%'} width={'10%'} />
+      </div>
+    )
+    }
+
+    
     </Container>
     )
 }

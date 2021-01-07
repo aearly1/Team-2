@@ -11,7 +11,9 @@ function DropDown(props)
     const array = props.array
     const items= array.map(elem=>
     {
-        return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+        return <DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
+        <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+        </DropdownButton>
     })
     return(
         <DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>

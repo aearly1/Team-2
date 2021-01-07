@@ -445,9 +445,9 @@ router.get("/leave-do-reqs", async (req, res) => {
                     requesto.requestType === "maternal leave" ||
                     requesto.requestType === "accidental leave" ||
                     requesto.requestType === "sick leave" ||
-                    requesto.requestType === "compenation leave" ||
+                    requesto.requestType === "compensation leave" ||
                     requesto.requestType === "change day off")){
-                        
+                        //relaventDocuments --> relevantLeaveDocuments
                         let reciever = await staffModel.findOne({_id: ObjectId(requesto.recieverID)})
                         let sender = await staffModel.findOne({_id: ObjectId(requesto.senderID)})
                         if(reciever && sender){
@@ -460,6 +460,7 @@ router.get("/leave-do-reqs", async (req, res) => {
                             }
                             if(requesto.requestReason){leavesOutputItem.requestReason =requesto.requestReason }
                             if(requesto.status){leavesOutputItem.status =requesto.status }
+                            if(requesto.replacementStaffName){leavesOutputItem.replacementStaffName = requesto.replacementStaffName}
                             if(requesto.rejectionReason){leavesOutputItem.rejectionReason =requesto.rejectionReason }
                             if(requesto.relaventDocuments){leavesOutputItem.relaventDocuments =requesto.relaventDocuments }
                             if(requesto.DesiredDayoff){leavesOutputItem.DesiredDayoff =requesto.DesiredDayoff }

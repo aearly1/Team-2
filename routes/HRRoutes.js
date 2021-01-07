@@ -1196,6 +1196,8 @@ router.post('/addAttendanceRecord',[
     const attendanceRecord = req.body.attendanceRecord;
     attendanceRecord[1].time = new Date(attendanceRecord[1].time)
     attendanceRecord[0].time = new Date(attendanceRecord[0].time)
+    attendanceRecord[0].time.setHours(attendanceRecord[0].time.getHours()+2)
+    attendanceRecord[1].time.setHours(attendanceRecord[1].time.getHours()+2)
     const timeSpent = (attendanceRecord[1].time.getTime()-attendanceRecord[0].time.getTime())/(60*1000);
     attendanceRecord[1].net = timeSpent
       await  staffModel.findOne({id:id},(err,staffMember)=>{
@@ -1310,7 +1312,7 @@ let users = result.filter(u =>{
         let mins = missingHours.Mins
         return missingDays.length>0||Math.sign(mins)==-1 || Math.sign(hours)==-1
 })
-users = users.map(user => user.id+" "+user.name)
+users = users.map(user => 'ID: '+ user.id+", Name :"+user.name)
 return res.send(users);
 
 }});
@@ -1380,7 +1382,7 @@ router.post('/viewSalary', [
             timeDeduction = Math.abs(hours*60+mins) *(baseSalary/(180*60))
         const deduction = timeDeduction+daysDeduction
         const salary = baseSalary-deduction
-        return res.send("salary: "+salary)   
+        return res.send(''+salary)   
     } 
 });
 });

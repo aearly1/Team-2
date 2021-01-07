@@ -244,10 +244,6 @@ the returend token in the header of the request to authenticate.
 Functionality: View "slot linking" request(s) from academic members linked to his/her course.
 Route: /api/coordinator/slotLinkingRequest
 Request type: GET
-Request Body:
-{
-"courseName":"CSEN701: Embedded Systems"
-}
 Response: Array of "slot linking" request objects sent from academic members linked to his/her course.
 Example:
 [
@@ -367,13 +363,16 @@ Request type: GET
 Response: Array containing JSON objects representing the slots.
 Example:
 [
-{
-"startTime": "2020-12-20T10:10:00.000Z",
-"endTime": "2020-12-20T10:11:30.000Z",
-"staffTeachingSlot": "Shaka",
-"slotLocation": "H14",
-"replacementStaff": "NA"
-}
+    {
+        "day": 5,
+        "slotNr": 1,
+        "startTime": "2020-12-20T10:10:00.000Z",
+        "endTime": "2020-12-20T10:11:30.000Z",
+        "courseTaughtInSlot": "CSEN701: Embedded Systems",
+        "staffTeachingSlot": "Shaka",
+        "slotLocation": "H14",
+        "replacementStaff": "NA"
+    }
 ]
 
 ---

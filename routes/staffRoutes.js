@@ -34,7 +34,9 @@ const missingdays = require('../functions/funcs').missingdays
             DayOff: staffMem.dayOff,
             annualLeaves: staffMem.annualLeaves,
             accidentalLeavesLeft: staffMem.accidentalLeavesLeft,
-            Salary: staffMem.Salary
+            Salary: staffMem.Salary,
+            Type: staffMem.type,
+            img: staffMem.imgLink
         }
         res.status(200).send(out);
     })
@@ -169,6 +171,7 @@ const missingdays = require('../functions/funcs').missingdays
             if(month > 12 || month <= 0)
             return res.status(401).send("Please enter a valid month")
             let max = new Date()
+            month--;
             max.setMonth(month,10)
             max.setHours(20)
             let min = new Date()

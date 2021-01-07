@@ -3,6 +3,18 @@ import {Form,Button,Container, Row, Col, DropdownButton,Dropdown} from 'react-bo
 
 function RequestsPage()
 {
+    const submitHandler=()=>{
+        /*if(value1!="Select timing of slot" && value2!="Select location of slot")
+        {
+            async function createSlots()
+            {
+                  await axios.post('http://localhost:5000/api/coordinator/addCourseSlot',{day:value3, slotNr:value1, slotLocation:value2},{headers:{'auth-token':token}}).then((res)=>{       
+                  }).catch(err=>alert(err));
+             }
+              createSlots();
+             window.location.reload(); 
+        }*/
+    }
     return (
         <Form>
         <Form.Row>
@@ -86,7 +98,7 @@ function RequestsPage()
             </Form.Group>
         </Form.Row>
 
-        <Button variant="primary" type="submit">
+        <Button onClick={submitHandler} variant="primary" type="submit">
             Submit
         </Button>
         </Form>);

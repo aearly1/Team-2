@@ -6,7 +6,7 @@ import useToken from '../general/useToken'
 import axios from 'axios';
 function ViewAttendance(props){
     const token = useToken().token
-
+    
 
   const renderTooltip1 = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -28,20 +28,31 @@ function ViewAttendance(props){
     const handleSubmit = (e1)=> {
         e1.preventDefault();
         if(btn == 1)
-        axios.post('http://localhost:5000/api/hr/viewAttendance',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
-        alert(res.data)    
-        }).catch(err=>alert(err))
+{        axios.post('http://localhost:5000/api/hr/viewAttendance',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
+        setAttendance(res.data)
+        setDays([])
+        setSalary('')
+    }).catch(err=>alert(err))
+       }
+
         if(btn == 2)
         axios.post('http://localhost:5000/api/hr/viewMissingDaysOrHours',{},{headers:{'auth-token':token}}).then((res)=>{
-        alert(res.data)    
-        }).catch(err=>alert(err))
+        setDays(res.data)    
+        setAttendance([])
+        setSalary('')    
+         }).catch(err=>alert(err))
         if(btn == 3)
         axios.post('http://localhost:5000/api/hr/viewSalary',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
-        alert(res.data)    
+        setSalary(res.data)    
+        setDays([])
+        setAttendance([])
         }).catch(err=>alert(err))
         }
            
             const [Id,setID]= useState('');
+            const [Attendance,setAttendance]= useState([]);
+            const [Days,setDays]= useState([]);
+            const [Salary,setSalary]= useState('');
  
             const changeID = (event) =>{
             setID(event.target.value)
@@ -62,7 +73,7 @@ function ViewAttendance(props){
             }
 
     return (
-   <form onSubmit={handleSubmit}>
+        <div>   <form onSubmit={handleSubmit}>
          <label>
           Staff Member ID:
           </label>
@@ -102,7 +113,35 @@ function ViewAttendance(props){
                     <Button variant="danger" type="submit"onClick={changeSalary}>View Salary  </Button>
                 </OverlayTrigger>
       </form>
-    )
+      <br/>
+      <label>
+          Attendance:
+          </label>
+        <br/>
+        <ul>
+            {Attendance.map((r)=>{
+                return <li style={{marginLeft:"10px"}}>{r.time.toLocaleString()+', '+r.op}</li>
+            })}
+        </ul>
+     <br/>
+      <label>
+          Staff Members with missing days or hours:
+          </label>
+        <br/>
+        <ul>
+            {Days.map((r)=>{
+                return <li style={{marginLeft:"10px"}}>{r}</li>
+            })}
+        </ul>
+        <br/>
+        <label>
+          Salary:
+          </label>
+          <p> {Salary}</p>
+        </div>
+
+
+)
 }
 /*
     check("office", "Staff member office must be a string").isString(),
