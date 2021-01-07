@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useHistory,Redirect } from 'react-router-dom';
 import ReactLoading from 'react-loading'
 import { usePromiseTracker,trackPromise } from "react-promise-tracker";
+import { FaYoutube } from 'react-icons/fa';
 async function handleLogout (token) { axios.post('http://localhost:5000/api/staffs/logout',{},
         {
             headers: {
@@ -19,9 +20,10 @@ async function handleLogout (token) { axios.post('http://localhost:5000/api/staf
             console.log("yep cock")
           })
         }
-export default function  Logout  ({setTokeypokey}) {
+export default function  Logout  ({setTokeypokey,setToken}) {
     const token = useToken().token
-    const history = useHistory()
+    const [isLoading, setIsLoading] = useState(true);
+   const history = useHistory()
     const Load = ({ type, color }) => (
         <ReactLoading type={type} color={color} height={667} width={375} />
     );
@@ -33,17 +35,24 @@ export default function  Logout  ({setTokeypokey}) {
             <Load type='balls' color='#0C0A4A' /></div>
          );  
          }
-       useEffect(async ()=>{
+       useEffect(()=>{
+        async function yep(){
+          await handleLogout(token)
+          await setTokeypokey();
+          await setToken(token)
+           setIsLoading(false)
+         history.push("/");
+        }
         try{
-            await handleLogout(token)
-            await setTokeypokey(false);
-            history.push("/");
+          
+            yep()
             }
             catch (er) {
                 alert(er.message);
+                setIsLoading(false)
               }
        })
         
 
-    return(<><LoadingIndicator/></>)
+    return(<>{isLoading?<LoadingIndicator/>:null}</>)
 }

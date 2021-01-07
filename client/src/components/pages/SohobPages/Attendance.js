@@ -2,6 +2,8 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Modal, Form, Button, Row, Col, Container, Alert,Card,CardDeck } from 'react-bootstrap'
 import useToken from '../general/useToken'
+import ReactLoading from 'react-loading'
+import { usePromiseTracker,trackPromise } from "react-promise-tracker";
 const Attendance = props => {
   const token = useToken().token
   const styles = {border:0,
@@ -29,9 +31,22 @@ const Attendance = props => {
   const [alert2, setAlert2] = useState(false);
   const [success1, setSuccess1] = useState(false);
   const [success2, setSuccess2] = useState(false);
+
+  const Load = ({ type, color }) => (
+    <ReactLoading type={type} color={color} height={667} width={375} />
+);
+const LoadingIndicator = props => {
+    const { promiseInProgress } = usePromiseTracker();
+      return (
+        promiseInProgress && 
+        <div style={{background: '5px groove rgba(0, 0, 0, 0.5)',position:'fixed'}}>
+        <Load type='balls' color='#0C0A4A' /></div>
+     );  
+     }
+
   useEffect(() => {
     if (selection == "All") {
-      axios.get('http://localhost:5000/api/staffs/attendance', {
+      trackPromise(axios.get('http://localhost:5000/api/staffs/attendance', {
         headers: {
           'auth-token': `${token}`
         }
@@ -41,10 +56,10 @@ const Attendance = props => {
       })
         .catch((error) => {
           console.error(error)
-        })
+        }))
     }
     else {
-      axios.get('http://localhost:5000/api/staffs/attendance' + '/' + selection, {
+      trackPromise(axios.get('http://localhost:5000/api/staffs/attendance' + '/' + selection, {
         headers: {
           'auth-token': `${token}`
         }
@@ -54,13 +69,13 @@ const Attendance = props => {
       })
         .catch((error) => {
           console.error(error)
-        })
+        }))
     }
   }, [selection])
 
   useEffect(() => {
 
-    axios.get('http://localhost:5000/api/staffs/missingdays', {
+    trackPromise(axios.get('http://localhost:5000/api/staffs/missingdays', {
       headers: {
         'auth-token': `${token}`
       }
@@ -70,13 +85,13 @@ const Attendance = props => {
     })
       .catch((error) => {
         console.error(error)
-      })
+      }))
 
-  }, [])
+  }, [attendance])
 
   useEffect(() => {
 
-    axios.get('http://localhost:5000/api/staffs/missinghours', {
+    trackPromise(axios.get('http://localhost:5000/api/staffs/missinghours', {
       headers: {
         'auth-token': `${token}`
       }
@@ -86,13 +101,13 @@ const Attendance = props => {
     })
       .catch((error) => {
         console.error(error)
-      })
+      }))
 
   }, [])
 
 
   const handleSignin = () => {
-    axios.post('http://localhost:5000/api/staffs/signin', {}, {
+    trackPromise(axios.post('http://localhost:5000/api/staffs/signin', {}, {
       headers: {
         'auth-token': `${token}`
       }
@@ -105,11 +120,11 @@ const Attendance = props => {
         console.error(error)
         console.log("dab")
         setAlert(true)
-      })
+      }))
   }
 
   const handleSignout = () => {
-    axios.post('http://localhost:5000/api/staffs/signout', {}, {
+    trackPromise(axios.post('http://localhost:5000/api/staffs/signout', {}, {
       headers: {
         'auth-token': `${token}`
       }
@@ -122,7 +137,7 @@ const Attendance = props => {
         console.error(error.response.data)
         console.log("dab")
         setAlert2(true)
-      })
+      }))
   }
   const alertfunc = () => {
 
@@ -254,6 +269,7 @@ const Attendance = props => {
             <option>12</option>
           </Form.Control>
         </Form.Group>
+        <LoadingIndicator/>
           <ul>
             {attendance.map(mapping)}
           </ul>
@@ -265,6 +281,7 @@ const Attendance = props => {
           <Modal.Title>Missing Days</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <LoadingIndicator/>
           <ul>
             {missingdays.map(d => <li style={{ margin: '25px' }}>{d.Day + "/" + d.Month}</li>)}
           </ul>
@@ -276,6 +293,7 @@ const Attendance = props => {
           <Modal.Title>Missing Hours</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <LoadingIndicator/>
           {missinghours ? <div>{missinghours.Hours + ":" + missinghours.Mins}</div> : null}
         </Modal.Body>
       </Modal>

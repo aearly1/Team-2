@@ -1,7 +1,7 @@
 import React, {Fragment,useState, useEffect} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {BrowserRouter as Router, Redirect, Route, Switch,useHistory } from 'react-router-dom';
 
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
@@ -45,8 +45,8 @@ function App (){
 
   const { token, setToken } = useToken();
   const [ tokeypokey, setTokeypokey ] = useState(false);
-
-  
+  const history = useHistory()
+  const killtokey = ()=> setTokeypokey(false)
   let style1 = { 
     padding:0,
     paddingTop:58,
@@ -96,7 +96,7 @@ function App (){
             <Route exact path = '/login' component ={Profile} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
-            <Route exact path = '/logout' component = {() => <Logout setTokeypokey={setTokeypokey} />} />
+            <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
             <Route component= {NotFound}/>
           </Switch>
         </Container>
