@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import React , {useState, useEffect} from 'react'
 import {Container,Alert, Button, Form, Dropdown, DropdownButton, Tooltip, OverlayTrigger } from 'react-bootstrap'
 import useToken from '../general/useToken';
@@ -203,4 +201,3 @@ function HODEditCourse(){
 }
 
 export default HODEditCourse
->>>>>>> cfe7918a4410611cc29f38396c9b1118367847c4

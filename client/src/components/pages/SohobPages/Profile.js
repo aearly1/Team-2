@@ -143,7 +143,7 @@ let style1 = {
                     </Row></div>
                 </Col>
                 {!edit?<Button variant="warning" show='false' onClick ={handleEdit}>Edit</Button>:
-                <div><Button variant="success" onClick={handleSubmit}>Save</Button><Button variant="warning" onClick ={handleEditc}>Cancel</Button></div>}
+                <div><Button variant="success" onClick={handleSubmit}>Save</Button><Button variant="danger" onClick ={handleEditc}>Cancel</Button></div>}
             </Row>
         </Container>
         </StaffCard>
