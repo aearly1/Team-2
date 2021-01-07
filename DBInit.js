@@ -204,6 +204,7 @@ router.route('/academic-coordinator')
         name: 'Shaka',
         gender:'Male',
         type: 'academic', // can either be HR or academic
+        subType:'TA',
         office: 'C3-203',
         dayOff: 'Tuesday',
         facultyName: 'MET', //null for HR
@@ -263,8 +264,6 @@ router.route('/academic-coordinator')
             newCourse._id},  { $push: { teachingAssistants: Coordinator._id}}, {new: true});
     await staffMembers.findOneAndUpdate({_id :
             HOD._id},  { $push: {  courses: newCourse._id}}, {new: true});
-    await staffMembers.findOneAndUpdate({_id :
-            TA._id},  { $push: {  courses: newCourse._id}}, {new: true});
     const loc = new location(
         {
             roomNr: 'H14',

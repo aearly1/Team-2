@@ -102,9 +102,7 @@ router.route('/theSlots')
         }
     })
 router.route('/slotLinkingRequest')
-    .get([
-        body('courseName').isString().withMessage("CourseName must be a string")
-    ],async(req,res)=>{
+    .get(async(req,res)=>{
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
          {
@@ -114,15 +112,24 @@ router.route('/slotLinkingRequest')
         const userID=req.user.objectId;
         const CourseName=req.body.courseName;
         let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-        let courseObject = await course.findOne({courseName:CourseName})//course of coordinator
-        if(courseObject==null)
+        const courseList = await course.find();
+
+        courseId=null;
+        if(courseList!=null)
+        for (const element of courseList) 
         {
-            res.status(404).send("Course doesn't exist")
+            if(element.coordinator.equals(userID))
+            {
+                courseId=element._id;break;
+            }
         }
-        if(!courseObject.coordinator.equals(userObject._id))
+        if(courseId==null)
         {
-            res.status(401).send("User is not the course coordinator of this course")
+            res.status(404).send("Not coordinator")
         }
+        else
+        {
+            const courseObject= await course.findOne({_id:courseId})
         const requetsRec = userObject.receivedRequests;
         let array=[];
         if(requetsRec!=null)
@@ -141,6 +148,7 @@ router.route('/slotLinkingRequest')
                 var requestDisplayed=
                 {
                     "request sent by": U.name, 
+                    "request sent to": userObject.name,
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
                     "Desired slot": desiredS,
@@ -151,6 +159,7 @@ router.route('/slotLinkingRequest')
              }
         }
         res.send(array);
+    }
     })
     router.route('/acceptRejectslotLinkingRequest')
     .post([

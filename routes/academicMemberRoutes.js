@@ -9,6 +9,169 @@ const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
+
+router.route('/unassignedslots')
+.get(async(req,res)=>
+{
+    var ObjectId = require('mongodb').ObjectId; 
+    const userID=req.user.objectId;
+    try{
+       const me= await staffMembers.findOne({_id:userID});
+       const myCourses=me.courses; 
+       console.log(myCourses)
+       const result=[];
+       if(myCourses!=null)
+       {
+        for (const element of myCourses) {
+            const theCourse= await course.findOne({_id:element});
+            const theSlots= theCourse.teachingSlots;
+            if(theSlots!=null)
+            for (const element2 of theSlots) {
+                const sloto = await slot.findOne({_id:element2});
+                console.log(sloto)
+                try{
+                    if(sloto.staffTeachingSlot!=null)
+                    {
+                        console.log("ZULU")
+                    }
+                    else
+                    {
+                        const info=
+                    {
+                        id: sloto._id,
+                        day: sloto.day,
+                        slotNr: sloto.slotNr,
+                        location: sloto.location,
+                        course: theCourse.courseName
+                    }
+                    result.push(info);
+                    }
+                }
+                catch(err)
+                {
+                    const info=
+                    {
+                        id: sloto._id,
+                        day: sloto.day,
+                        slotNr: sloto.slotNr,
+                        location: sloto.location,
+                        course: theCourse.courseName
+                    }
+                    result.push(info);
+                }
+            }
+        }
+       }  
+       res.send(result); 
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
+router.route('/mySlots')
+.get(async(req,res)=>
+{
+    var ObjectId = require('mongodb').ObjectId; 
+    const userID=req.user.objectId;
+    try{
+       const me= await staffMembers.findOne({_id:userID});
+       const mySlots=me.scheduleSlots; 
+       const result=[];
+       if(mySlots!=null)
+       {
+        for (const element of mySlots) {
+            const theSlot= await slot.findOne({_id:element});
+            var theDay="";
+            var slotNumero="";
+            if(theSlot.day==1)
+            {
+                theDay="Sataurday"
+            }
+            else if(theSlot.day==2)
+            {
+                theDay="Sunday"
+            }
+            else if(theSlot.day==3)
+            {
+                theDay="Monday"
+            }
+            else if(theSlot.day==4)
+            {
+                theDay="Tuesday"
+            }
+            else if(theSlot.day==5)
+            {
+                theDay="Wednesday"
+            }
+            else if(theSlot.day==6)
+            {
+                theDay="Thursday"
+            }
+            else if(theSlot.day==7)
+            {
+                theDay="Friday"
+            }
+            if(theSlot.slotNr==1)
+            {
+                slotNumero="1st"
+            }
+            else if(theSlot.slotNr==2)
+            {
+                slotNumero="2nd"
+            }
+            else if(theSlot.slotNr==3)
+            {
+                slotNumero="3rd"
+            }
+            else if(theSlot.slotNr==4)
+            {
+                slotNumero="4th"
+            }
+            else if(theSlot.slotNr==5)
+            {
+                slotNumero="5th"
+            }
+            const stringo= theDay + "-" + slotNumero + "-" + theSlot._id
+            result.push(stringo)
+        }
+       }  
+       res.send(result); 
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
+router.route('/peers')
+.get(async(req,res)=>
+{
+    var ObjectId = require('mongodb').ObjectId; 
+    const userID=req.user.objectId;
+    try{
+       const me= await staffMembers.findOne({_id:userID});
+       const subType=me.subType;
+       const myCourses=me.courses; 
+       console.log(myCourses)
+       const result=[];
+       if(myCourses!=null)
+       {
+        for (const element of myCourses) {
+            const theCourse= await course.findOne({_id:element});
+            const theStaff= subType=="TA"?theCourse.teachingAssistants: theCourse.instructors;
+            for (const element2 of theStaff) {
+                const peero = await staffMembers.findOne({_id:element2});
+                result.push(peero.name);
+            }
+        }
+       }  
+       res.send(result); 
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
 router.route('/location')
 .get(async(req,res)=>
 {
@@ -73,8 +236,7 @@ router.route('/schedule')
     .post([
         body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")],
         [body('sendingRequestTo').isString().withMessage("recieverID must be a string")
-          ], [body('dayForWhichINeedAReplacement').isString().withMessage("dateOfRequest must be a string")
-        ],async(req,res)=>
+          ],async(req,res)=>
     {
         const errors = validationResult(req);
          if (!errors.isEmpty()) 
@@ -86,7 +248,10 @@ router.route('/schedule')
         const senderID=req.user.objectId;
         const sendingRequestTo=req.body.sendingRequestTo;//get id of reciever from request body
         const slotID=req.body.slotID;
-        const dayForWhichINeedAReplacement=req.body.dayForWhichINeedAReplacement;
+        const day=req.body.day;
+        const month=req.body.month;
+        const theDate = new Date(2016, day, month);
+        console.log(theDate)
         try{
         //get sender object
         const senderObject= await staffMembers.findOne({_id:senderID});
@@ -130,6 +295,7 @@ router.route('/schedule')
                else{
                     //we are done with the verifications, we can create and send the request
                     //create request
+                    console.log("DFHHHHHH" +theDate)
                     const newRequest= new request(
                     {
                         senderID: senderID, //id of the staff member sending the request
@@ -137,8 +303,8 @@ router.route('/schedule')
                         requestType: "replacement", //the available request types are change day off OR slot linking OR leave OR replacement)
                         status: "pending", //the value of status can either be accepted or rejected or pending
                         replacementSlot: ObjectId(slotID),
-                        startOfLeave: dayForWhichINeedAReplacement,
-                        endOfLeave: dayForWhichINeedAReplacement
+                        startOfLeave: theDate,
+                        endOfLeave: theDate
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
@@ -164,7 +330,7 @@ router.route('/schedule')
                     "Type of request": "Replacement request",
                     "Status": "Pending",
                     "Slot to be replaced": slot,
-                    "Date of replacement": "2021-12-20T10:10:00.000Z"
+                    "Date of replacement": theDate.toString()
                    }
                    res.send(output);
                 }
@@ -202,18 +368,19 @@ router.route('/schedule')
                 const staff=await staffMembers.findOne({_id:sloty.staffTeachingSlot});
                    const S = 
                    {
-                    "startTime": sloty.startTime,
-                    "endTime": sloty.endTime,
-                    "course taught in slot": courseObject.courseName,
+                    "StartTime": sloty.startTime.toLocaleTimeString().substring(3),
+                    "EndTime": sloty.endTime.toLocaleTimeString().substring(3),
+                    "CourseTaughtInSlot": courseObject.courseName,
                     "staff member teaching slot": staff.name,
-                    "slotLocation": loc.roomNr
+                    "SlotLocation": loc.roomNr
                     }
                 var requestDisplayed=
                 {
-                    "request sent by": U.name, 
-                    "requestType": requestObject.requestType,
-                    "status": requestObject.status,
-                    "replacementSlot": S,
+                    "Sender": U.name, 
+                    "Reciever": userObject.name,
+                    "RequestType": requestObject.requestType,
+                    "Status": requestObject.status,
+                    "ReplacementSlot": S,
                 }
                 if(requestObject.requestType=="replacement")array.push(requestDisplayed);
             
@@ -390,12 +557,12 @@ router.route('/schedule')
           }
         const output=
         {
-            "Request sent by": user.name,
-            "Request sent to": reciever.name,
-            "requestType": "slot linking",
-            "status": "pending",
-            "replacementSlot": S,
+            "Sender": reciever.name,
+            "RequestType": "slot linking",
+            "Status": "pending",
+            "DesiredDayOff": S,
         }
+        console.log(output)
         res.send(output);
         }
         }
@@ -502,10 +669,6 @@ router.route('/schedule')
         body('leaveType').isString().withMessage("leaveType must be a string")
     ],[
         body('replacementStaff').isString().optional().withMessage("replacementStaff must be a string")
-    ],[
-        body('startOfLeave').isString().withMessage("startLeave must be a string")
-    ],[
-        body('endOfLeave').isString().withMessage("endLeave must be a string")
     ],async(req,res)=>
     {
         const errors = validationResult(req);
@@ -520,8 +683,12 @@ router.route('/schedule')
         const reason= req.body.reason;
         const leaveType= req.body.leaveType;
         const replacementStaff= req.body.replacementStaff;
-        const startLeave=req.body.startOfLeave;
-        const endLeave= req.body.endOfLeave;
+        const startMonth=req.body.startMonth;
+        const startDay=req.body.startDay;
+        const endMonth=req.body.endMonth;
+        const endDay=req.body.endDay;
+        const startLeave= new Date("2020", startMonth, startDay)
+        const endLeave= new Date("2020", endMonth, endDay)
 
         try
         {
