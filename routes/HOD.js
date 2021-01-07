@@ -280,6 +280,10 @@ router.get("/staff-crs",[
         let staffOutput = [];
         staff.forEach(staffMem => staffOutput.push({
             userCode: staffMem.id,
+<<<<<<< Updated upstream
+=======
+            subType: staffMem.subType,
+>>>>>>> Stashed changes
             email: staffMem.email,
             name: staffMem.name
         }))
@@ -574,14 +578,22 @@ router.get("/course-cov", [
 });
 //=========================================================================//
 
+<<<<<<< Updated upstream
 // @status  Untouched
+=======
+// @status  Done & Tested
+>>>>>>> Stashed changes
 // @route   GET api/hod/teaching-assignments
 // @input   courseId  
 // @desc    View teaching assignments (which staff members teach which slots) 
 //          of course offered by his department.
 // @access  Private
 router.get("/teaching-assignments",[
+<<<<<<< Updated upstream
     check("courseId", "Course Id incorrect <backend problem>").isLength(24)
+=======
+    check("courseName", "Course name needed")
+>>>>>>> Stashed changes
   ]
   ,  async (req, res) => {
     try {
@@ -642,6 +654,34 @@ router.get("/teaching-assignments",[
     }
 });
 
+<<<<<<< Updated upstream
+=======
+router.get("/courses", async (req, res) => {
+    try {
+        //Get the Logged in User's department
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+        //check if user is head of the department
+
+        if (depart.HOD_id.toString() == currentUser._id.toString()){
+            let coursesOutput = [];
+            depart.courses.forEach(async course =>{
+                crs = await courseModel.findOne({"_id": ObjectId(course)})
+                coursesOutput.push({coursename: crs.courseName})
+            }
+            )
+            res.status(200).json(coursesOutput)
+            }
+        else{
+            res.status(401).send("Unauthorized. User is not head of his department")
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+>>>>>>> Stashed changes
 
 
 module.exports = router;

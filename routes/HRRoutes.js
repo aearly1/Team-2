@@ -231,7 +231,12 @@ router.post('/deleteFaculty',[
     }
     await facultyModel.findOneAndDelete({facultyName:facultyName},(err, docs)=> { 
     if (err){ 
+<<<<<<< Updated upstream
         res.sendStatus(500).send(err) 
+=======
+        return res.sendStatus(500).send(err) 
+        return;
+>>>>>>> Stashed changes
     } 
     else{ 
         res.send("Removed faculty : "+ docs); 
@@ -381,9 +386,17 @@ router.post('/editDepartment',[
     if(newFaculty ==null)
     res.status(400).send("Incorrect Faculty name")
     if(oldFaculty ==null)
+<<<<<<< Updated upstream
     res.status(400).send("Incorrect Faculty name")
    if(department ==null)
     res.status(400).send("Incorrect department name")
+=======
+    {return res.status(400).send("Incorrect Faculty name")
+}
+    if(department ==null)
+    {return res.status(400).send("Incorrect department name")
+}
+>>>>>>> Stashed changes
     newFaculty.departments.push(department._id)
     oldFaculty.departments.filter(departmentId=>{
        return departmentId != department._id
@@ -543,9 +556,17 @@ router.post('/editCourse',[
     if(newDepartment ==null)
     res.status(400).send("Incorrect department name")
     if(oldDepartment ==null)
+<<<<<<< Updated upstream
     res.status(400).send("Incorrect department name")
    if(course ==null)
     res.status(400).send("Incorrect course name")
+=======
+    {return res.status(400).send("Incorrect department name")
+}
+    if(course ==null)
+    {return res.status(400).send("Incorrect course name")
+}
+>>>>>>> Stashed changes
     newDepartment.courses.push(course._id)
     oldDepartment.courses.filter(courseId=>{
        return courseId != course._id
@@ -752,7 +773,11 @@ router.post('/editStaffMember',[
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+<<<<<<< Updated upstream
         res.status(400).send("Error with arguments types");
+=======
+        return res.status(400).send("Error with arguments types");
+>>>>>>> Stashed changes
     }
 
     const id = req.body.id
@@ -763,7 +788,25 @@ router.post('/editStaffMember',[
     //const scheduleSlots = req.body.scheduleSlots
     // sentRequests: [mongoose.Types.ObjectId], //stores request models sent by this particular staff member
     // receivedRequests: [mongoose.Types.ObjectId], //stores request models submitted to this particular staff
+<<<<<<< Updated upstream
 if(id != null&&office !=null){
+=======
+    if(facultyName)
+    await facultyModel.findOne({facultyName:facultyName},async (error,results)=>{
+        if(error){
+            return res.status(400).send("Cannot find faculty") 
+        }
+    })
+    if(departmentName)
+    await departmentModel.findOne({departmentName:departmentName},async (error,results)=>{
+        if(error){
+            return res.status(400).send("Cannot find department") 
+        }
+    })
+
+
+    if(office !=null){
+>>>>>>> Stashed changes
    locationModel.findOne({roomNr:office},async (error,results)=>{
     if(error){
         res.status(500).send(error) 
@@ -945,10 +988,18 @@ router.post('viewAttendance'[
     
 const id = req.body.id
 staffModel.findOne({id:id},(err,staffMember)=>{
+<<<<<<< Updated upstream
 if(err)
 res.sendStatus(500)
 else{
     res.send(staffMember.attendance);
+=======
+if(err){
+return res.sendStatus(500)
+return;
+}else{
+    return res.send(staffMember.attendance);
+>>>>>>> Stashed changes
 }
 })
 })
