@@ -295,7 +295,6 @@ router.route('/schedule')
                else{
                     //we are done with the verifications, we can create and send the request
                     //create request
-                    console.log("DFHHHHHH" +theDate)
                     const newRequest= new request(
                     {
                         senderID: senderID, //id of the staff member sending the request
@@ -358,11 +357,12 @@ router.route('/schedule')
         }
         let array=[];
        if(userObject.receivedRequests!=null)
+       {
         for (const element of userObject.receivedRequests) {
             var requestObject= await request.findOne({_id:element});
+            if(requestObject.requestType=="replacement"){
                 var U = await staffMembers.findOne({_id: requestObject.senderID})
                 var sloty= await slot.findOne({_id: requestObject.replacementSlot})
-                console.log(requestObject.replacementSlot)
                 const courseObject=await course.findOne({_id:sloty.courseTaughtInSlot});
                 const loc=await location.findOne({_id:sloty.slotLocation});
                 const staff=await staffMembers.findOne({_id:sloty.staffTeachingSlot});
@@ -376,15 +376,18 @@ router.route('/schedule')
                     }
                 var requestDisplayed=
                 {
+                    "id": requestObject._id,
                     "Sender": U.name, 
                     "Reciever": userObject.name,
                     "RequestType": requestObject.requestType,
                     "Status": requestObject.status,
                     "ReplacementSlot": S,
                 }
-                if(requestObject.requestType=="replacement")array.push(requestDisplayed);
-            
+                array.push(requestDisplayed);
             }
+        }
+       }
+       console.log(array)
         res.send(array);
     })
     router.route('/acceptReplacementRequest')
@@ -410,28 +413,28 @@ router.route('/schedule')
         //check that user is not HR
         if(user.type=="HR")
         {
-        res.status(401).send("User is not an academic staff member")
+       // res.status(401).send("User is not an academic staff member")
         }
         if(newRequest==null)
         {
-            res.status(404).send("Request doesn't exist")
+            //res.status(404).send("Request doesn't exist")
         }
         if(!user || !newRequest.recieverID.equals(user._id))
         {
-            res.status(401).send("You cannot accept someone elses request");
+            //res.status(401).send("You cannot accept someone elses request");
         }
         if(newRequest.requestType!="replacement")
         {
-            res.status(401).send("This is not a replacement request in the first place")
+            //res.status(401).send("This is not a replacement request in the first place")
         }
         if(newRequest.status!="pending")
         {
-            res.status(401).send("You can only accept pending requests")
+            //res.status(401).send("You can only accept pending requests")
         }
         const d = new Date();
         if(d>newRequest.startOfLeave)
         {
-            res.status(401).send("The date inside the request has already passed. Cannot accept an outdated request.")
+            //res.status(401).send("The date inside the request has already passed. Cannot accept an outdated request.")
         }
         //passed all these checks then accept request
         try
@@ -465,23 +468,23 @@ router.route('/schedule')
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
         if(user.type=="HR")
         {
-        res.status(401).send("User is not an academic staff member")
+        //res.status(401).send("User is not an academic staff member")
         }
         if(newRequest==null)
         {
-            res.status(404).send("Request doesn't exist")
+            //res.status(404).send("Request doesn't exist")
         }
         if(!user || !newRequest.recieverID.equals(user._id))
         {
-            res.status(401).send("You cannot reject someone elses request");
+            //res.status(401).send("You cannot reject someone elses request");
         }
         if(newRequest.requestType!="replacement")
         {
-            res.status(401).send("This is not a replacement request in the first place")
+            //res.status(401).send("This is not a replacement request in the first place")
         }
         if(newRequest.status!="pending")
         {
-            res.status(401).send("You can only reject pending requests")
+            //res.status(401).send("You can only reject pending requests")
         }
         //passed all these checks then reject request
         try
@@ -562,7 +565,6 @@ router.route('/schedule')
             "Status": "pending",
             "DesiredDayOff": S,
         }
-        console.log(output)
         res.send(output);
         }
         }
@@ -797,10 +799,11 @@ router.route('/schedule')
             var U = await staffMembers.findOne({_id: requestObject.recieverID})
                 var requestDisplayed=
                 {
+                    "id":requestObject._id,
                     "request sent to": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
-                }
+                    "date": requestObject.startOfLeave                }
             array.push(requestDisplayed);
         }
         res.send(array);
@@ -831,10 +834,11 @@ router.route('/schedule')
                 var U = await staffMembers.findOne({_id: requestObject.recieverID})
                     var requestDisplayed=
                     {
-                        "request sent to": U.name, 
+                        "id":requestObject._id,
+                        "sender": U.name, 
                         "requestType": requestObject.requestType,
                         "status": requestObject.status,
-                    }
+                        "date": requestObject.startOfLeave                    }
                  if(requestObject.status=="accepted")
                  array.push(requestDisplayed);
                 }
@@ -866,10 +870,11 @@ router.route('/schedule')
             var U = await staffMembers.findOne({_id: requestObject.recieverID})
                 var requestDisplayed=
                 {
-                    "request sent to": U.name, 
+                    "id":requestObject._id,
+                    "sender": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
-                }
+                    "date": requestObject.startOfLeave                }
              if(requestObject.status=="rejected")
              array.push(requestDisplayed);
         }
@@ -899,11 +904,14 @@ router.route('/schedule')
          for (const element of requetsSent) {
             var requestObject= await request.findOne({_id:element});
             var U = await staffMembers.findOne({_id: requestObject.recieverID})
+            console.log(requestObject.startTime)
                 var requestDisplayed=
                 {
-                    "request sent to": U.name, 
+                    "id":requestObject._id,
+                    "sender": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
+                    "date": requestObject.startOfLeave
                 }
              if(requestObject.status=="pending")
              array.push(requestDisplayed);

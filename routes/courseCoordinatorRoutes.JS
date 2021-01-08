@@ -103,17 +103,9 @@ router.route('/theSlots')
     })
 router.route('/slotLinkingRequest')
     .get(async(req,res)=>{
-        const errors = validationResult(req);
-         if (!errors.isEmpty()) 
-         {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        var ObjectId = require('mongodb').ObjectId; 
         const userID=req.user.objectId;
-        const CourseName=req.body.courseName;
         let userObject = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
         const courseList = await course.find();
-
         courseId=null;
         if(courseList!=null)
         for (const element of courseList) 
@@ -123,15 +115,11 @@ router.route('/slotLinkingRequest')
                 courseId=element._id;break;
             }
         }
-        if(courseId==null)
-        {
-            res.status(404).send("Not coordinator")
-        }
-        else
-        {
-            const courseObject= await course.findOne({_id:courseId})
-        const requetsRec = userObject.receivedRequests;
         let array=[];
+        if(courseId!=null)
+        {
+        const courseObject= await course.findOne({_id:courseId})
+        const requetsRec = userObject.receivedRequests;
         if(requetsRec!=null)
          for (const element of requetsRec) {
              var requestObject= await request.findOne({_id:element});
@@ -140,24 +128,26 @@ router.route('/slotLinkingRequest')
                 var loc = await location.findOne({_id: sloty.slotLocation})
                 var desiredS=
                 {
-                    "startTime": sloty.startTime,
-                    "endTime": sloty.endTime,
+                    "startTime": sloty.startTime.toLocaleTimeString().substring(3),
+                    "endTime": sloty.endTime.toLocaleTimeString().substring(3),
                     "courseTaughtInSlot": courseObject.courseName,
                     "slotLocation": loc.roomNr
                 }
                 var requestDisplayed=
                 {
-                    "request sent by": U.name, 
-                    "request sent to": userObject.name,
-                    "requestType": requestObject.requestType,
-                    "status": requestObject.status,
-                    "Desired slot": desiredS,
+                    "id": requestObject._id,
+                    "Sender": U.name, 
+                    "Reciever": userObject.name,
+                    "RequestType": requestObject.requestType,
+                    "Status": requestObject.status,
+                    "DesiredSlot": desiredS,
                 }
              if(requestObject.requestType=="slot linking")
              {
                 array.push(requestDisplayed);
              }
         }
+        console.log(array)
         res.send(array);
     }
     })

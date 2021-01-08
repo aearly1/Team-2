@@ -452,14 +452,15 @@ router.get("/leave-do-reqs", async (req, res) => {
                         let sender = await staffModel.findOne({_id: ObjectId(requesto.senderID)})
                         if(reciever && sender){
                             let leavesOutputItem = {
-                                requestId : requesto._id, 
-                                reqSenderId : sender.id, 
-                                reqSenderName : sender.name,
-                                reqRecieverId : reciever.id,
-                                reqRecieverName : reciever.name,
+                                "id" : requesto._id, 
+                                "RequestType" :requesto.requestType,
+                                "reqSenderId" : sender.id, 
+                                "Sender" : sender.name,
+                                "reqRecieverId": reciever.id,
+                                "Reciever" : reciever.name,
                             }
                             if(requesto.requestReason){leavesOutputItem.requestReason =requesto.requestReason }
-                            if(requesto.status){leavesOutputItem.status =requesto.status }
+                            if(requesto.status){Status =requesto.status }
                             if(requesto.replacementStaffName){leavesOutputItem.replacementStaffName = requesto.replacementStaffName}
                             if(requesto.rejectionReason){leavesOutputItem.rejectionReason =requesto.rejectionReason }
                             if(requesto.relaventDocuments){leavesOutputItem.relaventDocuments =requesto.relaventDocuments }
@@ -470,23 +471,23 @@ router.get("/leave-do-reqs", async (req, res) => {
                             leavesOutput.push(leavesOutputItem)
                         }
                         else{
-                            res.status(400).send("Request's reciever or sender are unidentified")
+                            //res.status(400).send("Request's reciever or sender are unidentified")
                         }
                     }
                 }
                 else{
-                    res.status(400).send("Request with that ID not found")
+                   // res.status(400).send("Request with that ID not found")
                 }
             }
-            res.status(200).json(leavesOutput)
+            //res.status(200).json(leavesOutput)
 
         }
         else{
-            res.status(401).send("Unauthorized. User is not head of his department")
+            //res.status(401).send("Unauthorized. User is not head of his department")
         }
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server Error");
+        //res.status(500).send("Server Error");
     }
 });
 //=========================================================================//
