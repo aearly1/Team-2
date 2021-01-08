@@ -35,9 +35,9 @@ function RecievedRequestsTable()
         //loading changing day off/ leaves requests upon loading the page
         async function changingDayOff()
         {
-            await axios.get('http://localhost:5000/api/hod/leave-do-reqs',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('http://localhost:5000/api/academicMember/diabsrequests',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
-            setArr3( [...arr3, ...items]);
+            setArr3(items);
         }).catch(err=>alert(err))}
         await changingDayOff();
         }, []  )
@@ -75,7 +75,7 @@ function RecievedRequestsTable()
         <th>Accept/Reject</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody >
         {
             //inserting replacement request rows
             arr.map
@@ -142,7 +142,7 @@ function RecievedRequestsTable()
                         </div>)
                     }
                     var details = null;
-                    if(request.RequestType=="Change Day Off")
+                    if(request.RequestType=="change day off")
                     {
                         details=<ViewchangeDayOffDetailsModal Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} DesiredDayOff={request.DesiredDayOff} Reason={request.Reason}/>
                     }

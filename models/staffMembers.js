@@ -21,7 +21,8 @@ const staffSchema = new schema ({
     annualLeaves: Number,
     accidentalLeavesLeft: Number,
     Salary: Number,
-    firstLogin: Boolean
+    firstLogin: Boolean,
+    notifications:Array
 })
 
 module.exports = mongoose.model('Staff',staffSchema)

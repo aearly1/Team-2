@@ -21,7 +21,7 @@ function SentRequestsTable()
     const handleSelectStatus=()=>{
         async function select()
         {
-            if(value1=="View all requests")
+            if(value1=="View all sent requests")
             {
                 await axios.get('http://localhost:5000/api/academicMember/requestStatus',{headers:{'auth-token':token}}).then((res)=>{
                 let items=res.data;
@@ -59,6 +59,8 @@ function SentRequestsTable()
                 await axios.post('http://localhost:5000/api/academicMember/cancleRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             cancel();
+            window.location.reload();
+
     }
 
     return (
@@ -75,7 +77,7 @@ function SentRequestsTable()
             <Dropdown.Item eventKey={"View rejected requests"}>View rejected requests</Dropdown.Item>
             </DropdownButton>      
             </Col>
-            <Button onClick={handleSelectStatus} variant="success">Select</Button>{' '}
+            <Button onClick={handleSelectStatus} variant="primary">Select</Button>{' '}
             <Col>
             </Col>
         </Row>

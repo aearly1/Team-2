@@ -10,6 +10,59 @@ const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 
+router.route('/diabsrequests')
+.get(async(req,res)=>
+{
+    var ObjectId = require('mongodb').ObjectId; 
+    const userID=req.user.objectId;
+    try{
+       const me= await staffMembers.findOne({_id:userID});
+       const recRequests=me.receivedRequests; 
+       const result=[]
+       if(recRequests!=null)
+       for(const element of recRequests)
+       {
+            const aRequest= await request.findOne({_id: element});
+            const sender = await staffMembers.findOne({_id:aRequest.senderID})
+            if(aRequest.requestType=="change day off")
+            {
+                const request =
+                {
+                        id: aRequest._id,
+                        Sender: sender.name, //id of the staff member sending the request
+                        Reciever: me.name, //id of the staff member recieving the request
+                        RequestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
+                        DesiredDayOff:aRequest.DesiredDayOff,
+                        Status: aRequest.status, //the value of status can either be accepted or rejected or pending
+                        Reason: aRequest.requestReason
+                }
+                result.push(request)
+            }
+            else if(aRequest.requestType!="replacement" && aRequest.requestType!="slot linking")
+            {
+                const request=
+                {
+                    id: aRequest._id,
+                    Status: aRequest.status,
+                    Sender:sender.name,
+                    Reciever:me.name,
+                    RequestType:aRequest.requestType,
+                    ReplacementStaffName:aRequest.replacementStaffName, 
+                    RelaventLeaveDocuments:aRequest.relaventLeaveDocuments, 
+                    Reason:aRequest.requestReason,
+                    StartOfLeave:aRequest.startOfLeave,
+                    EndOfLeave:aRequest.endOfLeave
+                }
+                result.push(request)
+            }
+       }
+       res.send(result);
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
 router.route('/unassignedslots')
 .get(async(req,res)=>
 {
@@ -36,12 +89,13 @@ router.route('/unassignedslots')
                     }
                     else
                     {
+                        const LOCO= await location.findOne({_id: sloto.slotLocation})
                         const info=
                     {
                         id: sloto._id,
                         day: sloto.day,
                         slotNr: sloto.slotNr,
-                        location: sloto.location,
+                        location: LOCO.roomNr,
                         course: theCourse.courseName
                     }
                     result.push(info);
@@ -77,7 +131,7 @@ router.route('/mySlots')
     try{
        const me= await staffMembers.findOne({_id:userID});
        const mySlots=me.scheduleSlots; 
-       const result=[];
+       const result=["Choose..."];
        if(mySlots!=null)
        {
         for (const element of mySlots) {
@@ -153,7 +207,7 @@ router.route('/peers')
        const subType=me.subType;
        const myCourses=me.courses; 
        console.log(myCourses)
-       const result=[];
+       const result=["Choose..."];
        if(myCourses!=null)
        {
         for (const element of myCourses) {
@@ -165,6 +219,7 @@ router.route('/peers')
             }
         }
        }  
+       console.log(result)
        res.send(result); 
     }
     catch(err){
@@ -233,25 +288,21 @@ router.route('/schedule')
         }
     )
    router.route('/replacementRequest')
-    .post([
-        body('slotID').isString().isLength(24).withMessage("slotID must be a string of length 24")],
-        [body('sendingRequestTo').isString().withMessage("recieverID must be a string")
-          ],async(req,res)=>
+    .post(
+        async(req,res)=>
     {
-        const errors = validationResult(req);
-         if (!errors.isEmpty()) 
-         {
-            return res.status(400).json({ errors: errors.array() });
-        }
         var ObjectId = require('mongodb').ObjectId; 
 
         const senderID=req.user.objectId;
         const sendingRequestTo=req.body.sendingRequestTo;//get id of reciever from request body
-        const slotID=req.body.slotID;
+        var slotID=req.body.slotID;
         const day=req.body.day;
         const month=req.body.month;
         const theDate = new Date(2016, day, month);
-        console.log(theDate)
+        const temp=slotID.split("-")
+        slotID=temp[2];
+        console.log("ID!!!!!!!!!!!!!" + slotID)
+        
         try{
         //get sender object
         const senderObject= await staffMembers.findOne({_id:senderID});
@@ -307,7 +358,7 @@ router.route('/schedule')
                     }
                     );
                    await staffMembers.findOneAndUpdate({_id :
-                        senderID},  { $push: { courses: newRequest._id }}, {new: true});
+                        senderID},  { $push: { sentRequests: newRequest._id }}, {new: true});
                     await staffMembers.findOneAndUpdate({_id :
                         recieverObject._id},  { $push: { receivedRequests: newRequest._id }}, {new: true});
                 
@@ -331,6 +382,7 @@ router.route('/schedule')
                     "Slot to be replaced": slot,
                     "Date of replacement": theDate.toString()
                    }
+                   console.log(output)
                    res.send(output);
                 }
            }
@@ -406,7 +458,6 @@ router.route('/schedule')
         const requestID=req.body.requestID;// id of request that you want to accept
         //get user
         const user= await staffMembers.findOne({_id:userID});
-        console.log(user)
 
         //get request
         const newRequest= await request.findOne({_id:ObjectId(requestID)});
@@ -440,6 +491,8 @@ router.route('/schedule')
         try
         {
             await request.findOneAndUpdate({_id: requestID}, {status:"accepted"}, {new: true});
+            const message= user.name + " has accepted your " + newRequest.requestType + " request"
+            await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
             res.send("Accepted")
         }
         catch(err)
@@ -490,6 +543,8 @@ router.route('/schedule')
         try
         {
             await request.findOneAndUpdate({_id: requestID}, {status:"rejected"}, {new: true});
+            const message= user.name + " has rejected your " + newRequest.requestType + " request"
+            await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
             res.send("Rejected")
         }
         catch(err)
@@ -555,8 +610,8 @@ router.route('/schedule')
          {
           "startTime": sloty.startTime,
           "endTime": sloty.endTime,
-          "course taught in slot": slotCourse.courseName,
-          "slotLocation": loc.roomNr
+          "taughtBy": slotCourse.courseName,
+          "location": loc.roomNr
           }
         const output=
         {
@@ -606,10 +661,10 @@ router.route('/schedule')
         {
             res.status(404).send("user is not in a department. Thus, there is no HOD of department to send this request to")
         }
-        else if(desiredDayOff==null || (desiredDayOff!="SAT" && desiredDayOff!="SUN" && desiredDayOff!="MON" && desiredDayOff!="TUES" && desiredDayOff!="WED" && desiredDayOff!="THURS"))
+        /*else if(desiredDayOff==null || (desiredDayOff!="SAT" && desiredDayOff!="SUN" && desiredDayOff!="MON" && desiredDayOff!="TUES" && desiredDayOff!="WED" && desiredDayOff!="THURS"))
         {
             res.status(404).send("Not a valid day of the week")
-        }
+        }*/
         else
         {
             //get the object of the department
@@ -632,13 +687,13 @@ router.route('/schedule')
         else
         {
             newRequest = new request(
-                {
+            {
                     senderID: userID, //id of the staff member sending the request
                     recieverID: departmentObj.HOD_id, //id of the staff member recieving the request
                     requestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
                     DesiredDayOff:desiredDayOff,
                     status: "pending", //the value of status can either be accepted or rejected or pending
-                }
+            }
             );
         }
         newRequest.save();
@@ -651,9 +706,10 @@ router.route('/schedule')
             "Recieved by": HOD.name + " (HOD)",
             "requestType": "change day off",
             "status": "pending",
-            "DesiredDayOff": "SAT",
+            "DesiredDayOff": newRequest.desiredDayOff,
             "requestReason": newRequest.requestReason
         }
+        console.log(result)
         res.send(result);
     }
         }
@@ -705,10 +761,6 @@ router.route('/schedule')
             else if(departmentName==null)
             {
                 res.status(404).send("user is not in a department. Thus, there is no HOD of department to send this request to")
-            }
-            else if(leaveType!="annual leave" && leaveType!="accidental leave" && leaveType!="sick leave" && leaveType!="maternity leave" && leaveType!="compensation leave")
-            {
-                res.status(404).send("Invalid leave type")
             }
             else if(documents==null && (leaveType=="sick leave" || leaveType=="maternity leave"))
             {
@@ -800,7 +852,7 @@ router.route('/schedule')
                 var requestDisplayed=
                 {
                     "id":requestObject._id,
-                    "request sent to": U.name, 
+                    "sender": U.name, 
                     "requestType": requestObject.requestType,
                     "status": requestObject.status,
                     "date": requestObject.startOfLeave                }
@@ -899,6 +951,7 @@ router.route('/schedule')
             res.status(401).send("User is not an academic staff member")
         }
         const requetsSent = userObject.sentRequests;
+        console.log("SENTO MENTO: " + requetsSent)
         let array=[];
         if(requetsSent!=null)
          for (const element of requetsSent) {
@@ -983,5 +1036,26 @@ router.route('/schedule')
             console.log(err);
         }
     })
+    router.route('/notifications')
+    .get(async(req,res)=>
+    {
+        var ObjectId = require('mongodb').ObjectId; 
 
+        const userID=req.user.objectId;
+        try
+        {
+            let userObject = await staffMembers.findOne({_id:userID})
+        if(userObject.type=="HR")
+        {
+            res.status(401).send("User is not an academic staff member")
+        }
+        const notifications = userObject.notifications;
+        if(notifications==null)notifications=[];
+        res.send(notifications);
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    })
 module.exports=router;

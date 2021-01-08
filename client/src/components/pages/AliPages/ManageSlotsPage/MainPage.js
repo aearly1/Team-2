@@ -1,7 +1,7 @@
 import React , {useEffect, useState} from 'react'
 import useToken from 'client/src/components/pages/general/useToken'
 import axios from 'axios'
-import DropDown from "./DropDown"
+import RowComponent from './RowComponent'
 import {OverlayTrigger,Tooltip, Container, Col, Row, DropdownButton, Dropdown, Button, Table} from 'react-bootstrap'
 
 //slot page component
@@ -87,16 +87,7 @@ function Slot()
             updateSlots();
             window.location.reload(); 
     }
-      const deleteClick=(e)=>{
-        var index = e.target.id
-        async function deleteSlots()
-              {
-                    await axios.post('http://localhost:5000/api/coordinator/deleteCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
-                    }).catch(err=>alert(err));
-               }
-                deleteSlots();
-               window.location.reload(); 
-    }
+    
     return (<div>
         <h1>Manage Course Slots</h1>
         <br></br>
@@ -144,45 +135,7 @@ function Slot()
             {
               arr.map((elem,i)=>
                 {
-                return(
-                <tr>
-                <td>{elem.Day}</td>
-                <td>{elem.startTime.substring(3)}</td>
-                <td>{elem.endTime.substring(3)}</td>
-                <td><DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
-                     {elem.taughtBy.map(elem2=> {return <Dropdown.Item eventKey={elem2}>{elem2}</Dropdown.Item>})}
-                </DropdownButton></td>
-                <td><DropdownButton onSelect={handleSelect1} id="dropdown-basic-button" variant="warning"  drop={"down"} title={value1}>
-                {elem.location.map(elem2=> {return <Dropdown.Item eventKey={elem2}>{elem2}</Dropdown.Item>})}
-                </DropdownButton></td>
-                <td>
-                <>
-                <OverlayTrigger placement="bottom"
-                    overlay={
-                        <Tooltip id={`tooltip-${'bottom'}`}>
-                        By clicking this button, the slot location and the staff member teaching the slot will be updated wth the values selected in the drop down menus. If you want either of the two values to remain the same, do NOT select any of the options in the corresponding drop down menu.
-                        </Tooltip>
-                    }
-                    >
-                    <Button Button id={elem.id+"-"+i} onClick={updateClick} variant="info">Update</Button>
-                    </OverlayTrigger>
-                </>
-                </td>
-                <td>
-                <>
-                <OverlayTrigger placement="bottom"
-                    overlay={
-                        <Tooltip id={`tooltip-${'bottom'}`}>
-                        By clicking this button, the course slot will be deleted.
-                        </Tooltip>
-                    }
-                    >
-                    <Button id={elem.id} onClick={deleteClick} variant="danger">Delete</Button>
-                    </OverlayTrigger>
-                </>
-                </td>
-            
-                </tr>)
+                return <RowComponent id={elem.id} day= {elem.Day} startTime= {elem.startTime.substring(3)} endTime={elem.endTime.substring(3)} taughtBy={elem.taughtBy} location={elem.location}/>
                 })
             }
             </tbody>

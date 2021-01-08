@@ -403,27 +403,16 @@ router.route('/slotLinkingRequest')
         body('slotLocation').isString().optional().withMessage("slotLocation must be a string")
     ], async(req,res)=>
     {
-        const errors = validationResult(req);
-         if (!errors.isEmpty()) 
-         {
-            return res.status(400).json({ errors: errors.array() });
-        }
+
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.user.objectId;
-        const coursename=req.body.courseName;
         const slotID=req.body.slotID; 
         const STAFFTEACHINGSLOT=req.body.staffTeachingSlot;
         const SLOTLOCATION=req.body.slotLocation;
         try
         {
-            //get user
-            let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-            //console.log(user)
-            let courseObject = await course.findOne({courseName:coursename});//course of coordinator
-            //console.log(courseObject)
             let sloteObject = await slot.findOne({_id:ObjectId(slotID)});//course of coordinator
-            //console.log(sloteObject)
             var loc = null;
             if(SLOTLOCATION!=null)
             loc=await location.findOne({roomNr:SLOTLOCATION});
@@ -486,7 +475,7 @@ router.route('/slotLinkingRequest')
             await staffMembers.findOneAndUpdate({_id :
                 sloteObject.staffTeachingSlot}, {$pull: { teachingSlots: sloteObject._id}}, {new: true});
             var result=null;
-            if(STAFFTEACHINGSLOT=="Update staff member")
+            if(STAFFTEACHINGSLOT==null)
             {
                 result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {slotLocation:loc._id}, {new: true})
@@ -500,7 +489,7 @@ router.route('/slotLinkingRequest')
                     }
                     res.send(slotInfo);
             }
-            else if(SLOTLOCATION=="Update location")
+            else if(SLOTLOCATION==null)
             {
                  result=await slot.findOneAndUpdate({_id :
                     ObjectId(slotID)}, {staffTeachingSlot:staffToBeAssigned._id}, {new: true})

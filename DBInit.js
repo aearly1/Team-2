@@ -41,6 +41,7 @@ router.route('/courseInstructor')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 400,
         accidentalLeavesLeft: 2,
         Salary: 1000000,
@@ -65,6 +66,7 @@ router.route('/courseInstructor')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 12,
         accidentalLeavesLeft: 1,
         Salary: 12345,
@@ -89,6 +91,7 @@ router.route('/courseInstructor')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 12,
         accidentalLeavesLeft: 1,
         Salary: 12345,
@@ -190,6 +193,7 @@ router.route('/academic-coordinator')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 400,
         accidentalLeavesLeft: 2,
         Salary: 1000000,
@@ -214,6 +218,7 @@ router.route('/academic-coordinator')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 12,
         accidentalLeavesLeft: 1,
         Salary: 12345,
@@ -238,6 +243,7 @@ router.route('/academic-coordinator')
         scheduleSlots: [], //can be an array of slot models (nested models) //null in case of HR
         sentRequests: [], //stores request models sent by this particular staff member
         receivedRequests: [], //stores request models submitted to this particular staff
+        notifications: [],
         annualLeaves: 50,
         accidentalLeavesLeft: 50,
         Salary: 1,

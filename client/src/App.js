@@ -7,7 +7,7 @@ import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
 import AcademicSchedule from './components/pages/AliPages/SchedulesPage/academicSchedule'
 import SlotsPage from './components/pages/AliPages/ManageSlotsPage/MainPage'
-import Requests from './components/pages/AliPages/RequestsPage/MainPage'
+import Requests from './components/pages/AliPages/RequestPage/Main'
 import NotFound from './components/pages/general/NotFound';
 import Sidebar from './components/layout/SidebarMain';
 import HODEditCourse from './components/pages/DiabPages/HODAssignInstr';
@@ -40,7 +40,6 @@ import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
 import useToken from './components/pages/general/useToken'
 import Logout from './components/pages/general/Logout';
-import Request2 from './components/pages/AliPages/Repeat/Main'
 
 function App (){
 
@@ -98,7 +97,6 @@ function App (){
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
             <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
-            <Route exact path = '/request2' component ={Request2} />
             <Route component= {NotFound}/>
 
           </Switch>
