@@ -134,5 +134,26 @@ export const HRData = [
       icon: < FAIcons.FaUserCheck />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
+    },
+    {
+      title: 'Add Missing Attendance',
+      path: '/attendance',
+      icon: < FAIcons.FaUserCheck />,
+      iconClosed: < RiIcons.RiArrowDownSFill />,
+      iconOpened: < RiIcons.RiArrowUpSFill />,
+    },
+    {
+      title: 'Modify Salary',
+      path: '/attendance',
+      icon: < FAIcons.FaUserCheck />,
+      iconClosed: < RiIcons.RiArrowDownSFill />,
+      iconOpened: < RiIcons.RiArrowUpSFill />,
+    },
+    {
+      title: 'View Staff Info',
+      path: '/attendance',
+      icon: < FAIcons.FaUserCheck />,
+      iconClosed: < RiIcons.RiArrowDownSFill />,
+      iconOpened: < RiIcons.RiArrowUpSFill />,
     }
   ];

@@ -70,8 +70,8 @@ function SidebarMain({tokey}) {
   useEffect(()=>{
     async function doIt(){
     //GET THE Courses under department
-    await axios.get('http://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then((res)=>{
-        alert(JSON.stringify(res.data));
+    await axios.get('http://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then(
+      (res)=>{
         switch(res.data){
           case "hod": setSidebardata(HODData); break;
           case "ta":setSidebardata(TAData); break;
