@@ -7,7 +7,7 @@ import * as RiIcons from 'react-icons/ri'
 import * as MdIcons from 'react-icons/md'
 
 
-export const SidebarData = [
+export const HODData = [
     {
       title: 'Instructor Assignment',
       path: '/assign-instr',
@@ -21,7 +21,6 @@ export const SidebarData = [
       icon: <RiIcons.RiFolderUserFill />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
-  
       subNav: [
         {
           title: 'View all staff',
@@ -35,7 +34,6 @@ export const SidebarData = [
         }
       ]
     },
-    
     {
       title: 'Staff day offs',
       path: '#',

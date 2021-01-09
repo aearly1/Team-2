@@ -98,7 +98,6 @@ function App (){
             <Route exact path = '/attendance' component = {Attendance} />
             <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
             <Route component= {NotFound}/>
-
           </Switch>
         </Container>
         </>  

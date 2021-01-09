@@ -718,4 +718,49 @@ router.get("/courses", async (req, res) => {
 });
 
 
+router.get('/sidebarData',async(req,res)=>{        
+    try {
+        //Get the Logged in User & his department 
+        let userCode = req.user.id;
+        let currentUser = await staffModel.findOne({"id": userCode});
+        
+        if(currentUser.type == 'HR'){
+            res.send('HR')
+        }
+        else{
+            if(currentUser.subType==="instructor"){
+                let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+                if (depart.HOD_id.toString() == currentUser._id.toString()){
+                    res.send("hod")
+                }
+                else{
+                    res.send('instructor')
+                }
+            }
+            else if(currentUser.subType==="ta"){
+                let course = await courseModel.findOne({"coordinator": ObjectId(currentUser._id)});
+                if (course){
+                    res.send("coordinator")
+                }
+                else{
+                    res.send('ta');
+                }
+            }
+            else{
+                res.status(400).send('what are you?!')
+            }
+        }
+        
+        
+        
+        //check if user is head of the department
+        
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error : Server Error.");
+    }
+   
+})
+
+
 module.exports = router;

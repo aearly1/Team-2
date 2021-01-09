@@ -97,9 +97,11 @@ let style1 = {
                 <LoadingIndicator/>
             <StaffCard>
         <Container style={style1} fluid="">
-            <Row md={1}><div style={{ width: 450, height: 'auto', textAlign: 'center' }}>
-                <Image roundedCircle width="auto" height="180px" src={user.img}
-                /></div></Row>
+            <Row md={1}><div style={{ width: 450, height: 'auto', textAlign: 'center',paddingTop: 30 }}>
+                {(user.img)?(<Image roundedCircle width="auto" height="180px" src={user.img}
+                />):(<Image roundedCircle width="auto" height="180px" src='https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
+                />)}
+                </div></Row>
             <Row md={2}>
                 <Col xs={2} >
                     <Row md={8} >

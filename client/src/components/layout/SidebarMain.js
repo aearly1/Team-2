@@ -3,21 +3,16 @@ import styled from 'styled-components';
 import { Nav, Navbar} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import SubMenu from './SubMenu';
-import {SidebarData} from './SidebarData'
+import {HODData} from './data/HODData'
+import {HRData} from './data/HRData'
+import {InstrData} from './data/InstrData'
+import {TAData} from './data/TAData'
+import {CoordData} from './data/CoordData'
 import useToken from '../pages/general/useToken';
-import axios from 'axios';
-
+import axios from 'axios'
 import * as AiIcons from 'react-icons/ai'
 import * as FaIcons from 'react-icons/fa'
 import * as GoIcons from 'react-icons/go'
-
-// const Nav = styled.div`
-//     background: #15171c;
-//     height: 80px;
-//     display: flex;
-//     justify-content: flex-start;
-//     align-items: center;
-// `
 
 const Navig = styled.div`
   .navbar { background-color: #0C0A3E ;
@@ -70,8 +65,27 @@ const SidebarWrap = styled.div`
 function SidebarMain({tokey}) {
   const token = useToken().token
   const [sidebar, setSidebar] = useState(false);
+  const [sidebardata, setSidebardata] = useState([]);
   
-  
+  useEffect(()=>{
+    async function doIt(){
+    //GET THE Courses under department
+    await axios.get('http://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then((res)=>{
+        alert(JSON.stringify(res.data));
+        switch(res.data){
+          case "hod": setSidebardata(HODData); break;
+          case "ta":setSidebardata(TAData); break;
+          case "coordinator": setSidebardata(CoordData); break;
+          case "instructor":setSidebardata(InstrData); break;
+          case "HR":setSidebardata(HRData); break;
+          default: setSidebardata([]); break;
+        }
+    }).catch(err=>console.log(err.response.data))}
+    
+    if(token){doIt();}
+    }, []  )
+
+
 
   const showSidebar = () => setSidebar(!sidebar);
     return (
@@ -128,16 +142,19 @@ function SidebarMain({tokey}) {
             <NavIcon to='#'>
                 <AiIcons.AiOutlineClose style={{color:"gold",marginLeft:12, marginTop: 10}} onClick= {showSidebar}/>
             </NavIcon>
-            {SidebarData.map((item, index) => {
-              return <SubMenu item={item} key={index} />;
-            })}
-            
+            {
+            sidebardata.map(
+              (item, index) => {
+                return <SubMenu item={item} key={index} />;
+            }
+            )
+            }
             </SidebarWrap>
             </SidebarNav>
             )
             :
             (
-              <div> </div>
+              <></>
             )
             }
             
