@@ -5,9 +5,27 @@ import * as FiIcons from 'react-icons/fi'
 import * as BiIcons from 'react-icons/bi'
 import * as RiIcons from 'react-icons/ri'
 import * as MdIcons from 'react-icons/md'
+import * as BsIcons from 'react-icons/bs'
+import * as HiIcons from 'react-icons/hi'
 
 
 export const HODData = [
+  {
+  title: 'Schedule',
+  path: '/schedule',
+  icon: <BsIcons.BsCalendar />,
+  iconClosed: <RiIcons.RiArrowDownSFill />,
+  iconOpened: <RiIcons.RiArrowUpSFill />,
+  
+},
+{
+  title: 'Requests',
+  path: '/requests',
+  icon: <HiIcons.HiOutlineReceiptRefund />,
+  iconClosed: <RiIcons.RiArrowDownSFill />,
+  iconOpened: <RiIcons.RiArrowUpSFill />,
+ 
+},
     {
       title: 'Instructor Assignment',
       path: '/assign-instr',

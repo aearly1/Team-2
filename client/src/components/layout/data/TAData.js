@@ -1,132 +1,27 @@
 import React from 'react'
 
 import * as FAIcons from 'react-icons/fa'
-import * as FiIcons from 'react-icons/fi'
-import * as BiIcons from 'react-icons/bi'
 import * as RiIcons from 'react-icons/ri'
-import * as MdIcons from 'react-icons/md'
+import * as BsIcons from 'react-icons/bs'
+import * as HiIcons from 'react-icons/hi'
 
 
 export const TAData = [
     {
-      title: 'Faculty',
-      path: '#',
-      icon: <RiIcons.RiUserSharedFill />,
+      title: 'Schedule',
+      path: '/schedule',
+      icon: <BsIcons.BsCalendar />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
-      subNav: [
-        {
-          title: 'Thingy 1',
-          path: '/staff-do',
-          icon: <FiIcons.FiUsers />
-        },
-        {
-          title: 'Thingy 2',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        },
-        {
-          title: 'Thingy 3',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        }
-      ]
+      
     },
     {
-      title: 'Department',
-      path: '#',
-      icon: <RiIcons.RiFolderUserFill />,
+      title: 'Requests',
+      path: '/requests',
+      icon: <HiIcons.HiOutlineReceiptRefund />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
-      subNav: [
-        {
-          title: 'Thingy 1',
-          path: '/staff-do',
-          icon: <FiIcons.FiUsers />
-        },
-        {
-          title: 'Thingy 2',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        },
-        {
-          title: 'Thingy 3',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        }
-      ]
-    },
-    {
-      title: 'Location',
-      path: '#',
-      icon: <FAIcons.FaUserSlash />,
-      iconClosed: <RiIcons.RiArrowDownSFill />,
-      iconOpened: <RiIcons.RiArrowUpSFill />,
-      subNav: [
-        {
-          title: 'Thingy 1',
-          path: '/staff-do',
-          icon: <FiIcons.FiUsers />
-        },
-        {
-          title: 'Thingy 2',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        },
-        {
-          title: 'Thingy 3',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        }
-      ]
-    },
-    {
-      title: 'Course',
-      path: '#',
-      icon: <MdIcons.MdAssignmentTurnedIn />,
-      iconClosed: <RiIcons.RiArrowDownSFill />,
-      iconOpened: <RiIcons.RiArrowUpSFill />,
-      subNav: [
-        {
-          title: 'Thingy 1',
-          path: '/staff-do',
-          icon: <FiIcons.FiUsers />
-        },
-        {
-          title: 'Thingy 2',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        },
-        {
-          title: 'Thingy 3',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        }
-      ]
-    },
-    {
-      title: 'Staff Members',
-      path: '#',
-      icon: <FAIcons.FaChalkboardTeacher />,
-      iconClosed: <RiIcons.RiArrowDownSFill />,
-      iconOpened: <RiIcons.RiArrowUpSFill />,
-      subNav: [
-        {
-          title: 'Thingy 1',
-          path: '/staff-do',
-          icon: <FiIcons.FiUsers />
-        },
-        {
-          title: 'Thingy 2',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        },
-        {
-          title: 'Thingy 3',
-          path: '/staff-dos',
-          icon: <BiIcons.BiMale/>
-        }
-      ]
+     
     },
     {
       title: 'Attendance',

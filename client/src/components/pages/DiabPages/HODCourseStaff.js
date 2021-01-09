@@ -55,7 +55,7 @@ function HODCourseStaff() {
 
   return (
       <Container fluid >
-      <h1>  Select a course to view its staff members:</h1>
+      <h1>Select a course to view its staff members:</h1>
       <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
       <DropdownButton variant="warning" onSelect={handleChange} id="dropdown-basic-button" title={(value1==="")?"Select Member":value1}>
           {(!loading1)?(

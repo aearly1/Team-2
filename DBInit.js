@@ -575,7 +575,10 @@ router.get('/hod-init', async (req,res)=>{
         ahmed1 = await staffMembers.findOne({"name": "Ahmed Hesham"})
         let course1 = new course({
             courseName: "CSEN 701 - Embedded Systems",
-            teachingAssistants : [ObjectId(ahmed1._id)]  });
+            teachingAssistants : [ObjectId(ahmed1._id)]  ,
+            coordinator : ObjectId(ahmed1._id)
+        }
+        );
         await course1.save();
         
         //MAKE A DEPARTMENT
