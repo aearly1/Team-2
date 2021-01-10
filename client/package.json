@@ -19,6 +19,7 @@
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",
+    "react-inputs-validation": "^4.6.2",
     "react-loading": "^2.0.3",
     "react-promise-tracker": "^2.1.0",
     "react-router": "^5.2.0",

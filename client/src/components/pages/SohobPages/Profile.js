@@ -150,7 +150,7 @@ let style1 = {
                     Salary: {user.Salary}
                         </Row>:<div>
                         <Row style={{ margin: '25px' }}>
-                        Salary: <input onChange={e=>setSalary(e.target.value)} placeholder="Enter new Salary"></input>
+                        Salary: <input type="number" onChange={e=>setSalary(e.target.value)} placeholder="Enter new Salary"></input>
                         </Row></div>}
                     <Row style={{ margin: '25px' }}>
                         <Button variant="warning" onClick={handleShow}>View Courses</Button>

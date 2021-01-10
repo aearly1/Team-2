@@ -5,6 +5,7 @@ import Background from '../SohobPages/guc_cairo_campus2.jpg'
 import PropTypes from 'prop-types';
 import styles from '../SohobPages/Sohob'
 import {Redirect,useHistory} from 'react-router-dom'
+import { Textbox } from 'react-inputs-validation';
 async function loginUser(credentials) {
     return fetch('http://localhost:5000/api/login', {
       method: 'POST',
@@ -14,6 +15,7 @@ async function loginUser(credentials) {
       body: JSON.stringify(credentials)
     })
       .then(data => data.json())
+      .catch(err=> alert("The email/password combination you entered was incorrect"))
    }
 
 export default function Login ({setToken, setTokeypokey})  {
@@ -29,7 +31,7 @@ export default function Login ({setToken, setTokeypokey})  {
         history.push("/profile");
         }
         catch (er) {
-            alert(er.message);
+           // alert(er.message);
           }
       }
     return (
