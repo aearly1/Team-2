@@ -1284,7 +1284,7 @@ return;
     if(staffMember)
     return res.send(staffMember.attendance);
     else
-    return res.status(500).send("Staff Member does not exist")
+    return res.status(400).send("Staff Member does not exist")
 }
 })
 })

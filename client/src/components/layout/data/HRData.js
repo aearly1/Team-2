@@ -11,23 +11,23 @@ export const HRData = [
     {
       title: 'Faculty',
       path: '#',
-      icon: <RiIcons.RiUserSharedFill />,
+      icon: <RiIcons.RiFolderUserFill/>,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
-          title: 'Thingy 1',
-          path: '/staff-do',
+          title: 'Add Faculty',
+          path: '/AddFaculty',
           icon: <FiIcons.FiUsers />
         },
         {
-          title: 'Thingy 2',
-          path: '/staff-dos',
+          title: 'Update Faculty',
+          path: '/EditFaculty',
           icon: <BiIcons.BiMale/>
         },
         {
-          title: 'Thingy 3',
-          path: '/staff-dos',
+          title: 'Delete Faculty',
+          path: '/DeleteFaculty',
           icon: <BiIcons.BiMale/>
         }
       ]
@@ -40,18 +40,18 @@ export const HRData = [
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
-          title: 'Thingy 1',
-          path: '/staff-do',
+          title: 'Add Department',
+          path: '/AddDepartment',
           icon: <FiIcons.FiUsers />
         },
         {
-          title: 'Thingy 2',
-          path: '/staff-dos',
+          title: 'Update Department',
+          path: '/EditDepartment',
           icon: <BiIcons.BiMale/>
         },
         {
-          title: 'Thingy 3',
-          path: '/staff-dos',
+          title: 'Delete Faculty',
+          path: '/DeleteFaculty',
           icon: <BiIcons.BiMale/>
         }
       ]
@@ -64,18 +64,18 @@ export const HRData = [
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
-          title: 'Thingy 1',
-          path: '/staff-do',
+          title: 'Add Location',
+          path: '/AddLocation',
           icon: <FiIcons.FiUsers />
         },
         {
-          title: 'Thingy 2',
-          path: '/staff-dos',
+          title: 'Update Location',
+          path: '/EditLocation',
           icon: <BiIcons.BiMale/>
         },
         {
-          title: 'Thingy 3',
-          path: '/staff-dos',
+          title: 'Delete Location',
+          path: '/DeleteLocation',
           icon: <BiIcons.BiMale/>
         }
       ]
@@ -88,18 +88,18 @@ export const HRData = [
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
-          title: 'Thingy 1',
-          path: '/staff-do',
+          title: 'Add Course',
+          path: '/AddCourse',
           icon: <FiIcons.FiUsers />
         },
         {
-          title: 'Thingy 2',
-          path: '/staff-dos',
+          title: 'Update Course',
+          path: '/EditCourse',
           icon: <BiIcons.BiMale/>
         },
         {
-          title: 'Thingy 3',
-          path: '/staff-dos',
+          title: 'Delete Course',
+          path: '/DeleteCourse',
           icon: <BiIcons.BiMale/>
         }
       ]
@@ -112,18 +112,18 @@ export const HRData = [
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
-          title: 'Thingy 1',
-          path: '/staff-do',
+          title: 'Add Staff Members',
+          path: '/HRAddStaff',
           icon: <FiIcons.FiUsers />
         },
         {
-          title: 'Thingy 2',
-          path: '/staff-dos',
+          title: 'Update Staff Members',
+          path: '/HREditStaff',
           icon: <BiIcons.BiMale/>
         },
         {
-          title: 'Thingy 3',
-          path: '/staff-dos',
+          title: 'Delete Staff Members',
+          path: '/HRDeleteStaff',
           icon: <BiIcons.BiMale/>
         }
       ]
@@ -137,21 +137,21 @@ export const HRData = [
     },
     {
       title: 'Add Missing Attendance',
-      path: '/attendance',
+      path: '/AddMissingAttendance',
       icon: < FAIcons.FaUserCheck />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'Modify Salary',
-      path: '/attendance',
+      path: '/ModifySalary',
       icon: < FAIcons.FaUserCheck />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'View Staff Info',
-      path: '/attendance',
+      path: '/ViewStaffProps',
       icon: < FAIcons.FaUserCheck />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,

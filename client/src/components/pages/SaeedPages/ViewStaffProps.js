@@ -77,7 +77,7 @@ function ViewAttendance(props){
          <label>
           Staff Member ID:
           </label>
-          <input required type="text" class="form-control" value={Id} onChange={changeID} />
+          <input type="text" class="form-control" value={Id} onChange={changeID} />
         
         <br/>
 
