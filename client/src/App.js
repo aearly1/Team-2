@@ -2,6 +2,13 @@ import React, {Fragment,useState, useEffect} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter as Router, Redirect, Route, Switch,useHistory } from 'react-router-dom';
+import axios from 'axios'
+
+import {HODData} from './components/layout/data/HODData'
+import {HRData} from './components/layout/data/HRData'
+import {InstrData} from './components/layout/data/InstrData'
+import {TAData} from './components/layout/data/TAData'
+import {CoordData} from './components/layout/data/CoordData'
 
 import About from './components/pages/general/About';
 import Login from './components/pages/general/Login';
@@ -42,9 +49,38 @@ import useToken from './components/pages/general/useToken'
 import Logout from './components/pages/general/Logout';
 
 function App (){
-
   const { token, setToken } = useToken();
   const [ tokeypokey, setTokeypokey ] = useState(false);
+  const [sidebardata, setSidebardata] = useState([]);
+
+  useEffect(async ()=>{
+    async function yuck(){
+      await axios.get('http://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then(
+        (res)=>{
+          if(res.data ==='hod'){
+            setSidebardata(HODData)
+          }
+          else if(res.data ==='ta'){
+            setSidebardata(TAData)
+          }
+          else if(res.data ==='coordinator'){
+            setSidebardata(CoordData)
+          }
+          else if(res.data ==='instructor'){
+            setSidebardata(InstrData)
+          }
+          else if(res.data ==='HR'){
+            setSidebardata(HRData)
+          }
+        }
+      ).catch(err=>console.log(err.response.data))
+    }
+    await yuck();
+    
+  },[token,tokeypokey])
+
+
+
   const history = useHistory()
   const killtokey = ()=> setTokeypokey(false)
   let style1 = { 
@@ -57,7 +93,7 @@ function App (){
   return (
     <Router>
      <Fragment>
-     <Sidebar tokey={tokeypokey} />
+     <Sidebar tokey={tokeypokey} sidebardata= {sidebardata} tokenn={token}/>
        {
         token?(
         <>

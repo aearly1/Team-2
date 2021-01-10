@@ -3,17 +3,10 @@ import styled from 'styled-components';
 import { Nav, Navbar} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import SubMenu from './SubMenu';
-import {HODData} from './data/HODData'
-import {HRData} from './data/HRData'
-import {InstrData} from './data/InstrData'
-import {TAData} from './data/TAData'
-import {CoordData} from './data/CoordData'
-import useToken from '../pages/general/useToken';
 import axios from 'axios'
 import * as AiIcons from 'react-icons/ai'
 import * as FaIcons from 'react-icons/fa'
 import * as GoIcons from 'react-icons/go'
-
 const Navig = styled.div`
   .navbar { background-color: #0C0A3E ;
     position: fixed;
@@ -62,44 +55,23 @@ const SidebarWrap = styled.div`
 `;
 
 
-function SidebarMain({tokey}) {
-  const token = useToken().token
+function SidebarMain({tokey ,sidebardata,tokenn}) {
   const [sidebar, setSidebar] = useState(false);
-  const [sidebardata, setSidebardata] = useState([]);
-  
-  useEffect(()=>{
-    async function doIt(){
-    //GET THE Courses under department
-    await axios.get('http://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then(
-      (res)=>{
-        switch(res.data){
-          case "hod": setSidebardata(HODData); break;
-          case "ta":setSidebardata(TAData); break;
-          case "coordinator": setSidebardata(CoordData); break;
-          case "instructor":setSidebardata(InstrData); break;
-          case "HR":setSidebardata(HRData); break;
-          default: setSidebardata([]); break;
-        }
-    }).catch(err=>console.log(err.response.data))}
-    
-    if(token){doIt();}
-    }, []  )
-
-
+  const [vari, setVari] = useState(0);
 
   const showSidebar = () => setSidebar(!sidebar);
     return (
         <>
         <Navig>
             <Navbar>
-            {(tokey||token)?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
+            {(tokey||tokenn)?(<NavIcon style = {{textDecoration:"none", color: "gold"}} className ="pr-5" to='#'>
                 <i  class="fas fa-bars" onClick={showSidebar} />
             </NavIcon>):(<div></div>)}
             <Navbar.Brand  href="/"> Team 2 University System</Navbar.Brand> 
             
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ml-auto">
-            {(tokey||token)?
+            {(tokey||tokenn)?
                 (<>
                
                 <Nav.Item >
@@ -135,19 +107,20 @@ function SidebarMain({tokey}) {
             
             </Navbar>
         </Navig>
-        {(tokey||token)?(
+        {(tokey||tokenn)?(
         <SidebarNav sidebar={sidebar} >
             <SidebarWrap>
             
             <NavIcon to='#'>
                 <AiIcons.AiOutlineClose style={{color:"gold",marginLeft:12, marginTop: 10}} onClick= {showSidebar}/>
             </NavIcon>
-            {
+            { (sidebardata)?(
             sidebardata.map(
               (item, index) => {
                 return <SubMenu item={item} key={index} />;
             }
-            )
+            ))
+            :(<></>)
             }
             </SidebarWrap>
             </SidebarNav>
