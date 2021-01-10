@@ -690,5 +690,27 @@ router.route("/assign-academic/:course")
             res.status(500).send("Server Error");
     }
     });
+
+
+ router.get("/courses", async (req, res) => {
+        try {
+            //Get the Logged in User's department
+            let userCode = req.user.id;
+            let currentUser = await staffModel.findOne({"id": userCode});
+            let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+          
+                let coursesOutput = [];
+                for(let i=0;i<depart.courses.length;i++){
+                    crs = await courseModel.findOne({"_id": ObjectId(depart.courses[i])})
+                    coursesOutput.push({courseName: crs.courseName})
+                //}
+                res.status(200).json(coursesOutput)
+                }
+    
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send("Server Error");
+        }
+    });
 //.catch((err)=>{console.log(err)})
 module.exports=router;

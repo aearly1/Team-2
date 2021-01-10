@@ -42,12 +42,13 @@ import HRAddStaff from './components/pages/SaeedPages/Staff/HRAddStaff'
 import HREditStaff from './components/pages/SaeedPages/Staff/HREditStaff'
 import HRDeleteStaff from './components/pages/SaeedPages/Staff/HRDeleteStaff'
 import HODTeachAssignments from './components/pages/DiabPages/HODTeachAssignments';
+import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage'
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
 import useToken from './components/pages/general/useToken'
 import Logout from './components/pages/general/Logout';
-
+/Users/mayarmoawad/Documents/GitHub/Team-2/client/src/components/pages/MayarPages/InstructorCourseCoverage.js
 function App (){
   const { token, setToken } = useToken();
   const [ tokeypokey, setTokeypokey ] = useState(false);
@@ -133,6 +134,8 @@ function App (){
             <Route exact path = '/login' component ={Profile} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
+            <Route exact path = '/inst-cov' component = {InstructorCourseCoverage} />
+
             <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
             <Route component= {NotFound}/>
           </Switch>
