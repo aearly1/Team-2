@@ -60,7 +60,7 @@ backgroundColor:"#0C0A4A" ,height:'800px'}}>
 </Container>
 </div>*/
        <div  style={{padding:'100px',marginTop:"0px",background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
-        backgroundColor:"#0C0A4A" ,height:'800px'}}>
+        backgroundColor:"#0C0A4A" ,height:'100%'}}>
        <Container  style={{backgroundImage: `url(${Background})`,backgroundSize: 'cover',overflow:'hidden',backgroundPosition:'center', padding:'100px' ,backgroundRepeat:'false'}} >
             <div style={{padding:"10px", outline: '20px', margin: '0px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
                 <br/>

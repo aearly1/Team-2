@@ -87,7 +87,8 @@ function App (){
     padding:0,
     paddingTop:58,
     paddingBottom:0,
-    marginBottom:0
+    marginBottom:0,
+    height: '100%'
   }
   let style2 = {paddingTop:90}
   return (
@@ -140,7 +141,7 @@ function App (){
         )
         :
         (
-        <>
+        <div style={{height:"100vh"}}>
         <Container fluid style={style1}>
           <Switch>
             <Route exact path = '/about' component = {About} />
@@ -149,7 +150,7 @@ function App (){
             <Route component= {NotFound}/>
           </Switch>
         </Container>
-        </>
+        </div>
         ) 
        }  
         
