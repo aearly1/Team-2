@@ -29,7 +29,7 @@ function InstructorCourseCoverage() {
      const handleSelect1= async (e)=>{
       setLoading2(true)
       setValue1(e);
-      let url ='http://localhost:5000/api/instructor/view-course-coverage'+courseName 
+      let url ='http://localhost:5000/api/instructor/view-course-coverage'+'/'+value1 
       await axios.post(url,{courseName:e},{headers:{'auth-token':token}}).then((res)=>{
         setLoading2(false);  
         setStr(res.data); 

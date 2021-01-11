@@ -48,7 +48,6 @@ import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
 import useToken from './components/pages/general/useToken'
 import Logout from './components/pages/general/Logout';
-/Users/mayarmoawad/Documents/GitHub/Team-2/client/src/components/pages/MayarPages/InstructorCourseCoverage.js
 function App (){
   const { token, setToken } = useToken();
   const [ tokeypokey, setTokeypokey ] = useState(false);
