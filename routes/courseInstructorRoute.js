@@ -43,133 +43,17 @@ router.route("/view-slot-assign-course/:id",auth,[check ("id").isNumeric()])
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
-        if(myCourse==null)
-        {
-            res.status(404).send("Course not found!")
-        }
-        else
-        {    
-            const instructorId=req.user.id;
-            const instructor= await staffMembers.findOne({id:instructorId});
-            const intructorsList = myCourse.instructors;
-            var found=false;
-            if(intructorsList!=null)
-            {
-                for (const element of intructorsList)
-                {
-                    if(element.equals(instructor._id))
-                    {
-                        found=true;
-                    }
-                }
-            }
-            if(!found)
-            {
-                res.status(401).send("User is not an instructor or is not an instructor of that course")
-            }
-            else
-            {
-                const slots=myCourse.teachingSlots;                
-                const schedule=[];
-                for (const element of slots)
-                {
-                    const sloty= await slot.findOne({_id:element});
-                    console.log(sloty)
-                    const staff =await staffMembers.findOne({_id:sloty.staffTeachingSlot});
-                    const slotOutput=
-                    {
-                        "startTime": sloty.startTime, //start time of slot
-                        "endTime": sloty.endTime, //what course will be taught in the slot 
-                        "staff assigned to course": staff==null?"Slot not assigned yet":staff.name// null if this slot is still not assigned to anyon
-                    }
-                    schedule.push(slotOutput);
-                }
-                res.send(schedule);
-            }
-       
+        if(staffModel.findById(req.params.id).courses==null){ //HR
+            return res.send("No slots are assigned");
+       }else{
+        const user= await  staffModel.findById(req.params.id) ;
+        res.json(user.slots);
         }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
 });
-
-
-//View Unassigned slots per course
-router.route("/unassigned/:course")
-.get( async (req, res) => {
-    var ObjectId = require('mongodb').ObjectId; 
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })}
-    try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
-        if(myCourse==null)
-        {
-            res.status(404).send("Course not found!")
-        }
-        else
-        {   const unassignedslotsarray =[]
-            const teachingSlots = myCourse.teachingSlots;
-           
-                for (const element of teachingSlots)
-                {
-                    if(element.staffTeachingSlot.equals(null))
-                    {
-                        unassignedslotsarray.push(element )
-                    }
-                 }
-                 res.send(unassignedslotsarray)
-           } 
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Server Error");
-    }
-});
-
-
-
-//View assigned slots per course
-router.route("/assignedslots/:course")
-.get( async (req, res) => {
-    var ObjectId = require('mongodb').ObjectId; 
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })}
-    try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
-        if(myCourse==null)
-        {
-            res.status(404).send("Course not found!")
-        }
-        else
-        {   const assignedslotsarray =[]
-            const teachingSlots = myCourse.teachingSlots;
-           
-                for (const element of teachingSlots)
-                {
-                    if(!element.staffTeachingSlot.equals(null))
-                    {
-                        assignedslotsarray.push(element )
-                    }
-                 }
-                 res.send(assignedslotsarray)
-           } 
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Server Error");
-    }
-});
-
-
-
-
-
-
-
 
 //View all the staff per course along with their profiles.
 
@@ -209,35 +93,16 @@ router.route("/view-staf-dep/:id",auth,
     const currentdepartement =user.departmentName ;
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
-        try {
-            const instructorId=req.user.id;
-            const instructor= await staffMembers.findOne({id:instructorId});
-            if(instructor.subType==null)
-            {
-                res.status(404).send("Course not found!")
-            }
-            else
-            {
-                const ppl=await staffMembers.find({departmentName:instructor.departmentName});   
-                const profiles=[];
-                for (const element of ppl)
-                {
-                    const staff= await staffMembers.findOne({_id:element});
-                    const singleProfile=
-                    {
-                        "userCode": staff.id,
-                        "imgLink":staffMembers.imgLink,
-                        "subType": staff.subType,
-                        "email": staff.email,
-                        "name": staff.name,
-                        "office": staff.office
-                    }
-                    profiles.push(singleProfile);
-                }
-                res.send(profiles);
-            }
-        }
-    catch (err) {
+    try {
+        let staff = await staffModel.find({"departementName":currentdepartement});
+        let staffOutput = [];
+        staff.forEach(staffMem => staffOutput.push({
+            userCode: staffMem.id,
+            email: staffMem.email,
+            name: staffMem.name
+        }))
+        res.status(200).json(staffOutput);  
+    } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
