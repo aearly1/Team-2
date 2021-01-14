@@ -226,6 +226,7 @@ router.route("/view-staff-dep"
                     const singleProfile=
                     {
                         "userCode": staff.id,
+                        "imgLink":  staff.imgLink,
                         "subType": staff.subType,
                         "email": staff.email,
                         "name": staff.name,
@@ -712,5 +713,74 @@ router.route("/assign-academic/:course")
             res.status(500).send("Server Error");
         }
     });
+
+//View Unassigned slots per course
+router.route("/unassigned/:course")
+.get( async (req, res) => {
+    var ObjectId = require('mongodb').ObjectId; 
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })}
+    try {
+        const myCourse= await course.findOne({"courseName":req.params.course});
+        if(myCourse==null)
+        {
+            res.status(404).send("Course not found!")
+        }
+        else
+        {   const unassignedslotsarray =[]
+            const teachingSlots = myCourse.teachingSlots;
+           
+                for (const element of teachingSlots)
+                {
+                    if(element.staffTeachingSlot.equals(null))
+                    {
+                        unassignedslotsarray.push(element )
+                    }
+                 }
+                 res.send(unassignedslotsarray)
+           } 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+
+
+//View assigned slots per course
+router.route("/assignedslots/:course")
+.get( async (req, res) => {
+    var ObjectId = require('mongodb').ObjectId; 
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })}
+    try {
+        const myCourse= await course.findOne({"courseName":req.params.course});
+        if(myCourse==null)
+        {
+            res.status(404).send("Course not found!")
+        }
+        else
+        {   const assignedslotsarray =[]
+            const teachingSlots = myCourse.teachingSlots;
+           
+                for (const element of teachingSlots)
+                {
+                    if(!element.staffTeachingSlot.equals(null))
+                    {
+                        assignedslotsarray.push(element )
+                    }
+                 }
+                 res.send(assignedslotsarray)
+           } 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
 //.catch((err)=>{console.log(err)})
 module.exports=router;
