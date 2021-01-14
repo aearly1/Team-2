@@ -11,7 +11,8 @@ function Notifiactions()
     const token = useToken().token
     const [arr,setArr]= useState([]);
     useEffect(async ()=>{
-        //loading replacement requests upon loading the page
+        const intervalId = setInterval(() => {  
+              //loading replacement requests upon loading the page
         function Notifications()
         {
             axios.get('http://localhost:5000/api/academicMember/notifications',{headers:{'auth-token':token}}).then((res)=>{
@@ -19,6 +20,9 @@ function Notifiactions()
             setArr(items);
         }).catch(err=>alert(err))}
          Notifications();
+          }, 5000)
+          return () => clearInterval(intervalId); //This is important
+       
     }, []  );
     return (
     <div>

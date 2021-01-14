@@ -19,7 +19,8 @@ function AcademicSchedule()
     var [schedule, setSchedule] = useState(arr)
     
     useEffect(async ()=>{
-       //GET THE Courses under department
+        const intervalId = setInterval(() => {  
+            //GET THE Courses under department
        async function doIt()
        {
            await axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
@@ -34,6 +35,9 @@ function AcademicSchedule()
            setSchedule(array);
        }).catch(err=>alert(err))}
            doIt();
+        }, 5000)
+        return () => clearInterval(intervalId); //This is important
+        
         }, []  )
 
     

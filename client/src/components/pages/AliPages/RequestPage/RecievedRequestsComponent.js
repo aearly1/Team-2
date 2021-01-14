@@ -18,7 +18,8 @@ function RecievedRequestsTable()
     var[arr3, setArr3] = useState([]);
 
     useEffect(async ()=>{
-        //loading all requests upon loading the page
+        const intervalId = setInterval(() => {  
+            //loading all requests upon loading the page
         async function changingDayOff()
         {
              axios.get('http://localhost:5000/api/academicMember/recievedRequests',{headers:{'auth-token':token}}).then((res)=>{
@@ -26,6 +27,9 @@ function RecievedRequestsTable()
             setArr3(items);
         }).catch(err=>alert(err))}
          changingDayOff();
+        }, 5000)
+        return () => clearInterval(intervalId); //This is important
+        
         }, []  )
         
         //button handlers
