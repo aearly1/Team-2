@@ -42,7 +42,15 @@ import HRAddStaff from './components/pages/SaeedPages/Staff/HRAddStaff'
 import HREditStaff from './components/pages/SaeedPages/Staff/HREditStaff'
 import HRDeleteStaff from './components/pages/SaeedPages/Staff/HRDeleteStaff'
 import HODTeachAssignments from './components/pages/DiabPages/HODTeachAssignments';
-import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage'
+import AssignAcademicslot from './components/pages/MayarPages/AssignAcademicslot';
+import assigncoordinator from './components/pages/MayarPages/Assigncoordinator';
+import deleteassignment from './components/pages/MayarPages/Deleteassignment';
+import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage';
+import removeacademic from './components/pages/MayarPages/Removeacademic';
+import Updateassignment from './components/pages/MayarPages/Updateassignment';
+import viewslotassignment from './components/pages/MayarPages/Viewslotassignment';
+import Viewstaffcourse from './components/pages/MayarPages/Viewstaffcourse';
+import viewstaffperinstr from './components/pages/MayarPages/Viewstaffperinstr';
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
@@ -133,8 +141,6 @@ function App (){
             <Route exact path = '/login' component ={Profile} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
-            <Route exact path = '/inst-cov' component = {InstructorCourseCoverage} />
-
             <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
             <Route component= {NotFound}/>
           </Switch>
@@ -161,3 +167,13 @@ function App (){
   );
 }
 export default App;
+
+/* <Route exact path = '/view-course-coverage' component = {InstructorCourseCoverage} />
+<Route exact path = '/view-slot-assign-course' component = {Viewslotassignment} />
+<Route exact path = '/view-staff-course' component = {Viewstaffcourse} />
+<Route exact path = '/view-staff-dep' component = {Viewstaffperinstr} />
+<Route exact path = '/assign-course' component = {AssignAcademicslot} />
+<Route exact path = '/update-assign' component = {Updateassignment} />
+<Route exact path = '/delete-assign' component = {Deleteassignment} />
+<Route exact path = '/remove-academicMember' component = {Removeacademic} />
+<Route exact path = '/assign-academic' component = {Assigncoordinator} /> */
