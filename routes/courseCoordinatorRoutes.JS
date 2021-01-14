@@ -94,7 +94,7 @@ router.route('/theSlots')
                     startTime: sloto.startTime.toLocaleTimeString(), 
                     endTime: sloto.endTime.toLocaleTimeString(), 
                     taughtBy: staffNames, 
-                    location: array
+                    location: array,
                 }
                 results.push(object);
             }
@@ -272,7 +272,7 @@ router.route('/slotLinkingRequest')
         const day=req.body.day;
         const slotoNr=req.body.slotNr;
         const SLOTLOCATION=req.body.slotLocation;
-    
+        console.log("THE DAY: " + day)
         var startTimo=null;
         var endTimo=null
                 if(slotoNr=="1st")

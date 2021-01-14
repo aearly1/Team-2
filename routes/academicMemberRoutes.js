@@ -10,7 +10,7 @@ const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 
-router.route('/diabsrequests')
+router.route('/recievedRequests')
 .get(async(req,res)=>
 {
     var ObjectId = require('mongodb').ObjectId; 
@@ -19,6 +19,86 @@ router.route('/diabsrequests')
        const me= await staffMembers.findOne({_id:userID});
        const recRequests=me.receivedRequests; 
        const result=[]
+
+       //replacement request
+        let userObject = await staffMembers.findOne({_id:userID})
+       if(userObject.receivedRequests!=null)
+       {
+        for (const element of userObject.receivedRequests) {
+            var requestObject= await request.findOne({_id:element});
+            if(requestObject.requestType=="replacement"){
+                var U = await staffMembers.findOne({_id: requestObject.senderID})
+                var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                const courseObject=await course.findOne({_id:sloty.courseTaughtInSlot});
+                const loc=await location.findOne({_id:sloty.slotLocation});
+                const staff=await staffMembers.findOne({_id:sloty.staffTeachingSlot});
+                   const S = 
+                   {
+                    "StartTime": sloty.startTime.toLocaleTimeString().substring(3),
+                    "EndTime": sloty.endTime.toLocaleTimeString().substring(3),
+                    "CourseTaughtInSlot": courseObject.courseName,
+                    "staff member teaching slot": staff.name,
+                    "SlotLocation": loc.roomNr
+                    }
+                var requestDisplayed=
+                {
+                    "id": requestObject._id,
+                    "Sender": U.name, 
+                    "Reciever": userObject.name,
+                    "RequestType": requestObject.requestType,
+                    "Status": requestObject.status,
+                    "ReplacementSlot": S,
+                }
+                result.push(requestDisplayed);
+            }
+        }
+        }
+
+        //slot linking
+        const courseList = await course.find();
+        courseId=null;
+        if(courseList!=null)
+        for (const element of courseList) 
+        {
+            if(element.coordinator.equals(userID))
+            {
+                courseId=element._id;break;
+            }
+        }
+        if(courseId!=null)
+        {
+        const courseObject= await course.findOne({_id:courseId})
+        const requetsRec = userObject.receivedRequests;
+        if(requetsRec!=null)
+         for (const element of requetsRec) {
+             var requestObject= await request.findOne({_id:element});
+            var U = await staffMembers.findOne({_id: requestObject.senderID})
+                var sloty= await slot.findOne({_id: requestObject.replacementSlot})
+                var loc = await location.findOne({_id: sloty.slotLocation})
+                var desiredS=
+                {
+                    "startTime": sloty.startTime.toLocaleTimeString().substring(3),
+                    "endTime": sloty.endTime.toLocaleTimeString().substring(3),
+                    "courseTaughtInSlot": courseObject.courseName,
+                    "slotLocation": loc.roomNr
+                }
+                var requestDisplayed=
+                {
+                    "id": requestObject._id,
+                    "Sender": U.name, 
+                    "Reciever": userObject.name,
+                    "RequestType": requestObject.requestType,
+                    "Status": requestObject.status,
+                    "DesiredSlot": desiredS,
+                }
+             if(requestObject.requestType=="slot linking")
+             {
+                result.push(requestDisplayed);
+             }
+        }
+        }
+
+        //diab
        if(recRequests!=null)
        for(const element of recRequests)
        {
@@ -28,13 +108,13 @@ router.route('/diabsrequests')
             {
                 const request =
                 {
-                        id: aRequest._id,
-                        Sender: sender.name, //id of the staff member sending the request
-                        Reciever: me.name, //id of the staff member recieving the request
-                        RequestType: "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
-                        DesiredDayOff:aRequest.DesiredDayOff,
-                        Status: aRequest.status, //the value of status can either be accepted or rejected or pending
-                        Reason: aRequest.requestReason
+                        "id": aRequest._id,
+                        "Sender": sender.name, //id of the staff member sending the request
+                        "Reciever": me.name, //id of the staff member recieving the request
+                        "RequestType": "change day off", //the available request types are change day off OR slot linking OR leave OR replacement)
+                        "DesiredDayOff" :aRequest.DesiredDayOff,
+                        "Status": aRequest.status, //the value of status can either be accepted or rejected or pending
+                        "Reason": aRequest.requestReason
                 }
                 result.push(request)
             }
@@ -42,20 +122,21 @@ router.route('/diabsrequests')
             {
                 const request=
                 {
-                    id: aRequest._id,
-                    Status: aRequest.status,
-                    Sender:sender.name,
-                    Reciever:me.name,
-                    RequestType:aRequest.requestType,
-                    ReplacementStaffName:aRequest.replacementStaffName, 
-                    RelaventLeaveDocuments:aRequest.relaventLeaveDocuments, 
-                    Reason:aRequest.requestReason,
-                    StartOfLeave:aRequest.startOfLeave,
-                    EndOfLeave:aRequest.endOfLeave
+                    "id": aRequest._id,
+                    "Status": aRequest.status,
+                    "Sender":sender.name,
+                    "Reciever":me.name,
+                    "RequestType":aRequest.requestType,
+                    "ReplacementStaffName":aRequest.replacementStaffName, 
+                    "RelaventLeaveDocuments":aRequest.relaventLeaveDocuments, 
+                    "Reason":aRequest.requestReason,
+                    "StartOfLeave":aRequest.startOfLeave,
+                    "EndOfLeave":aRequest.endOfLeave
                 }
                 result.push(request)
             }
        }
+       console.log(result)
        res.send(result);
     }
     catch(err){
@@ -212,7 +293,7 @@ router.route('/peers')
        {
         for (const element of myCourses) {
             const theCourse= await course.findOne({_id:element});
-            const theStaff= subType=="TA"?theCourse.teachingAssistants: theCourse.instructors;
+            const theStaff= subType=="ta"?theCourse.teachingAssistants: theCourse.instructors;
             for (const element2 of theStaff) {
                 const peero = await staffMembers.findOne({_id:element2});
                 result.push(peero.name);
@@ -439,7 +520,6 @@ router.route('/schedule')
             }
         }
        }
-       console.log(array)
         res.send(array);
     })
     router.route('/acceptReplacementRequest')
@@ -488,17 +568,41 @@ router.route('/schedule')
             //res.status(401).send("The date inside the request has already passed. Cannot accept an outdated request.")
         }
         //passed all these checks then accept request
-        try
+        if(newRequest.requestType=="replacement")
         {
-            await request.findOneAndUpdate({_id: requestID}, {status:"accepted"}, {new: true});
+            try
+            {
+                await request.findOneAndUpdate({_id: requestID}, {status:"accepted"}, {new: true});
+                const message= user.name + " has accepted your " + newRequest.requestType + " request"
+                await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
+                res.send("Accepted")
+            }
+            catch(err)
+            {
+                console.log(err)
+            }
+        }
+        else if(newRequest.requestType=="slot linking")
+        {
+            console.log("SLOT LINKING")
+            await request.findOneAndUpdate({_id: ObjectId(requestID)}, {status:"accepted"}, {new: true});
             const message= user.name + " has accepted your " + newRequest.requestType + " request"
             await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
+            await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { scheduleSlots: newRequest.replacementSlot}}, {new: true});
+            const person = await staffMembers.findOne({_id:newRequest.senderID});
+            await slot.findOneAndUpdate({_id: newRequest.replacementSlot}, {staffTeachingSlot:person._id}, {new: true});
+            await course.findOneAndUpdate({_id:courseObject._id}, {unassignedSlots:courseObject.unassignedSlots-1}, {new: true});
+            
             res.send("Accepted")
         }
-        catch(err)
+        else
         {
-            console.log(err)
+                await request.findOneAndUpdate({_id: requestID}, {status:"accepted"}, {new: true});
+                const message= user.name + " has accepted your " + newRequest.requestType + " request"
+                await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
+                res.send("Accepted")
         }
+        
     })
     router.route('/rejectReplacementRequest')
     .post([

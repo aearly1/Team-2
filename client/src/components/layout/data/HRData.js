@@ -138,21 +138,21 @@ export const HRData = [
     {
       title: 'Add Missing Attendance',
       path: '/AddMissingAttendance',
-      icon: < FAIcons.FaUserCheck />,
+      icon: < FAIcons.FaEdit />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'Modify Salary',
       path: '/ModifySalary',
-      icon: < FAIcons.FaUserCheck />,
+      icon: < FAIcons.FaCoins />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'View Staff Info',
       path: '/ViewStaffProps',
-      icon: < FAIcons.FaUserCheck />,
+      icon: < FAIcons.FaInfo />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     }

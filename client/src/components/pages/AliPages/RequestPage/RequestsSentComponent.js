@@ -6,6 +6,8 @@ import ViewchangeDayOffDetailsModal from "./ViewchangeDayOffDetailsModal"
 import ViewSlotLinkingDetails from "./ViewslotLinkingDetailsModal"
 import ViewLeaveDetailsModal from "./ViewLeaveDetailsModal"
 import ViewReplacementDetailsModal from "./ViewReplacementDetailsModal"
+import TableScrollbar from 'react-table-scrollbar';
+
 
 function SentRequestsTable()
 {
@@ -19,7 +21,8 @@ function SentRequestsTable()
         setValue1(e)
     }
     const handleSelectStatus=()=>{
-        async function select()
+        const intervalId = setInterval(() => {  
+            async function select()
         {
             if(value1=="View all sent requests")
             {
@@ -51,6 +54,8 @@ function SentRequestsTable()
             }          
         }
         select();
+        }, 5000)
+        return () => clearInterval(intervalId); //This is important
     }
     const handleCancel=(e)=>{
         var index = e.target.id
@@ -59,7 +64,7 @@ function SentRequestsTable()
                 await axios.post('http://localhost:5000/api/academicMember/cancleRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             cancel();
-            window.location.reload();
+            window.location.reload(true);
 
     }
 
@@ -85,6 +90,7 @@ function SentRequestsTable()
     
     <br></br>
 
+    <TableScrollbar rows={4}>
     <Table style={{textAlign:"center"}} striped bordered hover> 
     <thead>
     <tr>
@@ -118,6 +124,7 @@ function SentRequestsTable()
         }
     </tbody>
     </Table>
+    </TableScrollbar>
     </div>
     )
 }

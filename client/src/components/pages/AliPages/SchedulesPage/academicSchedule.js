@@ -19,21 +19,25 @@ function AcademicSchedule()
     var [schedule, setSchedule] = useState(arr)
     
     useEffect(async ()=>{
-        //GET THE Courses under department
-        async function doIt()
-        {
-            await axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
-            let items=res.data;
-            var array = [...schedule];
-            for (const element of items) 
-            {
-                const day=element.day-1;
-                const slot=element.slotNr;
-                array[day][slot]=element.courseTaughtInSlot + " - " + element.slotLocation + "\n" + "Replacement staff: "+ element.replacementStaff
-            }
-            setSchedule(array);
-        }).catch(err=>alert(err))}
-            doIt();
+        const intervalId = setInterval(() => {  
+            //GET THE Courses under department
+       async function doIt()
+       {
+           await axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
+           let items=res.data;
+           var array = [...schedule];
+           for (const element of items) 
+           {
+               const day=element.day-1;
+               const slot=element.slotNr;
+               array[day][slot]=element.courseTaughtInSlot + " - " + element.slotLocation + "\n" + "Replacement staff: "+ element.replacementStaff
+           }
+           setSchedule(array);
+       }).catch(err=>alert(err))}
+           doIt();
+        }, 5000)
+        return () => clearInterval(intervalId); //This is important
+        
         }, []  )
 
     

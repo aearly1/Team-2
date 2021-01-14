@@ -6,40 +6,30 @@ import ViewchangeDayOffDetailsModal from "./ViewchangeDayOffDetailsModal"
 import ViewSlotLinkingDetails from "./ViewslotLinkingDetailsModal"
 import ViewLeaveDetailsModal from "./ViewLeaveDetailsModal"
 import ViewReplacementDetailsModal from "./ViewReplacementDetailsModal"
+import TableScrollbar from 'react-table-scrollbar';
 
 function RecievedRequestsTable()
 {
     const token = useToken().token
 
+    var[requestList, setRequestList] = useState([]);
     var[arr, setArr] = useState([]);
     var[arr2, setArr2] = useState([]);
     var[arr3, setArr3] = useState([]);
 
     useEffect(async ()=>{
-        //loading replacement requests upon loading the page
-        async function Replacement()
-        {
-            await axios.get('http://localhost:5000/api/academicMember/replacementRequest',{headers:{'auth-token':token}}).then((res)=>{
-            let items=res.data;
-            setArr( [...arr, ...items]);
-        }).catch(err=>alert(err))}
-        await Replacement();
-        //loading slot linking requests upon loading the page
-        async function SlotLinking()
-        {
-            await axios.get('http://localhost:5000/api/coordinator/slotLinkingRequest',{headers:{'auth-token':token}}).then((res)=>{
-            let items=res.data;
-            setArr2( [...arr2, ...items]);
-        }).catch(err=>alert(err))}
-        await SlotLinking();
-        //loading changing day off/ leaves requests upon loading the page
+        const intervalId = setInterval(() => {  
+            //loading all requests upon loading the page
         async function changingDayOff()
         {
-            await axios.get('http://localhost:5000/api/academicMember/diabsrequests',{headers:{'auth-token':token}}).then((res)=>{
+             axios.get('http://localhost:5000/api/academicMember/recievedRequests',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setArr3(items);
         }).catch(err=>alert(err))}
-        await changingDayOff();
+         changingDayOff();
+        }, 5000)
+        return () => clearInterval(intervalId); //This is important
+        
         }, []  )
         
         //button handlers
@@ -50,7 +40,7 @@ function RecievedRequestsTable()
                 await axios.post('http://localhost:5000/api/academicMember/acceptReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             accept();
-            window.location.reload();
+            window.location.reload(true);
         }
         const rejectClick=(e)=>{
             var index = e.target.id
@@ -59,13 +49,14 @@ function RecievedRequestsTable()
                 await axios.post('http://localhost:5000/api/academicMember/rejectReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             reject();
-            window.location.reload();
+            window.location.reload(true);
         }
 
     return (
         <div>
         <h5>Requests Recieved from Other Academic Members</h5>
-        <Table style={{textAlign:"center"}} striped bordered hover> 
+        <TableScrollbar rows={4}>
+        <Table style={{textAlign:"center", position: "sticky", top: 0, zIndex: 100,}} striped bordered hover> 
         <thead>
         <tr>
         <th>Sender</th>
@@ -75,57 +66,7 @@ function RecievedRequestsTable()
         <th>Accept/Reject</th>
         </tr>
         </thead>
-        <tbody >
-        {
-            //inserting replacement request rows
-            arr.map
-            (
-                (request)=>
-                {
-                    var buttons=null;
-                    if(request.Status=="pending")
-                    {
-                        buttons=(
-                        <div>
-                        <Button id={request.id} onClick={acceptClick} variant="success">Accept</Button>{' '}
-                        <Button id={request.id} onClick={rejectClick} variant="danger">Reject</Button>{' '}
-                        </div>)
-                    }
-                    return <tr>
-                    <td>{request.Sender}</td>
-                    <td>{request.RequestType}</td>
-                    <td>{request.Status}</td>
-                    <td><ViewReplacementDetailsModal Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} ReplacementSlot={request.ReplacementSlot}/></td>
-                    <td>{buttons}</td>
-                    </tr>
-                } 
-            )
-        }
-        {
-            //inserting replacement request rows
-            arr2.map
-            (
-                (request)=>
-                {
-                    var buttons=null;
-                    if(request.Status=="pending")
-                    {
-                        buttons=(
-                        <div>
-                        <Button id={request.id} onClick={acceptClick} variant="success">Accept</Button>{' '}
-                        <Button id={request.id} onClick={rejectClick} variant="danger">Reject</Button>{' '}
-                        </div>)
-                    }
-                    return <tr>
-                    <td>{request.Sender}</td>
-                    <td>{request.RequestType}</td>
-                    <td>{request.Status}</td>
-                    <td><ViewSlotLinkingDetails Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} DesiredSlot={request.DesiredSlot}/></td>
-                    <td>{buttons}</td>
-                    </tr>
-                } 
-            )
-        }  
+        <tbody > 
         {
             //inserting Diab request rows
             arr3.map
@@ -142,7 +83,15 @@ function RecievedRequestsTable()
                         </div>)
                     }
                     var details = null;
-                    if(request.RequestType=="change day off")
+                    if(request.RequestType=="replacement")
+                    {
+                        details=<ViewReplacementDetailsModal Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} ReplacementSlot={request.ReplacementSlot}/>
+                    }
+                    else if(request.RequestType=="slot linking")
+                    {
+                        details=<ViewSlotLinkingDetails Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} DesiredSlot={request.DesiredSlot}/>
+                    }
+                    else if(request.RequestType=="change day off")
                     {
                         details=<ViewchangeDayOffDetailsModal Status= {request.Status} Sender= {request.Sender} Reciever={request.Reciever} RequestType={request.RequestType} DesiredDayOff={request.DesiredDayOff} Reason={request.Reason}/>
                     }
@@ -162,6 +111,7 @@ function RecievedRequestsTable()
         }  
         </tbody>
         </Table>  
+        </TableScrollbar>
         </div>
     )
 }
