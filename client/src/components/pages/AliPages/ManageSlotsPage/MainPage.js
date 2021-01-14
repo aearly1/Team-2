@@ -1,8 +1,10 @@
 import React , {useEffect, useState} from 'react'
 import useToken from 'client/src/components/pages/general/useToken'
 import axios from 'axios'
+import TableScrollbar from 'react-table-scrollbar';
 import RowComponent from './RowComponent'
 import {OverlayTrigger,Tooltip, Container, Col, Row, DropdownButton, Dropdown, Button, Table} from 'react-bootstrap'
+import { assertNullLiteralTypeAnnotation } from '@babel/types'
 
 //slot page component
 function Slot()
@@ -34,8 +36,7 @@ function Slot()
     const [value1,setValue1]= useState("Select timing of slot");
     const [value2,setValue2]= useState("Select location of slot");
     const [value3,setValue3]= useState("Select day");
-    const [drop1,setDrop1]= useState([]);
-    const [drop2,setDrop2]= useState([]);
+
     const handleSelect1=(e)=>{
       setValue1(e)
     }
@@ -46,8 +47,8 @@ function Slot()
         setValue3(e)
       }
 
-    const timing=["1st", "2nd", "3rd", "4th", "5th"];
-    const days=["Sataurday", "Sunday", "Monday", "Tuesday", "Wedneday", "Thursday"];
+    const timing=["Select timing of slot","1st", "2nd", "3rd", "4th", "5th"];
+    const days=["Select day", "Sataurday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
     const items1= timing.map(elem=>
       {
           return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
@@ -61,9 +62,6 @@ function Slot()
                 return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
             })
     //update delete stuff
-    /*const array = [{Day: "TUES", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]},
-    {Day: "WED", startTime: "1:45 AM", endTime: "3:15 PM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]},
-    {Day: "THURS", startTime: "8:15 AM", endTime: "10:00 AM", taughtBy: ["Loaa Elzahar","Walid Elhefny"], location: ["C3. 201", "C3. 103", "C6. 204", "C5. 112"]}];*/
     
       const createClick=()=>{
           if(value1!="Select timing of slot" && value2!="Select location of slot")
@@ -76,17 +74,11 @@ function Slot()
                 createSlots();
                window.location.reload(); 
           }
+          else
+          {
+              alert("Cannot create slot!!! Please select a day, time and a location for your slot!!!")
+          }
       }
-      const updateClick=(e)=>{
-        var index = e.target.id
-        async function updateSlots()
-              {
-                    await axios.post('http://localhost:5000/api/coordinator/updateCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
-                    }).catch(err=>alert(err));
-               }
-            updateSlots();
-            window.location.reload(); 
-    }
     
     return (<div>
         <h1>Manage Course Slots</h1>
@@ -114,11 +106,15 @@ function Slot()
             <br></br>
             
             <Button onClick={createClick} variant="success">Create</Button>
+            <br></br>
+            <br></br>
+
             </div>
             </Col>
             <Col> 
             <div>
             <h5>Update and Delete Course Slots</h5>
+            <TableScrollbar rows={6}>
             <Table style={{textAlign:"center"}} striped bordered hover> 
             <thead>
             <tr>
@@ -140,6 +136,7 @@ function Slot()
             }
             </tbody>
             </Table>
+            </TableScrollbar>
             </div>
             <br></br>
             </Col>

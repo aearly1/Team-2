@@ -33,7 +33,7 @@ function ButtonSection() {
         <Modal
           size="lg"
           show={lgShow2}
-          onHide={() => setLg2Show(false)}
+          onHide={() => {setLg2Show(false);window.location.reload(true);}}
           aria-labelledby="example-modal-sizes-title-lg"
         >
           <Modal.Header closeButton>

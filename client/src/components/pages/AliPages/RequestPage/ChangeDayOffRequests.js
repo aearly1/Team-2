@@ -24,7 +24,7 @@ function RequestPage()
                 await axios.post('http://localhost:5000/api/academicMember/changeDayOffRequest',{"reasonForChange":dayOffVal, "desiredDayOff":reason},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             submit();
-            window.location.reload();
+            window.location.reload(true);
         }
         else
         {

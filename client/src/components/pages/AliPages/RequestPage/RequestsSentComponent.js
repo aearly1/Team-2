@@ -6,6 +6,8 @@ import ViewchangeDayOffDetailsModal from "./ViewchangeDayOffDetailsModal"
 import ViewSlotLinkingDetails from "./ViewslotLinkingDetailsModal"
 import ViewLeaveDetailsModal from "./ViewLeaveDetailsModal"
 import ViewReplacementDetailsModal from "./ViewReplacementDetailsModal"
+import TableScrollbar from 'react-table-scrollbar';
+
 
 function SentRequestsTable()
 {
@@ -59,7 +61,7 @@ function SentRequestsTable()
                 await axios.post('http://localhost:5000/api/academicMember/cancleRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             cancel();
-            window.location.reload();
+            window.location.reload(true);
 
     }
 
@@ -85,6 +87,7 @@ function SentRequestsTable()
     
     <br></br>
 
+    <TableScrollbar rows={4}>
     <Table style={{textAlign:"center"}} striped bordered hover> 
     <thead>
     <tr>
@@ -118,6 +121,7 @@ function SentRequestsTable()
         }
     </tbody>
     </Table>
+    </TableScrollbar>
     </div>
     )
 }

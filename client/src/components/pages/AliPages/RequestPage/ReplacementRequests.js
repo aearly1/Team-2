@@ -56,7 +56,7 @@ function RequestsPage()
                     await axios.post('http://localhost:5000/api/academicMember/replacementRequest',{"slotID":slotVal, "sendingRequestTo":sentToVal, "month":monthVal, "day":dayVal},{headers:{'auth-token':token}}).then((res)=>{
                 }).catch(err=>alert(err))}
                 submit();
-                window.location.reload();
+                window.location.reload(true);
             }
             else
             {

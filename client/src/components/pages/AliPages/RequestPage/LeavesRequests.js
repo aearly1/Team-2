@@ -67,7 +67,7 @@ import {Form, Table, Button,Container, Row, Col, DropdownButton,Dropdown} from '
                 {headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             submit();
-            window.location.reload();
+            window.location.reload(true);
         }
     }
     return (
