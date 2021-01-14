@@ -18,6 +18,17 @@ import HODCourseStaff from './components/pages/DiabPages/HODCourseStaff';
 import HODStaffDO from './components/pages/DiabPages/HODStaffDO';
 import HODStaffDOS from './components/pages/DiabPages/HODStaffDOS';
 import HODCourseCov from './components/pages/DiabPages/HODCourseCov';
+import AssignAcademicslot from './components/pages/MayarPages/AssignAcademicslot';
+import assigncoordinator from './components/pages/MayarPages/assigncoordinator';
+import deleteassignment from './components/pages/MayarPages/deleteassignment';
+import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage';
+import removeacademic from './components/pages/MayarPages/removeacademic';
+import Updateassignment from './components/pages/MayarPages/Updateassignment';
+import viewslotassignment from './components/pages/MayarPages/viewslotassignment';
+import Viewstaffcourse from './components/pages/MayarPages/Viewstaffcourse';
+import viewstaffperinstr from './components/pages/MayarPages/viewstaffperinstr';
+
+
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import PropTypes from 'prop-types';
@@ -57,6 +68,7 @@ function App (props ){
             <Route exact path = '/login' component = {Login} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
+
             <Route component= {NotFound}/>
           </Switch>
         </Container>

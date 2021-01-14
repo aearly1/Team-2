@@ -17,9 +17,9 @@ app.use(auth.func)
 app.use("/api/staffs",require("./routes/staffRoutes"))
 app.use("/api/hod", require("./routes/HOD"));
 app.use("/api/hr", require("./routes/HRRoutes"));
-app.use("/api/academicMember",require("./routes/academicMemberRoutes"))
+app.use("/api/academicMember",require("./routes/academicMemberRoutes"));
 app.use("/api/coordinator", require("./routes/courseCoordinatorRoutes"));
-
+app.use("/api/instructor"),require("./routes/courseInstructorRoute");
 
 const PORT = process.env.PORT || 3000;
 
