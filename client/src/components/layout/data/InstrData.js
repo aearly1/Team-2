@@ -7,6 +7,7 @@ import * as BiIcons from 'react-icons/bi'
 import * as BsIcons from 'react-icons/bs'
 import * as RiIcons from 'react-icons/ri'
 import * as MdIcons from 'react-icons/md'
+import * as AiIcons from 'react-icons/ai'
 
 
 export const InstrData = [
@@ -29,21 +30,21 @@ export const InstrData = [
     {
       title: 'Course Coverage', //in both
       path: '/view-course-coverage',
-      icon: <RiIcons.RiUserSharedFill />,
+      icon: <MdIcons.MdAssignmentTurnedIn />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'View slot assignments', //in both
       path: '/view-slot-assign-course',
-      icon: <RiIcons.RiFolderUserFill />,
+      icon: <BsIcons.BsCardList />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'View staff',//in both
       path: '#',
-      icon: <FAIcons.FaUserSlash />,
+      icon: <RiIcons.RiFolderUserFill />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
@@ -55,45 +56,45 @@ export const InstrData = [
         {
           title: 'View course staff',
           path: '/view-staff-course',
-          icon: <BiIcons.BiMale/>
+          icon: <FAIcons.FaUserFriends/>
         }
       ]
     },
     {
       title: 'Course slot assignments',
       path: '#',
-      icon: <FAIcons.FaUserSlash />,
+      icon: <FAIcons.FaChalkboardTeacher />,
       iconClosed: <RiIcons.RiArrowDownSFill />,
       iconOpened: <RiIcons.RiArrowUpSFill />,
       subNav: [
         {
           title: 'Assign slot',
           path: '/assign-course',
-          icon: <FiIcons.FiUsers />
+          icon: <RiIcons.RiUserSharedFill />
         },
         {
           title: 'Update assignment',
           path: '/update-assign',
-          icon: <FiIcons.FiUsers />
+          icon: <BiIcons.BiRefresh />
         },
         {
           title: 'Delete assignment',
           path: '/delete-assign',
-          icon: <BiIcons.BiMale/>
+          icon: <MdIcons.MdDeleteForever/>
         }
       ]
     },
     {
       title:      'Remove academic',
       path:       '/remove-academicMember',
-      icon:       < FAIcons.FaUserCheck />,
+      icon:       < AiIcons.AiOutlineUserDelete />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },
     {
       title: 'Assign Coordinator',
       path: '/assign-academic',
-      icon: < FAIcons.FaUserCheck />,
+      icon: < FAIcons.FaUserCog />,
       iconClosed: < RiIcons.RiArrowDownSFill />,
       iconOpened: < RiIcons.RiArrowUpSFill />,
     },

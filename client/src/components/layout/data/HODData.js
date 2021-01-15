@@ -7,6 +7,7 @@ import * as RiIcons from 'react-icons/ri'
 import * as MdIcons from 'react-icons/md'
 import * as BsIcons from 'react-icons/bs'
 import * as HiIcons from 'react-icons/hi'
+import * as AiIcons from 'react-icons/ai'
 
 
 export const HODData = [
@@ -88,38 +89,38 @@ export const HODData = [
   {
     title: 'Course slot assignments',
     path: '#',
-    icon: <FAIcons.FaUserSlash />,
+    icon:<BsIcons.BsCardList />,
     iconClosed: <RiIcons.RiArrowDownSFill />,
     iconOpened: <RiIcons.RiArrowUpSFill />,
     subNav: [
       {
         title: 'Assign slot',
         path: '/assign-course',
-        icon: <FiIcons.FiUsers />
+        icon: <RiIcons.RiUserSharedFill />
       },
       {
         title: 'Update assignment',
         path: '/update-assign',
-        icon: <FiIcons.FiUsers />
+        icon: <BiIcons.BiRefresh />
       },
       {
         title: 'Delete assignment',
         path: '/delete-assign',
-        icon: <BiIcons.BiMale/>
+        icon: <MdIcons.MdDeleteForever/>
       }
     ]
   },
   {
     title:      'Remove academic',
     path:       '/remove-academicMember',
-    icon:       < FAIcons.FaUserCheck />,
+    icon:       < AiIcons.AiOutlineUserDelete />,
     iconClosed: < RiIcons.RiArrowDownSFill />,
     iconOpened: < RiIcons.RiArrowUpSFill />,
   },
   {
     title: 'Assign Coordinator',
     path: '/assign-academic',
-    icon: < FAIcons.FaUserCheck />,
+    icon: < FAIcons.FaUserCog />,
     iconClosed: < RiIcons.RiArrowDownSFill />,
     iconOpened: < RiIcons.RiArrowUpSFill />,
   },
