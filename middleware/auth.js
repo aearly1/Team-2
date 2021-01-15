@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const blacklist = []
 const config = require("config");
 const staffMembers = require('../models/staffMembers');
-const key = config.get("jwtSecret")
+const key = config.get("jwtSecret") || "qofhiqoh38hfqfh3109fjqpjf";
 
 module.exports.func = async function authenticate(req,res,next){
     if(!req.header('auth-token'))
