@@ -13,7 +13,7 @@ app.use(cors())
 //Define Routes
 app.use("/api/init", require("./DBInit"));
 app.use("/api/login", require("./routes/login"))
-app.use(auth.func)
+//app.use(auth.func)
 app.use("/api/staffs",require("./routes/staffRoutes"))
 app.use("/api/hod", require("./routes/HOD"));
 app.use("/api/hr", require("./routes/HRRoutes"));
