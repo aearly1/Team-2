@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 const blacklist = []
-const config = require("config");
 const staffMembers = require('../models/staffMembers');
-const key = config.get("jwtSecret") || "qofhiqoh38hfqfh3109fjqpjf";
+const key = process.env.SECRET || "qofhiqoh38hfqfh3109fjqpjf";
 
 module.exports.func = async function authenticate(req,res,next){
     if(!req.header('auth-token'))
@@ -12,7 +11,7 @@ module.exports.func = async function authenticate(req,res,next){
         return res.status(403).send("You already logged out")
     });
     try{
-        const decoded = jwt.verify(req.header('auth-token'),config.get("jwtSecret"))
+        const decoded = jwt.verify(req.header('auth-token'),key)
         req.user = decoded.user;
         // console.log(JSON.stringify(req.user))
         // if(!req.user.firstLogin){
