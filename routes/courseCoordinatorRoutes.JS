@@ -11,7 +11,8 @@ const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-
+const auth = require('../middleware/auth.js')
+    router.use(auth.func)
 router.route('/theSlots')
     .get(async(req,res)=>{
 

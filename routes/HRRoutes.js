@@ -30,7 +30,8 @@ const missingdays = require('../functions/funcs').missingdays
 //         return res.sendStatus(401);
 //     }
 // };
-
+const auth = require('../middleware/auth.js')
+    router.use(auth.func)
 //add location
 router.post('/addLocation',[
     check("roomNr", "RoomNr Name incorrect").isString(),

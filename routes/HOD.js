@@ -11,7 +11,8 @@ const { ObjectId } = require('mongodb');
 const e = require('express');
 
 
-
+const auth = require('../middleware/auth.js')
+    router.use(auth.func)
 //Done ==> 12
 //Work In Progress ==> 0
 //Untouched ==> 0

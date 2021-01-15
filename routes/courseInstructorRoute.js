@@ -11,7 +11,7 @@ const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 const { check, validationResult } = require('express-validator');
 const { Server, ObjectId } = require('mongodb');
-
+router.use(auth.func)
 //View the coverage of course(s) he/she is assigned to.
 router.route("/view-course-coverage/:course")
 .get([check ("course").isString()],
