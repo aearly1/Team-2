@@ -1,19 +1,29 @@
 # Team-2
 IMPORTANT NOTE FOR MILESTONE 2
-- run localhost:3000/api/init/ to seed database
+
 - run npm i and nmp i client in terminal
 -Paste your mongoDB cnnection string in the config/default.json to connect to your database
 -to run website locally run npm run dev in terminal
--List of accounts of userthat you can login in with:
+
+EXTREMELY IMPORTANT
+
+There are FIVE routes that need to be run to seed the database (not all of them at once).
+    a) localhost:3000/api/init/academic-coordinator. This route is responsible to insert ALL the data need so you can be able to test the academic member and coordinator routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    b)localhost:3000/api/init/staffMems. This route is responsible to insert ALL the data need so you can be able to test the staff member routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    c)localhost:3000/api/init/hod-init. This route is responsible to insert ALL the data need so you can be able to test the HOD routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    d)localhost:3000/api/init/courseInstructor. This route is responsible to insert ALL the data need so you can be able to test the course instructor routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+    e)localhost:3000/api/init/hr-init. This route is responsible to insert ALL the data need so you can be able to test the HR routes. Once the data is inserted, you can use postman to copy our examples and you will see the same response that is written in the readme file.
+
+-List of accounts of userthat you can login in with (make sure to run the appropiate seeding route before logging in with user):
 1-HOD:
-email: Slim@gmail.com, password: SlimSlim
+email: Slim@gmail.com, password: SlimSlim (use this to test HOD stuff)
 2-Instructor:
-email: HSoubra@gmail.com, password: SoubraSoubra
+email: HSoubra@gmail.com, password: SoubraSoubra (Use this to test Course instructor)
 3-TA: 
 email: shaka@guc.com, password: 12345 (USE THIS TO TEST THE ACADEMIC STAFF FEATURES SINCE IT HAS DATA FOR THESE PAGES)
-email: AHesham@gmail.com, password: AhmedAhmed
+email: AHesham@gmail.com, password: AhmedAhmed (
 4-Coordinator:
-email: ali@guc.com@gmail.com, password: 123456 (USE THIS TO TEST THE ACADEMIC STAFF FEATURES SINCE IT HAS DATA FOR THESE PAGES)
+email: ali@guc.com@gmail.com, password: 123456 (USE THIS TO TEST THE ACADEMIC STAFF and coordicator FEATURES SINCE IT HAS DATA FOR THESE PAGES)
 5-HR: 
 email: HR1@guc.edu.eg, password:12345
 
