@@ -23,7 +23,7 @@ function AcademicSchedule()
             //GET THE Courses under department
        async function doIt()
        {
-           await axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
+           await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
            let items=res.data;
            var array = [...schedule];
            for (const element of items) 

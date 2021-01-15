@@ -18,7 +18,7 @@ function DeleteAssignment()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -32,7 +32,7 @@ const  assignedslots=(e)=>{
     setLoading2(true)
     setValue2(e)
     async function assignedslots2 (){
-     let url ='http://localhost:5000/api/instructor/assignedslots'+'/'+value2
+     let url ='https://staffsprotal.herokuapp.com/api/instructor/assignedslots'+'/'+value2
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
      res.data.map(assignedslots=>{items.push(assignedslots.slotID)})
@@ -73,7 +73,7 @@ const [selectcourse,setselectcourse]= useState([]);
     //Delete Assign button
      const DeleteClick=()=>{
         async function deleteassig()
-            {  let URL='http://localhost:5000/api/instructor/delete-assign'+'/'+selectcourse
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/delete-assign'+'/'+selectcourse
                 await axios.post(URL,{slotID:slotselect},{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    

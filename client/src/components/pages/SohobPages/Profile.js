@@ -59,7 +59,7 @@ let style1 = {
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
        useEffect(() =>{
-        trackPromise(axios.get('http://localhost:5000/api/staffs/profile', {
+        trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/staffs/profile', {
         headers: {
           'auth-token': `${token}`
         }
@@ -75,7 +75,7 @@ let style1 = {
     const handleEdit = () => setEdit(true);
     const handleEditc = () => setEdit(false);
     const handleSubmit = () =>{
-        axios.put('http://localhost:5000/api/staffs/profile/update',{email: updatedEmail,office: updatedOffice,salary:updatedSalary,faculty:updatedFaculty,department:updatedDepartment},{
+        axios.put('https://staffsprotal.herokuapp.com/api/staffs/profile/update',{email: updatedEmail,office: updatedOffice,salary:updatedSalary,faculty:updatedFaculty,department:updatedDepartment},{
             headers: {
               'auth-token': `${token}`
             }

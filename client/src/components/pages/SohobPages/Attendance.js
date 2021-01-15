@@ -46,7 +46,7 @@ const LoadingIndicator = props => {
 
   useEffect(() => {
     if (selection == "All") {
-      trackPromise(axios.get('http://localhost:5000/api/staffs/attendance', {
+      trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/staffs/attendance', {
         headers: {
           'auth-token': `${token}`
         }
@@ -59,7 +59,7 @@ const LoadingIndicator = props => {
         }))
     }
     else {
-      trackPromise(axios.get('http://localhost:5000/api/staffs/attendance' + '/' + selection, {
+      trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/staffs/attendance' + '/' + selection, {
         headers: {
           'auth-token': `${token}`
         }
@@ -75,7 +75,7 @@ const LoadingIndicator = props => {
 
   useEffect(() => {
 
-    trackPromise(axios.get('http://localhost:5000/api/staffs/missingdays', {
+    trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/staffs/missingdays', {
       headers: {
         'auth-token': `${token}`
       }
@@ -91,7 +91,7 @@ const LoadingIndicator = props => {
 
   useEffect(() => {
 
-    trackPromise(axios.get('http://localhost:5000/api/staffs/missinghours', {
+    trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/staffs/missinghours', {
       headers: {
         'auth-token': `${token}`
       }
@@ -107,7 +107,7 @@ const LoadingIndicator = props => {
 
 
   const handleSignin = () => {
-    trackPromise(axios.post('http://localhost:5000/api/staffs/signin', {}, {
+    trackPromise(axios.post('https://staffsprotal.herokuapp.com/api/staffs/signin', {}, {
       headers: {
         'auth-token': `${token}`
       }
@@ -124,7 +124,7 @@ const LoadingIndicator = props => {
   }
 
   const handleSignout = () => {
-    trackPromise(axios.post('http://localhost:5000/api/staffs/signout', {}, {
+    trackPromise(axios.post('https://staffsprotal.herokuapp.com/api/staffs/signout', {}, {
       headers: {
         'auth-token': `${token}`
       }

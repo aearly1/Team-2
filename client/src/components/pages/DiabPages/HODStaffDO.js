@@ -34,7 +34,7 @@ const [loading,setLoading]= useState(true);
 useEffect(()=>{
   async function doIt(){
   //GET THE Courses under department
-  await axios.get('http://localhost:5000/api/hod/staff-do',{headers:{'auth-token':token}}).then((res)=>{
+  await axios.get('https://staffsprotal.herokuapp.com/api/hod/staff-do',{headers:{'auth-token':token}}).then((res)=>{
       let items = []
       res.data.map(staffMem => {items.push({ 
         id: staffMem.id,

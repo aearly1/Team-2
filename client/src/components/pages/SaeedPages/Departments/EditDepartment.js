@@ -8,7 +8,7 @@ function EditDepartment(props){
 const token = useToken().token;
     const handleSubmit = (e1)=> {
       e1.preventDefault();
-      axios.post('http://localhost:5000/api/hr/editDepartment',{'departmentName':Department,'oldFacultyName':oldFaculty,'newFacultyName':newFaculty},{headers:{'auth-token':token}}).then((res)=>{
+      axios.post('https://staffsprotal.herokuapp.com/api/hr/editDepartment',{'departmentName':Department,'oldFacultyName':oldFaculty,'newFacultyName':newFaculty},{headers:{'auth-token':token}}).then((res)=>{
       alert(res.data)    
       }).catch(err=>alert(err))  
         }

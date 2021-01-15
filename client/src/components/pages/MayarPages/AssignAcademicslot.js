@@ -17,7 +17,7 @@ function AssignSlot()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -31,7 +31,7 @@ const  unassignedslots=(e)=>{
     async function unassignedslots2(){
     setLoading2(true)
     setValue2(e)
-     let url ='http://localhost:5000/api/instructor/unassigned'+'/'+e
+     let url ='https://staffsprotal.herokuapp.com/api/instructor/unassigned'+'/'+e
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
      res.data.map(unassignedslot=>{items.push(unassignedslot.slotID)})
@@ -47,7 +47,7 @@ const  staff=(e)=>
     async function staff2 (){
     setLoading1(true)
             setValue1(e)
-            let url ='http://localhost:5000/api/instructor/view-staff-course/ '+'/'+ e
+            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ e
             await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
             setLoading1(false)
             let members=[]
@@ -104,7 +104,7 @@ const [selectcourse,setselectcourse]= useState([]);
     //aAssign button
      const AssignClick=()=>{
         async function assignslot()
-            {  let URL='http://localhost:5000/api/instructor/assign-course'+'/'+selectcourse
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/assign-course'+'/'+selectcourse
                 await axios.post(URL,{slotID:slotselect, academicId:academicid },{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    

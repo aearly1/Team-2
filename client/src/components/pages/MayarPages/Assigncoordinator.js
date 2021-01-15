@@ -17,7 +17,7 @@ function Assigncoordinator()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -32,7 +32,7 @@ function Assigncoordinator()
     async function staff2(){
     setLoading1(true)
             setValue1(e)
-            let url ='http://localhost:5000/api/instructor/view-staff-course/ '+'/'+ e
+            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ e
             await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
             setLoading1(false)
             let members=[]
@@ -77,7 +77,7 @@ const [selectcourse,setselectcourse]= useState([]);
     //aAssign button
      const Assignclick=()=>{
         async function coordinatorset()
-            {  let URL='http://localhost:5000/api/instructor/assign-academic'+'/'+selectcourse
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/assign-academic'+'/'+selectcourse
                 await axios.post(URL,{academicID:academicid},{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    

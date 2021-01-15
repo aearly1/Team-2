@@ -35,7 +35,7 @@ function InstructorViewStaff() {
     
     const token = useToken().token
     useEffect(()=>{
-    axios.get('http://localhost:5000/api/instructor/view-staff-dep',{headers:{'auth-token':token}}).then((res)=>{
+    axios.get('https://staffsprotal.herokuapp.com/api/instructor/view-staff-dep',{headers:{'auth-token':token}}).then((res)=>{
         setStaffList(res.data)
         setLoading(false)
     }).catch(err=>console.log(err.response.data))

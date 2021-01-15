@@ -17,7 +17,7 @@ function Removeacademic()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -32,7 +32,7 @@ const staff=(e)=>{
     setLoading1(true)
     setValue1(e)
     async function staff2(){
-            let url ='http://localhost:5000/api/instructor/view-staff-course/ '+'/'+ value1
+            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ value1
             await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
             setLoading1(false)
             let members=[]
@@ -77,7 +77,7 @@ const [selectcourse,setselectcourse]= useState([]);
     //remove button
      const removeclick=()=>{
         async function removefromcourse()
-            {  let URL='http://localhost:5000/api/instructor/remove-academicMember'+'/'+selectcourse+'/'+academicid
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/remove-academicMember'+'/'+selectcourse+'/'+academicid
                 await axios.post(URL,{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    
