@@ -85,8 +85,8 @@ const [selectcourse,setselectcourse]= useState([]);
             }
 
     //FRONT-END 
-    return (<div>
-        <h1>Assign Unassigned Slot</h1>
+    return (<div style ={{paddingLeft: 300}}>
+        <h1>Remove academic member</h1>
         <br></br>
             <div>
             <p>Courses</p>

@@ -697,12 +697,12 @@ router.route("/assign-academic/:course")
         try {
             //Get the Logged in User's department
             let userCode = req.user.id;
-            let currentUser = await staffModel.findOne({"id": userCode});
-            let depart = await departmentModel.findOne({"departmentName" : currentUser.departmentName});
+            let currentUser = await staffMembers.findOne({"id": userCode});
+            let depart = await department.findOne({"departmentName" : currentUser.departmentName});
           
                 let coursesOutput = [];
                 for(let i=0;i<depart.courses.length;i++){
-                    crs = await courseModel.findOne({"_id": ObjectId(depart.courses[i])})
+                    crs = await course.findOne({"_id": ObjectId(depart.courses[i])})
                     coursesOutput.push({courseName: crs.courseName})
                 //}
                 res.status(200).json(coursesOutput)
