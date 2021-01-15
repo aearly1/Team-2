@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const departmentModel = require('../models/department');
+const departmentModel = require('../models/Department');
 const requestModel = require('../models/request');
 const courseModel = require('../models/course');
 const slotModel = require('../models/slot');
