@@ -45,7 +45,8 @@ const instructor=new staffMembers ({
     annualLeaves: 400,
     accidentalLeavesLeft: 2,
     Salary: 1000000,
-    firstLogin: false
+    firstLogin: false,
+    imgLink: "https://www.iwsm-mensura.org/wp-content/uploads/2018/08/SOUBRA-PIC-240x300.jpg"
 })
 await instructor.save();
 
