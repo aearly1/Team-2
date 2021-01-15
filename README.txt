@@ -1,4 +1,25 @@
 # Team-2
+IMPORTANT NOTE FOR MILESTONE 2
+
+- run npm i and nmp i client in terminal
+-Paste your mongoDB cnnection string in the config/default.json to connect to your database
+-to run website locally run npm run dev in terminal
+-List of accounts of userthat you can login in with:
+1-HOD:
+email: Slim@gmail.com, password: SlimSlim
+2-Instructor:
+email: HSoubra@gmail.com, password: SoubraSoubra
+3-TA: 
+email: shaka@guc.com, password: 12345
+email: AHesham@gmail.com, password: AhmedAhmed
+4-Coordinator:
+email: ali@guc.com@gmail.com, password: 123456
+5-HR: 
+email: HR1@guc.edu.eg, password:12345
+
+
+____________________________________________________________________________________________________
+READ ME OF MILESTONE 1 (might have outdated info)
 
 1.  Which file should be run to launch the server of your project and under which folder (if
     not in the root)?
