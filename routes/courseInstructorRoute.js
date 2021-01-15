@@ -294,8 +294,7 @@ router.route("/assign-course/:course").post(
                         {
                             for (const element of coursesOfTheAcademic)
                             {
-                                console.log(element + " " +myCourse._id)
-                                if(myCourse._id.equals(element))
+                                if(myCourse.courseName==element)
                                  {
                                     found1=true;break;
                                  }
@@ -385,7 +384,7 @@ router.route("/update-assign/:course",)
                         {
                             for (const element of coursesOfTheAcademic)
                             {
-                                 if(myCourse._id.equals(element))
+                                 if(myCourse.courseName.equals(element))
                                  {
                                     found1=true;break;
                                  }
@@ -548,7 +547,7 @@ router.route("/update-assign/:course",)
                         {
                             for (const element of coursesOfAcademicUser)
                             {
-                                const temp=(myCourse._id)
+                                const temp=(myCourse.courseName)
                                 if(temp.equals(element))
                                 {
                                     foundIt=true;break;
@@ -574,7 +573,7 @@ router.route("/update-assign/:course",)
                             {
                                 console.log(err);
                             }
-                            await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$pull: {courses:myCourse._id}}) 
+                            await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$pull: {courses:myCourse.courseName}}) 
                             const courseSlots= myCourse.teachingSlots;
                             if(courseSlots!=null)
                             {

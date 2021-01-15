@@ -136,7 +136,6 @@ router.route('/recievedRequests')
                 result.push(request)
             }
        }
-       console.log(result)
        res.send(result);
     }
     catch(err){
@@ -152,21 +151,18 @@ router.route('/unassignedslots')
     try{
        const me= await staffMembers.findOne({_id:userID});
        const myCourses=me.courses; 
-       console.log(myCourses)
        const result=[];
        if(myCourses!=null)
        {
         for (const element of myCourses) {
-            const theCourse= await course.findOne({_id:element});
+            const theCourse= await course.findOne({courseName:element});
             const theSlots= theCourse.teachingSlots;
             if(theSlots!=null)
             for (const element2 of theSlots) {
                 const sloto = await slot.findOne({_id:element2});
-                console.log(sloto)
                 try{
                     if(sloto.staffTeachingSlot!=null)
                     {
-                        console.log("ZULU")
                     }
                     else
                     {
@@ -287,12 +283,11 @@ router.route('/peers')
        const me= await staffMembers.findOne({_id:userID});
        const subType=me.subType;
        const myCourses=me.courses; 
-       console.log(myCourses)
        const result=["Choose..."];
        if(myCourses!=null)
        {
         for (const element of myCourses) {
-            const theCourse= await course.findOne({_id:element});
+            const theCourse= await course.findOne({courseName:element});
             const theStaff= subType=="ta"?theCourse.teachingAssistants: theCourse.instructors;
             for (const element2 of theStaff) {
                 const peero = await staffMembers.findOne({_id:element2});
@@ -300,7 +295,6 @@ router.route('/peers')
             }
         }
        }  
-       console.log(result)
        res.send(result); 
     }
     catch(err){
@@ -382,7 +376,6 @@ router.route('/schedule')
         const theDate = new Date(2016, day, month);
         const temp=slotID.split("-")
         slotID=temp[2];
-        console.log("ID!!!!!!!!!!!!!" + slotID)
         
         try{
         //get sender object
@@ -415,7 +408,7 @@ router.route('/schedule')
             {
                 var sameCourse=false;
                 for (const element of recieverObject.courses) {
-                    var courseObject= await course.findOne({_id:element});
+                    var courseObject= await course.findOne({courseName:element});
                         sameCourse=courseObject._id.equals(slotObject.courseTaughtInSlot)?true:sameCourse;
                    }
                
@@ -463,7 +456,6 @@ router.route('/schedule')
                     "Slot to be replaced": slot,
                     "Date of replacement": theDate.toString()
                    }
-                   console.log(output)
                    res.send(output);
                 }
            }
@@ -584,7 +576,6 @@ router.route('/schedule')
         }
         else if(newRequest.requestType=="slot linking")
         {
-            console.log("SLOT LINKING")
             await request.findOneAndUpdate({_id: ObjectId(requestID)}, {status:"accepted"}, {new: true});
             const message= user.name + " has accepted your " + newRequest.requestType + " request"
             await staffMembers.findOneAndUpdate({_id: newRequest.senderID}, { $push: { notifications: message}}, {new: true});
@@ -813,7 +804,6 @@ router.route('/schedule')
             "DesiredDayOff": newRequest.desiredDayOff,
             "requestReason": newRequest.requestReason
         }
-        console.log(result)
         res.send(result);
     }
         }
@@ -948,7 +938,6 @@ router.route('/schedule')
         const requetsSent = userObject.sentRequests;
 
         let array=[];
-        console.log(requetsSent)
         if(requetsSent!=null)
          for (const element of requetsSent) {
             var requestObject= await request.findOne({_id:element});
@@ -1055,13 +1044,11 @@ router.route('/schedule')
             res.status(401).send("User is not an academic staff member")
         }
         const requetsSent = userObject.sentRequests;
-        console.log("SENTO MENTO: " + requetsSent)
         let array=[];
         if(requetsSent!=null)
          for (const element of requetsSent) {
             var requestObject= await request.findOne({_id:element});
             var U = await staffMembers.findOne({_id: requestObject.recieverID})
-            console.log(requestObject.startTime)
                 var requestDisplayed=
                 {
                     "id":requestObject._id,

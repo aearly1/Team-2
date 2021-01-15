@@ -14,7 +14,7 @@ const staffMembers = require('../models/staffMembers.js');
 
 router.route('/theSlots')
     .get(async(req,res)=>{
-        console.log("START")
+
         var ObjectId = require('mongodb').ObjectId; 
 
         const userID=req.user.objectId;
@@ -147,7 +147,7 @@ router.route('/slotLinkingRequest')
                 array.push(requestDisplayed);
              }
         }
-        console.log(array)
+
         res.send(array);
     }
     })
@@ -173,9 +173,9 @@ router.route('/slotLinkingRequest')
         {
             //get user
             let user = await staffMembers.findOne({_id:userID})//fetch supposed coordinator
-            console.log(coursename)
+
             let courseObject = await course.findOne({courseName:coursename})//course of coordinator
-            console.log(courseObject)
+
             //get request
             const newRequest= await request.findOne({_id:ObjectId(requestID)});
 
@@ -240,7 +240,7 @@ router.route('/slotLinkingRequest')
                 else{
                     //passed all checks, can accept
                     await staffMembers.findOneAndUpdate({_id :
-                        person._id}, {$push: { courses:courseObject._id}}, {new: true});
+                        person._id}, {$push: { courses:courseObject.courseName}}, {new: true});
                     await request.findOneAndUpdate({_id: ObjectId(requestID)}, {status:"accepted"}, {new: true});
                     await slot.findOneAndUpdate({_id: wantedSlot._id}, {staffTeachingSlot:person._id}, {new: true});
                     await course.findOneAndUpdate({_id:courseObject._id}, {unassignedSlots:courseObject.unassignedSlots-1}, {new: true});
@@ -272,7 +272,7 @@ router.route('/slotLinkingRequest')
         const day=req.body.day;
         const slotoNr=req.body.slotNr;
         const SLOTLOCATION=req.body.slotLocation;
-        console.log("THE DAY: " + day)
+
         var startTimo=null;
         var endTimo=null
                 if(slotoNr=="1st")
@@ -384,7 +384,7 @@ router.route('/slotLinkingRequest')
                         "courseTaughtInSlot": c.courseName,
                         "slotLocation": loc.roomNr
                     }
-                    console.log(result)
+
                     res.send(result);
                 }
                 }    
@@ -458,7 +458,7 @@ router.route('/slotLinkingRequest')
                if(array!=null)
                for (const element of array) 
                {
-                    if(element==courseObject._id)
+                    if(element==courseObject.courseName)
                     {
                         teachesCourse=true;break;
                     }  
@@ -545,7 +545,7 @@ router.route('/slotLinkingRequest')
         var ObjectId = require('mongodb').ObjectId; 
         const userID=req.user.objectId;
         const coursename=req.body.courseName; 
-        console.log(coursename)
+
         const slotID=req.body.slotID; 
         try
         {
@@ -595,7 +595,7 @@ router.route('/slotLinkingRequest')
                     { multi: true }
                 )
                 //passed all checks delete slot
-                console.log("right route")
+
                 const result= await slot.deleteOne({_id :
                     slotToBeDeleted._id})
                     res.send("Successfully deleted slot")
