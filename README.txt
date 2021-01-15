@@ -10,10 +10,10 @@ email: Slim@gmail.com, password: SlimSlim
 2-Instructor:
 email: HSoubra@gmail.com, password: SoubraSoubra
 3-TA: 
-email: shaka@guc.com, password: 12345
+email: shaka@guc.com, password: 12345 (USE THIS TO TEST THE ACADEMIC STAFF FEATURES SINCE IT HAS DATA FOR THESE PAGES)
 email: AHesham@gmail.com, password: AhmedAhmed
 4-Coordinator:
-email: ali@guc.com@gmail.com, password: 123456
+email: ali@guc.com@gmail.com, password: 123456 (USE THIS TO TEST THE ACADEMIC STAFF FEATURES SINCE IT HAS DATA FOR THESE PAGES)
 5-HR: 
 email: HR1@guc.edu.eg, password:12345
 

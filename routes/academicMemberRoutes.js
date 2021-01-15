@@ -56,11 +56,13 @@ router.route('/recievedRequests')
 
         //slot linking
         const courseList = await course.find();
+        console.log(courseList);
         courseId=null;
         if(courseList!=null)
         for (const element of courseList) 
         {
-            if(element.coordinator.equals(userID))
+            console.log(element.coordinator);
+            if(element.coordinator!=null && element.coordinator.equals(userID))
             {
                 courseId=element._id;break;
             }

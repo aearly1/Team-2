@@ -703,9 +703,10 @@ router.route("/assign-academic/:course")
                 for(let i=0;i<depart.courses.length;i++){
                     crs = await course.findOne({"_id": ObjectId(depart.courses[i])})
                     coursesOutput.push({courseName: crs.courseName})
-                //}
-                res.status(200).json(coursesOutput)
+                //                console.log(coursesOutput)
                 }
+                return coursesOutput;
+
     
         } catch (err) {
             console.error(err.message);
