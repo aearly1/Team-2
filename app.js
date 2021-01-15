@@ -9,7 +9,7 @@ connectDB();
 
 //Init Middleware
 app.use(express.json({extended: false}));
-//app.use(cors())
+app.use(cors())
 //Define Routes
 app.use("/api/init", require("./DBInit"));
 app.use("/api/login", require("./routes/login"))
