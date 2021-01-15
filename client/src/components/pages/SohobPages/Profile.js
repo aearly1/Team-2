@@ -153,7 +153,7 @@ let style1 = {
                         Salary: <input type="number" onChange={e=>setSalary(e.target.value)} placeholder="Enter new Salary"></input>
                         </Row></div>}
                     <Row style={{ margin: '25px' }}>
-                        <Button variant="warning" onClick={handleShow}>View Courses</Button>
+                        {courses.length!=0?<Button variant="warning" onClick={handleShow}>View Courses</Button>:<br/>}
                     </Row></div>
                 </Col>
                 {!edit?<Button variant="warning" show='false' onClick ={handleEdit}>Edit</Button>:

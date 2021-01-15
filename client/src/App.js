@@ -42,7 +42,15 @@ import HRAddStaff from './components/pages/SaeedPages/Staff/HRAddStaff'
 import HREditStaff from './components/pages/SaeedPages/Staff/HREditStaff'
 import HRDeleteStaff from './components/pages/SaeedPages/Staff/HRDeleteStaff'
 import HODTeachAssignments from './components/pages/DiabPages/HODTeachAssignments';
-import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage'
+import AssignAcademicslot from './components/pages/MayarPages/AssignAcademicslot';
+import Assigncoordinator from './components/pages/MayarPages/Assigncoordinator';
+import Deleteassignment from './components/pages/MayarPages/Deleteassignment';
+import InstructorCourseCoverage from './components/pages/MayarPages/InstructorCourseCoverage';
+import Removeacademic from './components/pages/MayarPages/Removeacademic';
+import Updateassignment from './components/pages/MayarPages/Updateassignment';
+import Viewslotassignment from './components/pages/MayarPages/viewslotassignment';
+import Viewstaffcourse from './components/pages/MayarPages/Viewstaffcourse';
+import Viewstaffperinstr from './components/pages/MayarPages/Viewstaffperinstr';
 import {Container} from 'react-bootstrap';
 import Profile from './components/pages/SohobPages/Profile'
 import Attendance from './components/pages/SohobPages/Attendance';
@@ -101,20 +109,20 @@ function App (){
         <Container fluid style= {style2}>
           <Switch>
             <Route exact path = '/' component = {Profile} />
-            <Route exact path = '/course-staff' component = {HODCourseStaff}/>
+            <Route exact path = '/course-staff'  component = {HODCourseStaff}/>
             <Route exact path = '/teach-assignments' component = {HODTeachAssignments}/>
-            <Route exact path = '/staff-do' component = {HODStaffDO}/>
-            <Route exact path = '/staff-dos' component = {HODStaffDOS}/>
-            <Route exact path = '/course-cov' component = {HODCourseCov}/>
-            <Route exact path = '/assign-instr' component = {HODEditCourse} />
-            <Route exact path = '/view-staff' component = {HODViewStaff} />
-            <Route exact path = '/ViewStaffProps' component = {ViewStaffProps} />
-            <Route exact path = '/ModifySalary' component = {ModifySalary} />
+            <Route exact path = '/staff-do'  component = {HODStaffDO}/>
+            <Route exact path = '/staff-dos'    component = {HODStaffDOS}/>
+            <Route exact path = '/course-cov'  component = {HODCourseCov}/>
+            <Route exact path = '/assign-instr'  component = {HODEditCourse} />
+            <Route exact path = '/view-staff'  component = {HODViewStaff} />
+            <Route exact path = '/ViewStaffProps'  component = {ViewStaffProps} />
+            <Route exact path = '/ModifySalary'   component = {ModifySalary} />
             <Route exact path = '/AddMissingAttendance' component = {AddMissingAttendance} />
             <Route exact path = '/AddLocation' component = {AddLocation}/>
             <Route exact path = '/EditLocation' component = {EditLocation}/>
             <Route exact path = '/DeleteLocation' component = {DeleteLocation}/>
-            <Route exact path = '/AddFaculty' component = {AddFaculty}/>
+            <Route exact path = '/AddFaculty'  component = {AddFaculty}/>
             <Route exact path = '/EditFaculty' component = {EditFaculty}/>
             <Route exact path = '/DeleteFaculty' component = {DeleteFaculty}/>
             <Route exact path = '/AddDepartment' component = {AddDepartment}/>
@@ -133,8 +141,15 @@ function App (){
             <Route exact path = '/login' component ={Profile} />
             <Route exact path = '/profile' component = {Profile} />
             <Route exact path = '/attendance' component = {Attendance} />
-            <Route exact path = '/inst-cov' component = {InstructorCourseCoverage} />
-
+            <Route exact path = '/view-course-coverage' component = {InstructorCourseCoverage} />
+            <Route exact path = '/view-slot-assign-course' component = {Viewslotassignment} />
+            <Route exact path = '/view-staff-course' component = {Viewstaffcourse} />
+            <Route exact path = '/view-staff-dep' component = {Viewstaffperinstr} />
+            <Route exact path = '/assign-course' component = {AssignAcademicslot} />
+            <Route exact path = '/update-assign' component = {Updateassignment} />
+            <Route exact path = '/delete-assign' component = {Deleteassignment} />
+            <Route exact path = '/remove-academicMember' component = {Removeacademic} />
+            <Route exact path = '/assign-academic' component = {Assigncoordinator} />
             <Route exact path = '/logout' component = {() =><> <Logout setTokeypokey={killtokey} setToken={setToken}  /> {killtokey}      </>} />
             <Route component= {NotFound}/>
           </Switch>
@@ -161,3 +176,13 @@ function App (){
   );
 }
 export default App;
+
+/* <Route exact path = '/view-course-coverage' component = {InstructorCourseCoverage} />
+<Route exact path = '/view-slot-assign-course' component = {Viewslotassignment} />
+<Route exact path = '/view-staff-course' component = {Viewstaffcourse} />
+<Route exact path = '/view-staff-dep' component = {Viewstaffperinstr} />
+<Route exact path = '/assign-course' component = {AssignAcademicslot} />
+<Route exact path = '/update-assign' component = {Updateassignment} />
+<Route exact path = '/delete-assign' component = {Deleteassignment} />
+<Route exact path = '/remove-academicMember' component = {Removeacademic} />
+<Route exact path = '/assign-academic' component = {Assigncoordinator} /> */

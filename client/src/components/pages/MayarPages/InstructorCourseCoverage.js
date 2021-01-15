@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import useToken from '../general/useToken';
 import axios from 'axios'
 import Loading from 'react-loading'
-//import course from '../../../../../models/course';
+
 function InstructorCourseCoverage() {   
     const token = useToken().token
     const [str,setStr]= useState('');
@@ -29,8 +29,8 @@ function InstructorCourseCoverage() {
      const handleSelect1= async (e)=>{
       setLoading2(true)
       setValue1(e);
-      let url ='http://localhost:5000/api/instructor/view-course-coverage'+'/'+value1 
-      await axios.post(url,{courseName:e},{headers:{'auth-token':token}}).then((res)=>{
+      let url ='http://localhost:5000/api/instructor/view-course-coverage'+'/'+e
+      await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{
         setLoading2(false);  
         setStr(res.data); 
               
@@ -82,46 +82,3 @@ InstructorCourseCoverage.propTypes = {
   
 export default InstructorCourseCoverage
 
-
-/*import React, {useState} from 'react';
-import {Container,Alert, Form, Dropdown,DropdownButton} from 'react-bootstrap';
-import PropTypes from 'prop-types';
-
-
-function InstCourseCov(props) {   
-    const [str,setStr]= useState('');
-    const [value1,setValue1]= useState('');
-    const handleSelect1=(e)=>{
-      setValue1(e);
-      //PULL THIS Dynamically from route later
-      setStr("Course coverage for course "+e+" is: 30% (needs routing)");
-    }
-    return (
-        <Container fluid >
-        <Form>
-            <Form.Group controlId="formCourse">
-            <Form.Label><h1>  Select a course to view its coverage:</h1></Form.Label>
-            <div style = {{whiteSpace: 'nowrap', paddingLeft:10, marginLeft:0}}>
-            <DropdownButton className="pb-3" variant="warning" onSelect={handleSelect1} id="dropdown-basic-button" title={(value1==="")?"Select Course":value1}>
-              {props.courses.map(course => {
-                  return <Dropdown.Item eventKey={course}>{course}</Dropdown.Item>
-              }
-            )}
-            </DropdownButton>
-            
-        {(str==="")?(<div></div>):( <Alert  style={{maxWidth:'900'}} variant="info">{str}</Alert>)}
-        </div>
-        </Form.Group>
-        </Form>
-        </Container>
-        )
-}
-  InstCourseCov.propTypes = {
-    courses: PropTypes.string
-  }
-  
-  InstCourseCov.defaultProps = {
-    courses: ["Course 1","Course 2","Course 3" , "Course 4"],
-  };
-  
-export default InstCourseCov*/

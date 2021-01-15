@@ -12,7 +12,7 @@ const StaffCard = styled.div`
 `;
 
 
-function HODTeachAssignments() {   
+function InstructorslotAssignment() {   
   let style1 = {
     background:"linear-gradient(purple, transparent),linear-gradient(to top left, #2C2A8A, transparent),linear-gradient(to top right, #F9564F, transparent)",
     backgroundColor:"#0C0A4A" ,
@@ -32,8 +32,8 @@ function HODTeachAssignments() {
 
   useEffect(()=>{
     async function doIt(){
-    //GET THE Courses under department
-    await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+    //GET THE Courses under instructor
+    await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
       let items = []
       res.data.map(course => {items.push({ courseName:course.courseName})})
       setLoading1(false)
@@ -45,7 +45,8 @@ function HODTeachAssignments() {
   const handleChange= async (e)=>{
     setLoading2(true);
     setValue1(e)
-    await axios.post('http://localhost:5000/api/hod/teaching-assignments',{'courseName':e},{headers:{'auth-token':token}}).then((res)=>{ 
+    let url = 'http://localhost:5000/api/instructor/view-slot-assign-course'+'/'+e
+    await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
     setSlots(res.data)  
     setLoading2(false)
     setRendered(true)
@@ -147,4 +148,4 @@ function HODTeachAssignments() {
 } 
 
   
-export default HODTeachAssignments
+export default InstructorslotAssignment
