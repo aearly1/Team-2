@@ -1,8 +1,8 @@
 import React , {useEffect, useState} from 'react'
-import useToken from 'client/src/components/pages/general/useToken'
+import useToken from '../general/useToken';
 import axios from 'axios'
 import { DropdownButton, Dropdown, Button} from 'react-bootstrap'
-
+import { usePromiseTracker,trackPromise } from "react-promise-tracker";
 function UpdateAssignment()
 {
     const token = useToken().token
@@ -12,53 +12,56 @@ function UpdateAssignment()
     const [value1,setValue1]= useState('');
     const [loading2,setLoading2]= useState(false);
     var[courses, setcourses]= useState([]);
-    var [arr,setarr]= useState([]);
+    const [arr,setarr]= useState(["ana 7azeen"]);
 
-    useEffect(async ()=>{
-        async function doIt()
-        { //get courses of instructor
-            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',
+    useEffect( ()=>{
+        
+        //get courses of instructor
+            trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',
             {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
+            console.log(res.data.courseName)
+            console.log(token)
             res.data.map(course => {courseslist.push(course.courseName)})
             setcourses(courseslist);
-        }).catch(err=>alert(err))}
-            await doIt();
+        }).catch(err=>alert(err)))
+            
         }, []  )
+
 
 
 //view slot assignment of this course  selected 
 const  assignedslots=(e)=>{
     setLoading2(true)
     setValue2(e)
+    console.log(value2)
     async function assignedslots2(){
-     let url ='https://staffsprotal.herokuapp.com/api/instructor/assignedslots'+'/'+value2
+     let url ='https://staffsprotal.herokuapp.com/api/instructor/assignedslots'+'/'+e
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
-     res.data.map(assignedslots=>{items.push(assignedslots.slotID)})
+     res.data.map(assignedslots=>{items.push(assignedslots)})
      setLoading2(false);  
      setarr(items);
- }).catch(err=>setarr(err.toString()))
+ }).catch(err=>alert(err.toString()))
  
   }assignedslots2();}
 
            
 //staff of  selected course
-const staff=(e)=>{
+const staff= async (e)=>{
     setLoading1(true)
     setValue1(e)
-    async function staff2 (){
-            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ value1
-            await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
+            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/'+ value1
+            await axios.get(url,{headers:{'auth-token': `${token}`}}).then((res)=>{ 
+            console.log(res.data)
             setLoading1(false)
-            let members=[]
+            let a1=[]
             res.data.map(staffmem=>{
-                members.push(staffmem.name+" "+staffmem.id)
+                a1.push(staffmem.name+" "+staffmem.userCode)
            });
-            setMembers(members)
+            setMembers(a1)
             }).catch(err=>console.log(err.response.data))
-            
-}       staff2();}
+            }
 
 const [slotselect,setslotselect]= useState("Select Slot: ");
 const [academicid,setacademicid]= useState("Select Academic: ");
@@ -66,16 +69,17 @@ const [selectcourse,setselectcourse]= useState("Select Course: ");
 
 //pass the selected courses to get assigned slots and staff
         const handleSelect= async (e)=>{
-            setselectcourse(e);
-            assignedslots(e);
-            staff(e);
+          setselectcourse(e);
+          assignedslots(e);
+          staff(e);
           }
           
 //selected academic to be assigned updated
     const handleSelect2=(e)=>{
         let ehelper= e.split(" ")
         let ecurrent =ehelper.pop()
-         setacademicid(ecurrent)    }
+         setacademicid(ecurrent)
+        console.log(ecurrent)    }
 
 //selected slot to be assigned updated
     const handleSelect3=(e)=>{
@@ -102,7 +106,7 @@ const [selectcourse,setselectcourse]= useState("Select Course: ");
         <br></br>
             <div>
             <p>Courses</p>
-            <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
+            <DropdownButton onSelect={handleSelect} onChange={(e)=>{staff(e);console.log("ss")}} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
                 {courses.map(elem=>
       {
           return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
@@ -119,10 +123,10 @@ const [selectcourse,setselectcourse]= useState("Select Course: ");
             <br></br>
             <p>assignedslots</p>
             <DropdownButton onSelect={handleSelect3} id="dropdown-basic-button" variant="warning"  drop={"down"} title={slotselect}>
-                {arr.map(elem=>
-            {
-                return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
-            })}
+            { arr.map(elem=>
+        {
+            return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+        })}
             </DropdownButton>
             <br></br>
             <Button onClick={AssignClick} variant="success">Update AssignSlot</Button>

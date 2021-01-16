@@ -22,7 +22,7 @@ async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
+        const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
         if(myCourse==null)
         {
             res.status(404).send("Course not found!")
@@ -74,7 +74,7 @@ router.route("/view-slot-assign-course/:course")
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
+        const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
         if(myCourse==null)
         {
             res.status(404).send("Course not found!")
@@ -135,7 +135,8 @@ router.route("/view-staff-course/:course",
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
         try {
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            console.log(req.params.course.replace(/%20/g, " "))
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             if(myCourse==null)
             {
                 res.status(404).send("Course not found!")
@@ -251,7 +252,7 @@ router.route("/assign-course/:course").post(
     async (req, res) =>{
         try
         {
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             if(myCourse==null)
             {
                 res.status(404).send("Course not found!")
@@ -339,7 +340,7 @@ router.route("/update-assign/:course",)
 
         try
         {
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             if(myCourse==null)
             {
                 res.status(404).send("Course not found!")
@@ -386,7 +387,7 @@ router.route("/update-assign/:course",)
                         {
                             for (const element of coursesOfTheAcademic)
                             {
-                                 if(myCourse.courseName.equals(element))
+                                 if(myCourse.courseName == element)
                                  {
                                     found1=true;break;
                                  }
@@ -398,16 +399,18 @@ router.route("/update-assign/:course",)
                         }
                         else
                         {
+                            var sloty = await slot.findOne({_id:theSlot._id})
                             //delete
                            try
                            {
+                               
                                 await staffMembers.findByIdAndUpdate({_id:sloty.staffTeachingSlot},{$pull: {scheduleSlots:theSlot._id}})  
                            }
                            catch(err)
                            {
                                console.log(err)
                            }
-                            var sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:null}, {new: true})
+                           sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:null}, {new: true})
                             //add
                             sloty=await slot.findOneAndUpdate({_id:theSlot._id},{staffTeachingSlot:theAcademicUser._id}, {new: true})
                             await staffMembers.findByIdAndUpdate({_id:theAcademicUser._id},{$push: {scheduleSlots:theSlot._id}})  
@@ -438,7 +441,7 @@ router.route("/update-assign/:course",)
         async(req,res) =>{
             try
         {
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             if(myCourse==null)
             {
                 res.status(404).send("Course not found!")
@@ -507,7 +510,7 @@ router.route("/update-assign/:course",)
         async(req,res) =>{
             try
         {
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             console.log(myCourse)
             if(myCourse==null)
             {
@@ -621,7 +624,7 @@ router.route("/assign-academic/:course")
             const userID=req.user.id;
             const user = await staffMembers.findOne({id:userID})
             const academicID=req.body.academicID
-            const myCourse= await course.findOne({"courseName":req.params.course});
+            const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
             if(myCourse==null)
             {
                 res.status(404).send("Course not found!")
@@ -693,20 +696,21 @@ router.route("/assign-academic/:course")
     });
 
 
- router.get("/courses", async (req, res) => {
+ router.route("/courses")
+ .get( async (req, res) => {
         try {
             //Get the Logged in User's department
             let userCode = req.user.id;
             let currentUser = await staffMembers.findOne({"id": userCode});
             let depart = await department.findOne({"departmentName" : currentUser.departmentName});
           
-                let coursesOutput = [];
-                for(let i=0;i<depart.courses.length;i++){
+               let coursesOutput = [];
+               for(let i=0;i<depart.courses.length;i++){
                     crs = await course.findOne({"_id": ObjectId(depart.courses[i])})
                     coursesOutput.push({courseName: crs.courseName})
                 //                console.log(coursesOutput)
                 }
-                return coursesOutput;
+                return res.send(coursesOutput);
 
     
         } catch (err) {
@@ -724,7 +728,7 @@ router.route("/unassigned/:course")
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
+        const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
         if(myCourse==null)
         {
             res.status(404).send("Course not found!")
@@ -759,7 +763,7 @@ router.route("/assignedslots/:course")
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })}
     try {
-        const myCourse= await course.findOne({"courseName":req.params.course});
+        const myCourse= await course.findOne({"courseName":req.params.course.replace(/%20/g, " ")});
         if(myCourse==null)
         {
             res.status(404).send("Course not found!")
@@ -770,10 +774,12 @@ router.route("/assignedslots/:course")
            
                 for (const element of teachingSlots)
                 {
-                    if(!element.staffTeachingSlot.equals(null))
-                    {
-                        assignedslotsarray.push(element )
+
+                    let s = await slot.findOne({"_id":ObjectId(element)})
+                    if(s.staffTeachingSlot)   { 
+                    assignedslotsarray.push(s._id)
                     }
+                    
                  }
                  res.send(assignedslotsarray)
            } 
