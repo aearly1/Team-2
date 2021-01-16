@@ -30,19 +30,19 @@ function RowComponent(props)
                     }
                     else if(value1=="Select Staff Teaching Slot")
                     {
-                        await axios.put('https://staffsprotal.herokuapp.com/api/coordinator/updateCourseSlot',{"slotID":index, "slotLocation":value2},{headers:{'auth-token':token}}).then((res)=>{       
+                        await axios.put('https://localhost:5000/api/coordinator/updateCourseSlot',{"slotID":index, "slotLocation":value2},{headers:{'auth-token':token}}).then((res)=>{       
                         }).catch(err=>alert(err));
                         alert("slot updated") 
                     }
                     else if(value2=="Select Location of Slot")
                     {
-                        await axios.put('https://staffsprotal.herokuapp.com/api/coordinator/updateCourseSlot',{"slotID":index, "staffTeachingSlot":value1},{headers:{'auth-token':token}}).then((res)=>{       
+                        await axios.put('https://localhost:5000/api/coordinator/updateCourseSlot',{"slotID":index, "staffTeachingSlot":value1},{headers:{'auth-token':token}}).then((res)=>{       
                         }).catch(err=>alert(err));
                         alert("slot updated") 
                     }
                     else
                     {
-                        await axios.put('https://staffsprotal.herokuapp.com/api/coordinator/updateCourseSlot',{"slotID":index, "staffTeachingSlot":value1, "slotLocation":value2},{headers:{'auth-token':token}}).then((res)=>{       
+                        await axios.put('https://localhost:5000/api/coordinator/updateCourseSlot',{"slotID":index, "staffTeachingSlot":value1, "slotLocation":value2},{headers:{'auth-token':token}}).then((res)=>{       
                         }).catch(err=>alert(err));
                         alert("slot updated") 
                     }
@@ -55,7 +55,7 @@ function RowComponent(props)
         var index = e.target.id
         async function deleteSlots()
               {
-                    await axios.post('https://staffsprotal.herokuapp.com/api/coordinator/deleteCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
+                    await axios.post('https://localhost:5000/api/coordinator/deleteCourseSlot',{slotID:index},{headers:{'auth-token':token}}).then((res)=>{       
                     }).catch(err=>alert(err));
                }
                 deleteSlots();

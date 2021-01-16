@@ -20,7 +20,7 @@ function HODEditCourse(){
     const [value3,setValue3]= useState(''); // This is the instructorName
     useEffect(()=>{
         //GET THE Courses under department
-        axios.get('https://staffsprotal.herokuapp.com/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+        axios.get('https://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
             let items = []
             res.data.map(course => {items.push({ courseName:course.courseName})})
             setLoading1(false)
@@ -28,7 +28,7 @@ function HODEditCourse(){
         }).catch(err=>console.log(err.response.data))
 
         //GET THE Instructors under department
-        axios.get('https://staffsprotal.herokuapp.com/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
+        axios.get('https://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
             let items = []
             res.data.map(staffMem => 
             {
@@ -45,7 +45,7 @@ function HODEditCourse(){
     const assignInstrReq= async ()=> {
         if(value1&&value2){
             setLoading3(true)
-            await axios.post('https://staffsprotal.herokuapp.com/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+            await axios.post('https://localhost:5000/api/hod/assign-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
                 setLoading3(false);
                 setAlertext(res.data);         
             }).catch(err=>{
@@ -59,7 +59,7 @@ function HODEditCourse(){
     const deleteInstrReq=async  () => {
         if(value1&&value2){
             setLoading3(true)
-            await axios.post('https://staffsprotal.herokuapp.com/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+            await axios.post('https://localhost:5000/api/hod/del-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setLoading3(false);    
             setAlertext(res.data);      
             }).catch(err=>{
@@ -73,7 +73,7 @@ function HODEditCourse(){
     const updateInstrReq= async () => {
         if(value1&&value2){
             setLoading3(true)
-            await axios.post('https://staffsprotal.herokuapp.com/api/hod/update-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
+            await axios.post('https://localhost:5000/api/hod/update-instr-course',{courseName:value1,instructorId: value2},{headers:{'auth-token':token}}).then((res)=>{
             setLoading3(false);
             setAlertext(res.data);       
             }).catch(err=>{

@@ -17,7 +17,7 @@ function Slot()
     useEffect(async ()=>{
         async function doIt()
         {
-            await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/location',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://localhost:5000/api/academicMember/location',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setOptions2(items);
         }).catch(err=>alert(err))}
@@ -25,7 +25,7 @@ function Slot()
         
         async function tableLoading()
         {
-            await axios.get('https://staffsprotal.herokuapp.com/api/coordinator/theSlots',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://localhost:5000/api/coordinator/theSlots',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setArr(items);
         }).catch(err=>alert(err))}
@@ -68,7 +68,7 @@ function Slot()
           {
               async function createSlots()
               {
-                    await axios.post('https://staffsprotal.herokuapp.com/api/coordinator/addCourseSlot',{day:value3, slotNr:value1, slotLocation:value2},{headers:{'auth-token':token}}).then((res)=>{       
+                    await axios.post('https://localhost:5000/api/coordinator/addCourseSlot',{day:value3, slotNr:value1, slotLocation:value2},{headers:{'auth-token':token}}).then((res)=>{       
                     }).catch(err=>alert(err));
                }
                 createSlots();

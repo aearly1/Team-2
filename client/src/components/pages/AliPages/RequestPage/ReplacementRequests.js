@@ -32,7 +32,7 @@ function RequestsPage()
         //loading names of peers
         async function Peers()
         {
-            await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/peers',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://localhost:5000/api/academicMember/peers',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setSentTo(items);
         }).catch(err=>alert(err))}
@@ -40,7 +40,7 @@ function RequestsPage()
         //loading slots
        async function Slots()
         {
-            await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/mySlots',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://localhost:5000/api/academicMember/mySlots',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setSlot(items);
         }).catch(err=>alert(err))}
@@ -53,7 +53,7 @@ function RequestsPage()
             {
                 async function submit()
                 {
-                    await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/replacementRequest',{"slotID":slotVal, "sendingRequestTo":sentToVal, "month":monthVal, "day":dayVal},{headers:{'auth-token':token}}).then((res)=>{
+                    await axios.post('https://localhost:5000/api/academicMember/replacementRequest',{"slotID":slotVal, "sendingRequestTo":sentToVal, "month":monthVal, "day":dayVal},{headers:{'auth-token':token}}).then((res)=>{
                 }).catch(err=>alert(err))}
                 submit();
                 window.location.reload(true);

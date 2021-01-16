@@ -20,7 +20,7 @@ function AddStaff(props){
 
     const handleSubmit = (e1)=> {
       e1.preventDefault();
-      axios.post('https://staffsprotal.herokuapp.com/api/hr/addStaffMember',{'email':email,
+      axios.post('https://localhost:5000/api/hr/addStaffMember',{'email':email,
     'name':name,
     'type':type,
     'subType':subType,

@@ -35,7 +35,7 @@ function InstructorViewStaff() {
     
     const token = useToken().token
     useEffect(()=>{
-    axios.get('https://staffsprotal.herokuapp.com/api/instructor/view-staff-dep',{headers:{'auth-token':token}}).then((res)=>{
+    axios.get('https://localhost:5000/api/instructor/view-staff-dep',{headers:{'auth-token':token}}).then((res)=>{
         setStaffList(res.data)
         setLoading(false)
     }).catch(err=>console.log(err.response.data))
@@ -45,17 +45,6 @@ function InstructorViewStaff() {
     return (
         
         <Container fluid >
-        
-        {/*
-          (props.course==='')?(
-          //if this is not coming from /course-staff then it's just a view all staff
-          <h1 style = {{whiteSpace: 'nowrap'}}>Staff members in your department: </h1>
-        ):(
-          //but if the course is not empty, then it came from a /course-staff
-          <h1 style = {{whiteSpace: 'nowrap'}}>Staff members assigned to {props.course}:</h1>
-        )*/
-        }
-        
         {(!loading)?(
           staffList.map(staffMem => {
             return (

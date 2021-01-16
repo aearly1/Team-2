@@ -55,7 +55,7 @@ import {Form, Table, Button,Container, Row, Col, DropdownButton,Dropdown} from '
         {
             async function submit()
             {
-                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/leave',
+                await axios.post('https://localhost:5000/api/academicMember/leave',
                 {"documents": link,
                 "reason": reason,
                 "leaveType": leaveType,

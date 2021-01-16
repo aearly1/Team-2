@@ -14,51 +14,54 @@ function AssignSlot()
     var[courses, setcourses]= useState([]);
     var [arr,setarr]= useState([]);
 
-    useEffect(async ()=>{
-        async function doIt()
-        { //get courses of instructor
-            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+    useEffect( ()=>{
+        
+        //get courses of instructor
+            trackPromise(axios.get('https://localhost:5000/api/instructor/courses',
+            {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
-            res.data.map(course => {courseslist.push({ courseName:course.courseName})})
+            console.log(res.data.courseName)
+            console.log(token)
+            res.data.map(course => {courseslist.push(course.courseName)})
             setcourses(courseslist);
-        }).catch(err=>alert(err))}
-            await doIt();
+        }).catch(err=>alert(err)))
+            
         }, []  )
 
 
 //unassigned slots of selected course
 const  unassignedslots=(e)=>{
-    async function unassignedslots2(){
     setLoading2(true)
     setValue2(e)
-     let url ='https://staffsprotal.herokuapp.com/api/instructor/unassigned'+'/'+e
+    async function unassignedslots2(){
+     let url ='https://localhost:5000/api/instructor/unassigned'+'/'+e
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
-     res.data.map(unassignedslot=>{items.push(unassignedslot.slotID)})
+     res.data.map(unassignedslot=>{items.push(unassignedslot)})
      setLoading2(false);  
      setarr(items);
- }).catch(err=>setarr(err.toString()))
+ }).catch(err=>alert(err.toString()))
  
 }unassignedslots2();}
 
 
            
 //staff of  selected course
-const  staff=(e)=>{
-    async function staff2 (){
+const staff= async (e)=>{
     setLoading1(true)
-            setValue1(e)
-            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ e
-            await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
+    setValue1(e)
+            let url ='https://localhost:5000/api/instructor/view-staff-course/'+ value1
+            await axios.get(url,{headers:{'auth-token': `${token}`}}).then((res)=>{ 
+            console.log(res.data)
             setLoading1(false)
-            let members=[]
+            let a1=[]
             res.data.map(staffmem=>{
-                members.push(staffmem.name+" "+staffmem.id)
+                a1.push(staffmem.name+" "+staffmem.userCode)
            });
-            setMembers(members)
+            setMembers(a1)
             }).catch(err=>console.log(err.response.data))
-            
-        }       staff2();}
+            }
+
 
 
         const [slotselect,setslotselect]= useState("Select Slot: ");
@@ -107,12 +110,10 @@ const  staff=(e)=>{
     //aAssign button
      const AssignClick=()=>{
         async function assignslot()
-            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/assign-course'+'/'+selectcourse
+            {  let URL='https://localhost:5000/api/instructor/assign-course'+'/'+selectcourse
                 await axios.post(URL,{slotID:slotselect, academicId:academicid },{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
-             }    
-                assignslot();
-            }
+             }     assignslot();}
 
     //FRONT-END 
     return (<div>
@@ -120,7 +121,7 @@ const  staff=(e)=>{
         <br></br>
             <div>
             <p>Courses</p>
-            <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
+            <DropdownButton onSelect={handleSelect} onChange={(e)=>{staff(e);console.log("ss")}} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
                 {courses.map(elem=>
             {
                 return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
