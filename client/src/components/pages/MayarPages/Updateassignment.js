@@ -40,8 +40,7 @@ const  assignedslots=(e)=>{
      setarr(items);
  }).catch(err=>setarr(err.toString()))
  
-}assignedslots2();}
-
+  }assignedslots2();}
 
            
 //staff of  selected course
@@ -59,7 +58,7 @@ const staff=(e)=>{
             setMembers(members)
             }).catch(err=>console.log(err.response.data))
             
-        }       staff2();}
+}       staff2();}
 
 const [slotselect,setslotselect]= useState("Select Slot: ");
 const [academicid,setacademicid]= useState("Select Academic: ");
