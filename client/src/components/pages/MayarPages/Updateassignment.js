@@ -17,7 +17,8 @@ function UpdateAssignment()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',
+            {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -83,22 +84,9 @@ const [selectcourse,setselectcourse]= useState([]);
 
                                      //MAPING DROPDOWNS
     //courses
-    const items1= courses.map(elem=>
-      {
-          return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
-      })
+    
 
-      //academic members
-      const items2= members.map(elem=>
-        {
-            return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
-        })
 
-    //assigned slots 
-     const items3= arr.map(elem=>
-            {
-                return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
-            })
 
     //Update Assign button
      const AssignClick=()=>{
@@ -117,17 +105,26 @@ const [selectcourse,setselectcourse]= useState([]);
             <div>
             <p>Courses</p>
             <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
-                {items1}
+                {courses.map(elem=>
+      {
+          return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+      })}
             </DropdownButton>
             <br></br>
             <p>Academic members</p>
             <DropdownButton onSelect={handleSelect2} id="dropdown-basic-button" variant="warning"  drop={"down"} title={academicid}>
-                {items2}
+                { members.map(elem=>
+        {
+            return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+        })}
             </DropdownButton>
             <br></br>
             <p>assignedslots</p>
             <DropdownButton onSelect={handleSelect3} id="dropdown-basic-button" variant="warning"  drop={"down"} title={slotselect}>
-                {items3}
+                {arr.map(elem=>
+            {
+                return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+            })}
             </DropdownButton>
             <br></br>
             <Button onClick={AssignClick} variant="success">Update AssignSlot</Button>
