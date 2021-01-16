@@ -20,7 +20,7 @@ function UpdateAssignment()
             await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',
             {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
-            res.data.map(course => {courseslist.push({ courseName:course.courseName})})
+            res.data.map(course => {courseslist.push(course.courseName)})
             setcourses(courseslist);
         }).catch(err=>alert(err))}
             await doIt();
