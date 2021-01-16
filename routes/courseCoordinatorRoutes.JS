@@ -25,7 +25,7 @@ router.route('/theSlots')
         if(courseList!=null)
         for (const element of courseList) 
         {
-            if(element.coordinator.equals(userID))
+            if(element.coordinator!=null && element.coordinator.equals(userID))
             {
                 courseId=element._id;break;
             }

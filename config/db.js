@@ -1,12 +1,17 @@
 const mongoose = require("mongoose");
 const config = require("config");
-const db = config.get("mongoURI");
+const db = process.env.mongoURI || config.get("mongoURI") || "mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority";
 
 const connectDB = async () => {
   try {
     await mongoose.connect(db, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      server: {
+        socketOptions: {
+            connectTimeoutMS: 500000
+        }
+    }
     });
 
     console.log("MongoDB Connected...");

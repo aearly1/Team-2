@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://dbAdmin:ZerebewZobrew1@cluster0.14yo5.mongodb.net/test?retryWrites=true&w=majority",
+    "jwtSecret": "qofhiqoh38hfqfh3109fjqpjf"
+  }

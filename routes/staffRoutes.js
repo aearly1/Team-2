@@ -15,6 +15,8 @@ const missingdays = require('../functions/funcs').missingdays
 //connectDB()
 //.then(async()=>{
     //app.use(auth.func)
+    
+    app.use(auth.func)
     app.post('/logout',(req,res)=>{
         blacklist.push(req.header('auth-token'))
         res.status(200).send("Logout successful")

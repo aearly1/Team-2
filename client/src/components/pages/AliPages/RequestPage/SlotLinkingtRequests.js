@@ -42,7 +42,7 @@ function Requestpage()
         //loading slots
         async function slots()
         {
-            await axios.get('http://localhost:5000/api/academicMember/unassignedslots',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/unassignedslots',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setArr(items);
         }).catch(err=>alert(err))}
@@ -53,7 +53,7 @@ function Requestpage()
             const index=e.target.id
             async function submit()
             {
-                await axios.post('http://localhost:5000/api/academicMember/slotLinkingRequest',{"slotID":index},{headers:{'auth-token':token}}).then((res)=>{
+                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/slotLinkingRequest',{"slotID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             submit();
             alert("Request submitted")

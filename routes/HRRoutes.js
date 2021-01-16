@@ -3,7 +3,7 @@ const router= express.Router()
 const locationModel = require('../models/location.js')
 const slotModel = require('../models/slot.js')
 const facultyModel = require('../models/faculty.js')
-const departmentModel = require('../models/department')
+const departmentModel = require('../models/Department')
 const courseModel = require('../models/course.js')
 const staffModel = require('../models/staffMembers.js')
 const bcrypt = require("bcryptjs");
@@ -30,7 +30,8 @@ const missingdays = require('../functions/funcs').missingdays
 //         return res.sendStatus(401);
 //     }
 // };
-
+const auth = require('../middleware/auth.js')
+    router.use(auth.func)
 //add location
 router.post('/addLocation',[
     check("roomNr", "RoomNr Name incorrect").isString(),

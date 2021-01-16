@@ -1,6 +1,7 @@
 # Team-2
 IMPORTANT NOTE FOR MILESTONE 2
 
+-our deployed website: https://staffsprotal.herokuapp.com/
 - run npm i and nmp i client in terminal
 -Paste your mongoDB cnnection string in the config/default.json to connect to your database
 -to run website locally run npm run dev in terminal

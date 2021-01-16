@@ -18,7 +18,7 @@ function DeleteAssignment()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -32,19 +32,20 @@ const  assignedslots=(e)=>{
     setLoading2(true)
     setValue2(e)
     async function assignedslots2 (){
-     let url ='http://localhost:5000/api/instructor/assignedslots'+'/'+value2
+     let url ='https://staffsprotal.herokuapp.com/api/instructor/assignedslots'+'/'+value2
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
      res.data.map(assignedslots=>{items.push(assignedslots.slotID)})
      setLoading2(false);  
      setarr(items);
  }).catch(err=>setarr(err.toString()))
- assignedslots2();
-  }}
+ 
+}assignedslots2();}
 
 
-const [slotselect,setslotselect]= useState([]);
-const [selectcourse,setselectcourse]= useState([]);
+c
+const [slotselect,setslotselect]= useState("Select Slot: ");
+const [selectcourse,setselectcourse]= useState("Select Course: ");
 
 //pass the selected courses to get assigned slots and staff
         const handleSelect= async (e)=>{
@@ -57,7 +58,7 @@ const [selectcourse,setselectcourse]= useState([]);
       setslotselect(e)
     }
 
-                                     //MAPING DROPDOWNS
+  /*                                   //MAPING DROPDOWNS
     //courses
     const items1= courses.map(elem=>
       {
@@ -69,11 +70,12 @@ const [selectcourse,setselectcourse]= useState([]);
             {
                 return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
             })
+*/
 
     //Delete Assign button
      const DeleteClick=()=>{
         async function deleteassig()
-            {  let URL='http://localhost:5000/api/instructor/delete-assign'+'/'+selectcourse
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/delete-assign'+'/'+selectcourse
                 await axios.post(URL,{slotID:slotselect},{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    
@@ -87,12 +89,18 @@ const [selectcourse,setselectcourse]= useState([]);
             <div>
             <p>Courses</p>
             <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
-                {items1}
+                {courses.map(elem=>
+      {
+          return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+      })}
             </DropdownButton>
             <br></br>
             <p>assignedslots</p>
             <DropdownButton onSelect={handleSelect3} id="dropdown-basic-button" variant="warning"  drop={"down"} title={slotselect}>
-                {items3}
+                {arr.map(elem=>
+            {
+                return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+            })}
             </DropdownButton>
             <br></br>
             <Button onClick={DeleteClick} variant="success">Delete AssignSlot</Button>

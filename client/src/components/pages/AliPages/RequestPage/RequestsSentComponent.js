@@ -20,48 +20,43 @@ function SentRequestsTable()
     const handleSelect1=(e)=>{
         setValue1(e)
     }
-    const handleSelectStatus=()=>{
-        const intervalId = setInterval(() => {  
-            async function select()
+    const handleSelectStatus=()=>{async function select()
         {
             if(value1=="View all sent requests")
             {
-                await axios.get('http://localhost:5000/api/academicMember/requestStatus',{headers:{'auth-token':token}}).then((res)=>{
+                await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/requestStatus',{headers:{'auth-token':token}}).then((res)=>{
                 let items=res.data;
                 setArr(items);
                 }).catch(err=>alert(err))
             }
             else if(value1=="View accepted requests")
             {
-                await axios.get('http://localhost:5000/api/academicMember/requestStaus/accepted',{headers:{'auth-token':token}}).then((res)=>{
+                await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/requestStaus/accepted',{headers:{'auth-token':token}}).then((res)=>{
                     let items=res.data;
                     setArr(items);
                 }).catch(err=>alert(err))
             }
             else if(value1=="View rejected requests")
             {
-                await axios.get('http://localhost:5000/api/academicMember/requestStaus/rejected',{headers:{'auth-token':token}}).then((res)=>{
+                await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/requestStaus/rejected',{headers:{'auth-token':token}}).then((res)=>{
                     let items=res.data;
                     setArr(items);
                 }).catch(err=>alert(err))
             }
             else if(value1=="View pending requests")
             {
-                await axios.get('http://localhost:5000/api/academicMember/requestStaus/pending',{headers:{'auth-token':token}}).then((res)=>{
+                await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/requestStaus/pending',{headers:{'auth-token':token}}).then((res)=>{
                     let items=res.data;
                     setArr(items);
                 }).catch(err=>alert(err))
             }          
         }
-        select();
-        }, 5000)
-        return () => clearInterval(intervalId); //This is important
-    }
+        select();}
     const handleCancel=(e)=>{
         var index = e.target.id
             async function cancel()
             {
-                await axios.post('http://localhost:5000/api/academicMember/cancleRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
+                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/cancleRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             cancel();
             window.location.reload(true);

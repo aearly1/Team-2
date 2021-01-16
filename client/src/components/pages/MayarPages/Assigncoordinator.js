@@ -17,7 +17,7 @@ function Assigncoordinator()
     useEffect(async ()=>{
         async function doIt()
         { //get courses of instructor
-            await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             res.data.map(course => {courseslist.push({ courseName:course.courseName})})
             setcourses(courseslist);
@@ -32,7 +32,7 @@ function Assigncoordinator()
     async function staff2(){
     setLoading1(true)
             setValue1(e)
-            let url ='http://localhost:5000/api/instructor/view-staff-course/ '+'/'+ e
+            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ e
             await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
             setLoading1(false)
             let members=[]
@@ -41,11 +41,11 @@ function Assigncoordinator()
            });
             setMembers(members)
             }).catch(err=>console.log(err.response.data))
-            staff2();
-}}
+            
+        }       staff2();}
 
-const [academicid,setacademicid]= useState([]);
-const [selectcourse,setselectcourse]= useState([]);
+        const [academicid,setacademicid]= useState("Select Academic: ");
+        const [selectcourse,setselectcourse]= useState("Select Course: ");
 
 //pass the selected courses to get unassigned slots and staff
         const handleSelect= async (e)=>{
@@ -60,7 +60,7 @@ const [selectcourse,setselectcourse]= useState([]);
       setacademicid(ecurrent)
     }
 
-                                     //MAPING DROPDOWNS
+  /*                                   //MAPING DROPDOWNS
     //courses
     const items1= courses.map(elem=>
       {
@@ -72,12 +72,12 @@ const [selectcourse,setselectcourse]= useState([]);
         {
             return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
         })
-
+*/
 
     //aAssign button
      const Assignclick=()=>{
         async function coordinatorset()
-            {  let URL='http://localhost:5000/api/instructor/assign-academic'+'/'+selectcourse
+            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/assign-academic'+'/'+selectcourse
                 await axios.post(URL,{academicID:academicid},{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    
@@ -91,12 +91,19 @@ const [selectcourse,setselectcourse]= useState([]);
             <div>
             <p>Courses</p>
             <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
-                {items1}
+                {courses.map(elem=>
+      {
+          return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>
+      })
+}
             </DropdownButton>
             <br></br>
             <p>Academic members</p>
             <DropdownButton onSelect={handleSelect2} id="dropdown-basic-button" variant="warning"  drop={"down"} title={academicid}>
-                {items2}
+                {members.map(elem=>
+        {
+            return <Dropdown.Item  eventKey={elem}>{elem}</Dropdown.Item>
+        })}
             </DropdownButton>
             <br></br>
             <Button onClick={Assignclick} variant="success">Remove academic</Button>

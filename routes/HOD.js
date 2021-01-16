@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const departmentModel = require('../models/department');
+const departmentModel = require('../models/Department');
 const requestModel = require('../models/request');
 const courseModel = require('../models/course');
 const slotModel = require('../models/slot');
@@ -11,7 +11,8 @@ const { ObjectId } = require('mongodb');
 const e = require('express');
 
 
-
+const auth = require('../middleware/auth.js')
+    router.use(auth.func)
 //Done ==> 12
 //Work In Progress ==> 0
 //Untouched ==> 0
