@@ -3,14 +3,13 @@ const express = require('express');
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const course = require('../models/course');
-const department= require('../models/Department.js');
+const department= require('../models/department.js');
 //const faculty = require('../models/faculty.js')
 const location= require('../models/location.js')
 const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
-const auth = require('../middleware/auth.js')
-    router.use(auth.func)
+
 router.route('/recievedRequests')
 .get(async(req,res)=>
 {
@@ -57,11 +56,13 @@ router.route('/recievedRequests')
 
         //slot linking
         const courseList = await course.find();
+        console.log(courseList);
         courseId=null;
         if(courseList!=null)
         for (const element of courseList) 
         {
-            if(element.coordinator.equals(userID))
+            console.log(element.coordinator);
+            if(element.coordinator!=null && element.coordinator.equals(userID))
             {
                 courseId=element._id;break;
             }
