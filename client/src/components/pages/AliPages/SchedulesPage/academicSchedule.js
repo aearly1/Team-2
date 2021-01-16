@@ -19,11 +19,9 @@ function AcademicSchedule()
     var [schedule, setSchedule] = useState(arr)
     
     useEffect(async ()=>{
-        const intervalId = setInterval(() => {  
-            //GET THE Courses under department
-       async function doIt()
+        function doIt()
        {
-           await axios.get('https://staffsprotal.herokuapp.com/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
+        axios.get('http://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
            let items=res.data;
            var array = [...schedule];
            for (const element of items) 
@@ -35,8 +33,6 @@ function AcademicSchedule()
            setSchedule(array);
        }).catch(err=>alert(err))}
            doIt();
-        }, 5000)
-        return () => clearInterval(intervalId); //This is important
         
         }, []  )
 
