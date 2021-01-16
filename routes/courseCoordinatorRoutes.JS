@@ -12,6 +12,7 @@ const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 
+
 router.route('/theSlots')
     .get(async(req,res)=>{
 

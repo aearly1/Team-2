@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
-const auth = require("../middleware/auth");
+const auth = require('../middleware/auth');
 const course = require('../models/course');
 const department= require('../models/Department.js');
 const faculty = require('../models/faculty.js')
@@ -12,6 +12,7 @@ const staffMembers = require('../models/staffMembers.js');
 const { check, validationResult } = require('express-validator');
 const { Server, ObjectId } = require('mongodb');
 router.use(auth.func)
+
 //View the coverage of course(s) he/she is assigned to.
 router.route("/view-course-coverage/:course")
 .get([check ("course").isString()],
