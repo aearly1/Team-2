@@ -12,7 +12,6 @@ const request = require('../models/request.js')
 const slot= require('../models/slot.js')
 const staffMembers = require('../models/staffMembers.js');
 
-
 router.route('/theSlots')
     .get(async(req,res)=>{
 
@@ -26,7 +25,7 @@ router.route('/theSlots')
         if(courseList!=null)
         for (const element of courseList) 
         {
-            if(element.coordinator!=null&& element.coordinator.equals(userID))
+            if(element.coordinator!=null && element.coordinator.equals(userID))
             {
                 courseId=element._id;break;
             }
