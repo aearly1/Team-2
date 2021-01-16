@@ -17,19 +17,13 @@ function RecievedRequestsTable()
     var[arr2, setArr2] = useState([]);
     var[arr3, setArr3] = useState([]);
 
-    useEffect(async ()=>{
-        const intervalId = setInterval(() => {  
-            //loading all requests upon loading the page
-        async function changingDayOff()
+    useEffect(async ()=>{ async function changingDayOff()
         {
              axios.get('https://staffsprotal.herokuapp.com/api/academicMember/recievedRequests',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setArr3(items);
         }).catch(err=>alert(err))}
-         changingDayOff();
-        }, 5000)
-        return () => clearInterval(intervalId); //This is important
-        
+         changingDayOff(); 
         }, []  )
         
         //button handlers
