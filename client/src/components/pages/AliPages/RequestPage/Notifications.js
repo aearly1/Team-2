@@ -10,14 +10,14 @@ function Notifiactions()
 {   
     const token = useToken().token
     const [arr,setArr]= useState([]);
-    useEffect(async ()=>{
+    useEffect( ()=>{
         const intervalId = setInterval(() => {  
               //loading replacement requests upon loading the page
         function Notifications()
         {
             axios.get('https://staffsprotal.herokuapp.com/api/academicMember/notifications',{headers:{'auth-token':token}}).then((res)=>{
-            let items=res.data;
-            setArr(items);
+            setArr(res.data);
+            console.log(res.data)
         }).catch(err=>alert(err))}
          Notifications();
           }, 5000)
