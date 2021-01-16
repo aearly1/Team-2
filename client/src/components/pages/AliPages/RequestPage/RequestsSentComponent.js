@@ -20,9 +20,7 @@ function SentRequestsTable()
     const handleSelect1=(e)=>{
         setValue1(e)
     }
-    const handleSelectStatus=()=>{
-        const intervalId = setInterval(() => {  
-            async function select()
+    const handleSelectStatus=()=>{async function select()
         {
             if(value1=="View all sent requests")
             {
@@ -53,10 +51,7 @@ function SentRequestsTable()
                 }).catch(err=>alert(err))
             }          
         }
-        select();
-        }, 5000)
-        return () => clearInterval(intervalId); //This is important
-    }
+        select();}
     const handleCancel=(e)=>{
         var index = e.target.id
             async function cancel()
