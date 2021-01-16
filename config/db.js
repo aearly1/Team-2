@@ -9,7 +9,7 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       server: {
         socketOptions: {
-            connectTimeoutMS: 50000
+            connectTimeoutMS: 500000
         }
     }
     });
