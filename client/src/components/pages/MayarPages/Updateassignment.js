@@ -39,8 +39,8 @@ const  assignedslots=(e)=>{
      setLoading2(false);  
      setarr(items);
  }).catch(err=>setarr(err.toString()))
- assignedslots2();
-  }}
+ 
+  }assignedslots2();}
 
            
 //staff of  selected course
@@ -57,12 +57,12 @@ const staff=(e)=>{
            });
             setMembers(members)
             }).catch(err=>console.log(err.response.data))
-            staff2();
-}}
+            
+}       staff2();}
 
-const [slotselect,setslotselect]= useState([]);
-const [academicid,setacademicid]= useState([]);
-const [selectcourse,setselectcourse]= useState([]);
+const [slotselect,setslotselect]= useState("Select Slot: ");
+const [academicid,setacademicid]= useState("Select Academic: ");
+const [selectcourse,setselectcourse]= useState("Select Course: ");
 
 //pass the selected courses to get assigned slots and staff
         const handleSelect= async (e)=>{
