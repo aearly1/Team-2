@@ -43,7 +43,7 @@ const  assignedslots=(e)=>{
 }assignedslots2();}
 
 
-c
+
 const [slotselect,setslotselect]= useState("Select Slot: ");
 const [selectcourse,setselectcourse]= useState("Select Course: ");
 

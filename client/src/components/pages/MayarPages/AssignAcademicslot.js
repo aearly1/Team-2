@@ -39,7 +39,7 @@ const  unassignedslots=(e)=>{
      setarr(items);
  }).catch(err=>setarr(err.toString()))
  
-}assignedslots2();}
+}unassignedslots2();}
 
 
            
