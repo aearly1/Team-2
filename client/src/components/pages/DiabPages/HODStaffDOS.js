@@ -32,7 +32,7 @@ function HODStaffDOS() {
   const [loading2, setLoading2] = useState(false);
   useEffect(()=>{
     async function doIt(){
-    await axios.get('https://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
+    await axios.get('https://staffsprotal.herokuapp.com/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
       let items = []
       res.data.map(staffMem =>{items.push({id:staffMem.userCode, name:staffMem.name})})
       setOptions(items);
@@ -46,7 +46,7 @@ function HODStaffDOS() {
     setLoading2(true);
     let thingy = JSON.parse(e)
     setValue1(thingy.name)
-   await axios.post('https://localhost:5000/api/hod/staff-dos',{'staffId':thingy.id},{headers:{'auth-token':token}}).then((res)=>{ 
+   await axios.post('https://staffsprotal.herokuapp.com/api/hod/staff-dos',{'staffId':thingy.id},{headers:{'auth-token':token}}).then((res)=>{ 
     setMem(res.data)  
     }).catch(err=>console.log(err.response.data))
     setLoading2(false)

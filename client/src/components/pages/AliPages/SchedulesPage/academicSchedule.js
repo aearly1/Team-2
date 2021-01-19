@@ -21,7 +21,7 @@ function AcademicSchedule()
     useEffect(async ()=>{
         function doIt()
        {
-        axios.get('https://localhost:5000/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
+        axios.get('https://staffsprotal.herokuapp.com/api/academicMember/schedule',{headers:{'auth-token':token}}).then((res)=>{
            let items=res.data;
            var array = [...schedule];
            for (const element of items) 

@@ -9,7 +9,7 @@ const token = useToken().token
 
     const handleSubmit = (e1)=> {
       e1.preventDefault();
-      axios.post('https://localhost:5000/api/hr/deleteCourse',{'courseName':Course,'oldDepartmentName':oldDepartment},{headers:{'auth-token':token}}).then((res)=>{
+      axios.post('https://staffsprotal.herokuapp.com/api/hr/deleteCourse',{'courseName':Course,'oldDepartmentName':oldDepartment},{headers:{'auth-token':token}}).then((res)=>{
       alert(res.data)    
       }).catch(err=>alert(err))  
        }

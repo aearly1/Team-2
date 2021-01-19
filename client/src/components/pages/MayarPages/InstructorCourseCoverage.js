@@ -16,7 +16,7 @@ function InstructorCourseCoverage() {
     useEffect(()=>{
       async function doIt(){
       //GET THE Courses instructor is assigned to
-      await axios.get('https://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+      await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
           let items = []
           res.data.map(course => {items.push({ courseName:course.courseName})})
           setLoading1(false);
@@ -29,12 +29,12 @@ function InstructorCourseCoverage() {
      const handleSelect1= async (e)=>{
       setLoading2(true)
       setValue1(e);
-      let url ='https://localhost:5000/api/instructor/view-course-coverage'+'/'+e
-      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
+      let url ='https://staffsprotal.herokuapp.com/api/instructor/view-course-coverage'+'/'+e
+      await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{
         setLoading2(false);  
         setStr(res.data); 
               
-      }).catch(err=>alert(err.toString())) 
+      }).catch(err=>setStr(err.toString())) 
     }
     return (
         <Container fluid >

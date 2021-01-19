@@ -35,7 +35,7 @@ function HODViewStaff() {
     
     const token = useToken().token
     useEffect(()=>{
-    axios.get('https://localhost:5000/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
+    axios.get('https://staffsprotal.herokuapp.com/api/hod/staff',{headers:{'auth-token':token}}).then((res)=>{
         setStaffList(res.data)
         setLoading(false)
     }).catch(err=>console.log(err.response.data))

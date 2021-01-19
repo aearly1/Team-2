@@ -21,7 +21,7 @@ function RequestPage()
         {
             async function submit()
             {
-                await axios.post('https://localhost:5000/api/academicMember/changeDayOffRequest',{"reasonForChange":dayOffVal, "desiredDayOff":reason},{headers:{'auth-token':token}}).then((res)=>{
+                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/changeDayOffRequest',{"reasonForChange":dayOffVal, "desiredDayOff":reason},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             submit();
             window.location.reload(true);

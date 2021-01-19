@@ -734,17 +734,17 @@ router.route("/unassigned/:course")
             res.status(404).send("Course not found!")
         }
         else
-        {   const assignedslotsarray =[]
+        {   const unassignedslotsarray =[]
             const teachingSlots = myCourse.teachingSlots;
            
                 for (const element of teachingSlots)
                 {
-                    let s = await slot.findOne({"_id":ObjectId(element)})
-                    if(!s.staffTeachingSlot)   { 
-                    assignedslotsarray.push(s._id)
+                    if(element.staffTeachingSlot.equals(null))
+                    {
+                        unassignedslotsarray.push(element )
                     }
                  }
-                 res.send(assignedslotsarray)
+                 res.send(unassignedslotsarray)
            } 
     } catch (err) {
         console.error(err.message);

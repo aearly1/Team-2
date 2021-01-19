@@ -28,7 +28,7 @@ function ViewAttendance(props){
     const handleSubmit = (e1)=> {
         e1.preventDefault();
         if(btn == 1)
-{        axios.post('https://localhost:5000/api/hr/viewAttendance',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
+{        axios.post('https://staffsprotal.herokuapp.com/api/hr/viewAttendance',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
         setAttendance(res.data)
         setDays([])
         setSalary('')
@@ -36,13 +36,13 @@ function ViewAttendance(props){
        }
 
         if(btn == 2)
-        axios.post('https://localhost:5000/api/hr/viewMissingDaysOrHours',{},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('https://staffsprotal.herokuapp.com/api/hr/viewMissingDaysOrHours',{},{headers:{'auth-token':token}}).then((res)=>{
         setDays(res.data)    
         setAttendance([])
         setSalary('')    
          }).catch(err=>alert(err))
         if(btn == 3)
-        axios.post('https://localhost:5000/api/hr/viewSalary',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('https://staffsprotal.herokuapp.com/api/hr/viewSalary',{'id':Id},{headers:{'auth-token':token}}).then((res)=>{
         setSalary(res.data)    
         setDays([])
         setAttendance([])

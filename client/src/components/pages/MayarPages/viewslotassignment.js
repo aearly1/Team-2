@@ -33,7 +33,7 @@ function InstructorslotAssignment() {
   useEffect(()=>{
     async function doIt(){
     //GET THE Courses under instructor
-    await axios.get('https://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+    await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
       let items = []
       res.data.map(course => {items.push({ courseName:course.courseName})})
       setLoading1(false)
@@ -45,8 +45,8 @@ function InstructorslotAssignment() {
   const handleChange= async (e)=>{
     setLoading2(true);
     setValue1(e)
-    let url = 'https://localhost:5000/api/instructor/view-slot-assign-course'+'/'+e
-    await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{ 
+    let url = 'https://staffsprotal.herokuapp.com/api/instructor/view-slot-assign-course'+'/'+e
+    await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
     setSlots(res.data)  
     setLoading2(false)
     setRendered(true)

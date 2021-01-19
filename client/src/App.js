@@ -63,7 +63,7 @@ function App (){
 
   useEffect(async ()=>{
     async function yuck(){
-      await axios.get('https://localhost:5000/api/hod/sidebarData',{headers:{'auth-token':token}}).then(
+      await axios.get('https://staffsprotal.herokuapp.com/api/hod/sidebarData',{headers:{'auth-token':token}}).then(
         (res)=>{
           if(res.data ==='hod'){
             setSidebardata(HODData)

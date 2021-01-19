@@ -15,7 +15,7 @@ function Notifiactions()
               //loading replacement requests upon loading the page
         function Notifications()
         {
-            axios.get('https://localhost:5000/api/academicMember/notifications',{headers:{'auth-token':token}}).then((res)=>{
+            axios.get('https://staffsprotal.herokuapp.com/api/academicMember/notifications',{headers:{'auth-token':token}}).then((res)=>{
             setArr(res.data);
             console.log(res.data)
         }).catch(err=>alert(err))}
