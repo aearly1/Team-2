@@ -19,7 +19,7 @@ function RecievedRequestsTable()
 
     useEffect(async ()=>{ async function changingDayOff()
         {
-             axios.get('https://staffsprotal.herokuapp.com/api/academicMember/recievedRequests',{headers:{'auth-token':token}}).then((res)=>{
+             axios.get('http://localhost:5000/api/academicMember/recievedRequests',{headers:{'auth-token':token}}).then((res)=>{
             let items=res.data;
             setArr3(items);
         }).catch(err=>alert(err))}
@@ -31,7 +31,7 @@ function RecievedRequestsTable()
             var index = e.target.id
             async function accept()
             {
-                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/acceptReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
+                await axios.post('http://localhost:5000/api/academicMember/acceptReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             accept();
             window.location.reload(true);
@@ -40,7 +40,7 @@ function RecievedRequestsTable()
             var index = e.target.id
             async function reject()
             {
-                await axios.post('https://staffsprotal.herokuapp.com/api/academicMember/rejectReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
+                await axios.post('http://localhost:5000/api/academicMember/rejectReplacementRequest',{"requestID":index},{headers:{'auth-token':token}}).then((res)=>{
             }).catch(err=>alert(err))}
             reject();
             window.location.reload(true);

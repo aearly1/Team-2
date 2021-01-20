@@ -2,6 +2,7 @@ import React , {useEffect, useState} from 'react'
 import useToken from 'client/src/components/pages/general/useToken'
 import axios from 'axios'
 import { DropdownButton, Dropdown, Button} from 'react-bootstrap'
+import { usePromiseTracker,trackPromise } from "react-promise-tracker";
 
 function Removeacademic()
 {
@@ -14,35 +15,37 @@ function Removeacademic()
     var[courses, setcourses]= useState([]);
     var [arr,setarr]= useState([]);
 
-    useEffect(async ()=>{
-        async function doIt()
-        { //get courses of instructor
-            await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+    useEffect( ()=>{
+        
+        //get courses of instructor
+            trackPromise(axios.get('http://localhost:5000/api/instructor/courses',
+            {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
-            res.data.map(course => {courseslist.push({ courseName:course.courseName})})
+            console.log(res.data.courseName)
+            console.log(token)
+            res.data.map(course => {courseslist.push(course.courseName)})
             setcourses(courseslist);
-        }).catch(err=>alert(err))}
-            await doIt();
+        }).catch(err=>alert(err)))
+            
         }, []  )
 
 
            
 //staff of  selected course
-const staff=(e)=>{
+const staff= async (e)=>{
     setLoading1(true)
     setValue1(e)
-    async function staff2(){
-            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ value1
-            await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
+            let url ='http://localhost:5000/api/instructor/view-staff-course/'+ value1
+            await axios.get(url,{headers:{'auth-token': `${token}`}}).then((res)=>{ 
+            console.log(res.data)
             setLoading1(false)
-            let members=[]
+            let a1=[]
             res.data.map(staffmem=>{
-                members.push(staffmem.name+" "+staffmem.id)
+                a1.push(staffmem.name+" "+staffmem.userCode)
            });
-            setMembers(members)
+            setMembers(a1)
             }).catch(err=>console.log(err.response.data))
-            
-        }       staff2();}
+            }
 
         const [academicid,setacademicid]= useState("Select Academic: ");
         const [selectcourse,setselectcourse]= useState("Select Course: ");
@@ -77,7 +80,7 @@ const staff=(e)=>{
     //remove button
      const removeclick=()=>{
         async function removefromcourse()
-            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/remove-academicMember'+'/'+selectcourse+'/'+academicid
+            {  let URL='http://localhost:5000/api/instructor/remove-academicMember'+'/'+selectcourse+'/'+academicid
                 await axios.post(URL,{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err)); 
              }    
@@ -90,7 +93,7 @@ const staff=(e)=>{
         <br></br>
             <div>
             <p>Courses</p>
-            <DropdownButton onSelect={handleSelect} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
+            <DropdownButton onSelect={handleSelect} onChange={(e)=>{staff(e);console.log("ss")}} id="dropdown-basic-button" variant="warning"  drop={"down"} title={selectcourse}>
                 {courses.map(elem=>
       {
           return <Dropdown.Item eventKey={elem}>{elem}</Dropdown.Item>

@@ -33,7 +33,7 @@ function InstructorCourseStaff() {
   useEffect(()=>{
     async function doIt(){
     //GET THE Courses under department
-    await axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
+    await axios.get('http://localhost:5000/api/instructor/courses',{headers:{'auth-token':token}}).then((res)=>{
         let items = []
         res.data.map(course => {items.push({ courseName:course.courseName})})
         setLoading1(false)
@@ -45,8 +45,8 @@ function InstructorCourseStaff() {
   const handleChange= async (e)=>{
     setLoading2(true)
     setValue1(e)
-    let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/ '+'/'+ e
-    await axios.post(url,{headers:{'auth-token':token}}).then((res)=>{ 
+    let url ='http://localhost:5000/api/instructor/view-staff-course/ '+'/'+ e
+    await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{ 
     setLoading2(false)
     setMembers(res.data)
     }).catch(err=>console.log(err.response.data))

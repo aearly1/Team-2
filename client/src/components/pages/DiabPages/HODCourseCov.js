@@ -15,7 +15,7 @@ function HODCourseCov() {
     useEffect(()=>{
       async function doIt(){
       //GET THE Courses under department
-      await axios.get('https://staffsprotal.herokuapp.com/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+      await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
           let items = []
           res.data.map(course => {items.push({ courseName:course.courseName})})
           setLoading1(false);
@@ -28,7 +28,7 @@ function HODCourseCov() {
      const handleSelect1= async (e)=>{
       setLoading2(true)
       setValue1(e);
-      await axios.post('https://staffsprotal.herokuapp.com/api/hod/course-cov',{courseName:e},{headers:{'auth-token':token}}).then((res)=>{
+      await axios.post('http://localhost:5000/api/hod/course-cov',{courseName:e},{headers:{'auth-token':token}}).then((res)=>{
         setLoading2(false);  
         setStr(res.data); 
               

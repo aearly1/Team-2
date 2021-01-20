@@ -17,7 +17,7 @@ function UpdateAssignment()
     useEffect( ()=>{
         
         //get courses of instructor
-            trackPromise(axios.get('https://staffsprotal.herokuapp.com/api/instructor/courses',
+            trackPromise(axios.get('http://localhost:5000/api/instructor/courses',
             {headers:{'auth-token':token}}).then((res)=>{
             let courseslist = []
             console.log(res.data.courseName)
@@ -36,7 +36,7 @@ const  assignedslots=(e)=>{
     setValue2(e)
     console.log(value2)
     async function assignedslots2(){
-     let url ='https://staffsprotal.herokuapp.com/api/instructor/assignedslots'+'/'+e
+     let url ='http://localhost:5000/api/instructor/assignedslots'+'/'+e
      await axios.get(url,{headers:{'auth-token':token}}).then((res)=>{
      let items=[]
      res.data.map(assignedslots=>{items.push(assignedslots)})
@@ -51,7 +51,7 @@ const  assignedslots=(e)=>{
 const staff= async (e)=>{
     setLoading1(true)
     setValue1(e)
-            let url ='https://staffsprotal.herokuapp.com/api/instructor/view-staff-course/'+ value1
+            let url ='http://localhost:5000/api/instructor/view-staff-course/'+ value1
             await axios.get(url,{headers:{'auth-token': `${token}`}}).then((res)=>{ 
             console.log(res.data)
             setLoading1(false)
@@ -95,7 +95,7 @@ const [selectcourse,setselectcourse]= useState("Select Course: ");
     //Update Assign button
      const AssignClick=()=>{
         async function updateslot()
-            {  let URL='https://staffsprotal.herokuapp.com/api/instructor/update-assign'+'/'+selectcourse
+            {  let URL='http://localhost:5000/api/instructor/update-assign'+'/'+selectcourse
                 await axios.post(URL,{slotID:slotselect, academicId:academicid },{headers:{'auth-token':token}}).then((res)=>{       
                 }).catch(err=>alert(err))
              }     updateslot();}

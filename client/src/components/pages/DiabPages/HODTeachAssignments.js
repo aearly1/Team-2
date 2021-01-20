@@ -33,7 +33,7 @@ function HODTeachAssignments() {
   useEffect(()=>{
     async function doIt(){
     //GET THE Courses under department
-    await axios.get('https://staffsprotal.herokuapp.com/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
+    await axios.get('http://localhost:5000/api/hod/courses',{headers:{'auth-token':token}}).then((res)=>{
       let items = []
       res.data.map(course => {items.push({ courseName:course.courseName})})
       setLoading1(false)
@@ -45,7 +45,7 @@ function HODTeachAssignments() {
   const handleChange= async (e)=>{
     setLoading2(true);
     setValue1(e)
-    await axios.post('https://staffsprotal.herokuapp.com/api/hod/teaching-assignments',{'courseName':e},{headers:{'auth-token':token}}).then((res)=>{ 
+    await axios.post('http://localhost:5000/api/hod/teaching-assignments',{'courseName':e},{headers:{'auth-token':token}}).then((res)=>{ 
     setSlots(res.data)  
     setLoading2(false)
     setRendered(true)

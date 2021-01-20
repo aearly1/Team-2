@@ -8,7 +8,7 @@ function DeleteDepartment(props){
 const token = useToken().token
     const handleSubmit = (e1)=> {
       e1.preventDefault();
-      axios.post('https://staffsprotal.herokuapp.com/api/hr/deleteDepartment',{'departmentName':Department,'oldFacultyName':oldFaculty},{headers:{'auth-token':token}}).then((res)=>{
+      axios.post('http://localhost:5000/api/hr/deleteDepartment',{'departmentName':Department,'oldFacultyName':oldFaculty},{headers:{'auth-token':token}}).then((res)=>{
         alert(res.data)    
         }).catch(err=>alert(err))          }
         const [oldFaculty,setOldFacultyName]= useState('');

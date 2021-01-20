@@ -17,7 +17,7 @@ function ModifySalary(props){
 
     const handleSubmit = (e1)=> {
         e1.preventDefault();
-        axios.post('https://staffsprotal.herokuapp.com/api/hr/updateSalary',{'id':Id,'salary':Salary},{headers:{'auth-token':token}}).then((res)=>{
+        axios.post('http://localhost:5000/api/hr/updateSalary',{'id':Id,'salary':Salary},{headers:{'auth-token':token}}).then((res)=>{
         alert(res.data)    
         }).catch(err=>alert(err))
         }

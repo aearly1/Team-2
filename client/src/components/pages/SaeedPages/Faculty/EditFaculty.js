@@ -12,7 +12,7 @@ function AddFaculty(props){
     const handleSubmit = (e1)=> {
       e1.preventDefault();
       let IDS = Department.map(d=>d.value) 
-      axios.post('https://staffsprotal.herokuapp.com/api/hr/editFaculty',{'facultyName':facultyName,'departments':IDS},{headers:{'auth-token':token}}).then((res)=>{
+      axios.post('http://localhost:5000/api/hr/editFaculty',{'facultyName':facultyName,'departments':IDS},{headers:{'auth-token':token}}).then((res)=>{
       alert(res.data)    
       }).catch(err=>alert(err))        }
             const [facultyName,setFacultyName]= useState('');
@@ -27,7 +27,7 @@ function AddFaculty(props){
 
 
           const Refresh = (event)=>{
-            axios.get('https://staffsprotal.herokuapp.com/api/hr/getDepartments',{headers:{'auth-token':token}}).then((res)=>{
+            axios.get('http://localhost:5000/api/hr/getDepartments',{headers:{'auth-token':token}}).then((res)=>{
               setID(res.data[1]);
               setDep(res.data[0]);
               let op = []

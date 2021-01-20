@@ -21,7 +21,7 @@ const token = useToken().token
 
     const handleSubmit = (e1)=> {
         e1.preventDefault();
-        axios.post('https://staffsprotal.herokuapp.com/api/hr/editStaffMember',{'id':Id,'email':email,
+        axios.post('http://localhost:5000/api/hr/editStaffMember',{'id':Id,'email':email,
         'name':name,
         'type':type,
         'subType':subType,

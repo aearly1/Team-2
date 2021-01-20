@@ -5,7 +5,7 @@ import { useHistory,Redirect } from 'react-router-dom';
 import ReactLoading from 'react-loading'
 import { usePromiseTracker,trackPromise } from "react-promise-tracker";
 import { FaYoutube } from 'react-icons/fa';
-async function handleLogout (token) { axios.post('https://staffsprotal.herokuapp.com/api/staffs/logout',{},
+async function handleLogout (token) { axios.post('http://localhost:5000/api/staffs/logout',{},
         {
             headers: {
                 'auth-token': `${token}`
